@@ -1,0 +1,142 @@
+/* Buttons – docs/design.md, Abschnitt G */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  padding: 0 var(--space-5);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--ff-sans);
+  font-size: var(--fs-ui);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  white-space: normal;
+  touch-action: manipulation;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+.icon {
+  flex: none;
+}
+
+/* Größen */
+.md {
+  min-height: 48px;
+  padding: 0 var(--space-5);
+}
+
+.lg {
+  min-height: 56px;
+  padding: 0 var(--space-6);
+}
+
+.block {
+  display: flex;
+  width: 100%;
+}
+
+/* Primär */
+.primary {
+  background: var(--c-terra-700);
+  color: var(--c-paper);
+}
+
+.primary:active {
+  background: var(--c-terra-800);
+}
+
+@media (hover: hover) {
+  .primary:hover {
+    background: var(--c-terra-800);
+    color: var(--c-paper);
+  }
+}
+
+/* Sekundär */
+.secondary {
+  background: transparent;
+  border-color: var(--text);
+  color: var(--text);
+}
+
+.secondary:active {
+  background: color-mix(in srgb, var(--c-ink) 10%, transparent);
+}
+
+@media (hover: hover) {
+  .secondary:hover {
+    background: color-mix(in srgb, var(--c-ink) 6%, transparent);
+    color: var(--text);
+  }
+}
+
+/* Ghost */
+.ghost {
+  min-height: 44px;
+  padding: 10px 4px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--accent);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+.ghost:active {
+  color: var(--accent-hover);
+}
+
+@media (hover: hover) {
+  .ghost:hover {
+    color: var(--accent-hover);
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* Auf dunklem Grund */
+:global(.on-dark) .primary,
+:global(.onDark) .primary {
+  background: var(--c-sand);
+  color: var(--c-sage-900);
+}
+
+:global(.on-dark) .secondary,
+:global(.onDark) .secondary {
+  border-color: var(--c-sand);
+  color: var(--c-sand);
+}
+
+/* Deaktiviert / ladend */
+.button:disabled,
+.button[aria-disabled='true'] {
+  background: var(--c-line);
+  border-color: var(--c-line);
+  color: var(--c-ink-soft);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.button[aria-busy='true'] {
+  cursor: progress;
+}
+
+@media (forced-colors: active) {
+  .button {
+    border: 1px solid ButtonText;
+  }
+}

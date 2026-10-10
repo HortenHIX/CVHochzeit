@@ -4,11 +4,27 @@ export type Attendance = 'yes' | 'no';
 
 export interface RsvpPerson {
   name: string;
-  /** `value` aus site.rsvp.menuOptions (leer, wenn keine Auswahl) */
+  /** `value` aus site.rsvp.menuOptions bzw. site.rsvp.childMenu (leer, wenn keine Auswahl) */
   menu: string;
   child: boolean;
-  /** Unverträglichkeiten / Allergien, Freitext */
-  allergies: string;
+  /** Eintrag aus site.rsvp.childAgeOptions ('' wenn kein Kind) */
+  childAge: string;
+  highChair: boolean;
+  /** Angehakte Schnellauswahl aus site.rsvp.allergyOptions */
+  allergyTags: string[];
+  /** Weitere Unverträglichkeiten, Freitext */
+  allergyNote: string;
+}
+
+/** `value` aus site.rsvp.overnightOptions */
+export type Overnight = string;
+
+export interface RsvpShuttle {
+  there: boolean;
+  back: boolean;
+  /** Abfahrtsort (Hotelname) */
+  from: string;
+  seats: number;
 }
 
 export interface RsvpEntry {
@@ -17,18 +33,18 @@ export interface RsvpEntry {
   updatedAt: string;
   /** Wie oft die Antwort geändert wurde (0 = Erstantwort) */
   revision: number;
-  /** Ansprechpartner/in der Antwort */
+  /** Ansprechpartner/in der Antwort (Haushalt) */
   name: string;
   email: string;
-  phone: string;
   attendance: Attendance;
   /** Alle Personen inkl. Ansprechpartner/in – nur bei Zusage befüllt */
   persons: RsvpPerson[];
   /** IDs aus site.rsvp.events – nur bei Zusage befüllt */
   events: string[];
-  /** null = Frage nicht gestellt / nicht beantwortet */
-  overnight: boolean | null;
-  shuttle: boolean | null;
+  /** null = nicht gefragt / nicht beantwortet */
+  overnight: Overnight | null;
+  shuttle: RsvpShuttle | null;
+  songWish: string;
   message: string;
 }
 
@@ -36,7 +52,12 @@ export interface RsvpEntry {
 export const RSVP_LIMITS = {
   name: 120,
   email: 200,
-  phone: 40,
-  allergies: 300,
-  message: 2000,
+  allergyNote: 300,
+  songWish: 200,
+  message: 500,
 } as const;
+
+/** Alle Unverträglichkeiten einer Person als lesbarer Text. */
+export function allergyText(person: RsvpPerson): string {
+  return [...person.allergyTags, person.allergyNote.trim()].filter(Boolean).join(', ');
+}

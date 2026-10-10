@@ -45,10 +45,15 @@ export async function hasRole(required: Role): Promise<boolean> {
   return required === 'guest' ? true : role === 'admin';
 }
 
-export async function startSession(role: Role): Promise<boolean> {
+/**
+ * Meldet an. `persistent = false` setzt ein Sitzungs-Cookie, das beim
+ * Schließen des Browsers verfällt („Auf diesem Gerät angemeldet bleiben“).
+ */
+export async function startSession(role: Role, persistent = true): Promise<boolean> {
   const token = await createSessionToken(role, getAuthSecrets());
   if (!token) return false;
-  (await cookies()).set(SESSION_COOKIE, token, sessionCookieOptions(role));
+  const options = sessionCookieOptions(role);
+  (await cookies()).set(SESSION_COOKIE, token, persistent ? options : { ...options, maxAge: undefined });
   return true;
 }
 

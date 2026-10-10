@@ -26,7 +26,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: SECTION_IDS.story, label: 'Geschichte', show: site.story.items.length > 0 },
   { id: SECTION_IDS.schedule, label: 'Ablauf', show: site.schedule.items.length > 0 },
   { id: SECTION_IDS.locations, label: 'Anfahrt', show: site.locations.items.length > 0 },
-  { id: SECTION_IDS.stay, label: 'Übernachten', show: site.stay.hotels.length > 0 || site.stay.shuttle.enabled },
+  { id: SECTION_IDS.stay, label: 'Unterkunft', show: site.stay.hotels.length > 0 || site.stay.shuttle.enabled },
   { id: SECTION_IDS.dresscode, label: 'Dresscode', show: true },
   { id: SECTION_IDS.gifts, label: 'Geschenke', show: true },
   { id: SECTION_IDS.photos, label: 'Fotos', show: Boolean(site.photos.albumUrl) },

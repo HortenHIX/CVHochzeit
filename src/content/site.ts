@@ -10,78 +10,122 @@
  *  - Absätze in längeren Texten trennt ihr mit einer Leerzeile ("\n\n").
  *  - Listen (z. B. Hotels, FAQ) könnt ihr beliebig verlängern oder kürzen.
  *  - Ist eine Liste leer (z. B. `items: []`), wird die Sektion ausgeblendet.
- *  - Zeiten immer mit Zeitzone angeben, z. B. "2027-06-19T14:00:00+02:00"
+ *  - Zeitpunkte immer mit Zeitzone angeben, z. B. "2027-06-19T14:00:00+02:00"
  *    (+02:00 = Sommerzeit, +01:00 = Winterzeit).
+ *  - Reine Datumsangaben im Format "JJJJ-MM-TT", z. B. "2027-04-30".
  *
  *  Gästecode und Admin-Passwort stehen NICHT hier, sondern in den
  *  Umgebungsvariablen (siehe README.md).
  * ============================================================================
  */
 
-/** Verfügbare Icons (siehe src/components/icons). */
-export type IconName =
-  | 'rings'
-  | 'church'
-  | 'glass'
-  | 'dinner'
-  | 'cake'
-  | 'music'
-  | 'moon'
-  | 'camera'
-  | 'car'
-  | 'train'
-  | 'bus'
-  | 'hotel'
-  | 'heart'
-  | 'sun'
-  | 'gift'
-  | 'mail'
-  | 'phone'
-  | 'leaf'
-  | 'map'
-  | 'clock'
-  | 'coffee'
-  | 'sparkles'
-  | 'calendar'
-  | 'parking'
-  | 'shirt'
-  | 'question'
-  | 'plane'
-  | 'key'
-  | 'taxi'
-  | 'users'
-  | 'check'
-  | 'external'
-  | 'download'
-  | 'menu'
-  | 'close'
-  | 'chevron-down'
-  | 'arrow-right';
+/** Verfügbare Icons (siehe src/components/icons/Icon.tsx). */
+export const ICON_NAMES = [
+  'menu',
+  'close',
+  'arrow-right',
+  'chevron-down',
+  'external',
+  'copy',
+  'check',
+  'x',
+  'alert',
+  'info',
+  'phone',
+  'mail',
+  'chat',
+  'calendar',
+  'calendar-plus',
+  'pin',
+  'car',
+  'parking',
+  'train',
+  'bus',
+  'taxi',
+  'accessibility',
+  'bed',
+  'euro',
+  'tag',
+  'clock',
+  'rings',
+  'glasses',
+  'utensils',
+  'cake',
+  'music',
+  'moon',
+  'coffee',
+  'camera',
+  'qr',
+  'upload',
+  'image',
+  'link',
+  'printer',
+  'envelope',
+  'gift',
+  'plane',
+  'shirt',
+  'shoe',
+  'sun',
+  'plus',
+  'minus',
+  'trash',
+  'download',
+  'search',
+  'filter',
+  'user',
+  'users',
+  'child',
+  'leaf',
+  'key',
+  'heart',
+  'church',
+  'barn',
+  'mountain',
+  'wave',
+  'city',
+  'sparkles',
+  'logout',
+  'refresh',
+] as const;
+
+export type IconName = (typeof ICON_NAMES)[number];
+
+/** Motive für die Foto-Platzhalter in „Unsere Geschichte“ */
+export type StoryVignette = 'meet' | 'travel' | 'home' | 'proposal' | 'wedding';
+
+/** Motive für die Orts-Karten */
+export type VenueVignette = 'chapel' | 'barn';
 
 export interface StoryItem {
   /** Freitext, z. B. "Sommer 2016" */
   date: string;
   title: string;
   text: string;
+  /** Zeichnung, solange kein Foto hinterlegt ist */
+  vignette: StoryVignette;
   /** Optional: Pfad zu einem Foto in /public, z. B. "/images/antrag.jpg" */
   image?: string;
   imageAlt?: string;
 }
 
 export interface ScheduleItem {
-  /** Uhrzeit als Text, z. B. "14:00" */
+  /** Uhrzeit "HH:MM". Zeiten nach Mitternacht gehören automatisch zum Folgetag. */
   time: string;
   title: string;
   description?: string;
   /** Verweis auf eine Location-ID (siehe locations.items) */
   locationId?: string;
   icon: IconName;
+  /** Optionaler Zusatzhinweis als Badge, z. B. "Shuttle ab 13:15 Uhr" */
+  badge?: string;
 }
 
 export interface Location {
   id: string;
   /** Wofür ist der Ort? z. B. "Freie Trauung" oder "Feier" */
   label: string;
+  /** Uhrzeit als Text, z. B. "14:00 Uhr" */
+  time?: string;
   name: string;
   street: string;
   zipCity: string;
@@ -89,36 +133,45 @@ export interface Location {
   /** Koordinaten für Karte und Navigations-Links */
   lat: number;
   lng: number;
-  parking?: string;
-  icon: IconName;
+  vignette: VenueVignette;
 }
 
 export interface Hotel {
   name: string;
-  /** z. B. "5 Min. mit dem Auto" */
+  /** z. B. "3 Sterne" oder "Ferienwohnung" */
+  category?: string;
+  /** z. B. "2,4 km · 5 Min. Auto" */
   distance: string;
-  /** z. B. "ab 89 € / Nacht (DZ)" */
+  /** z. B. "ab 95 € / Nacht (DZ inkl. Frühstück)" */
   price?: string;
   description?: string;
+  /** Hält der Shuttle hier? */
+  shuttleStop?: boolean;
   /** Stichwort für das Zimmerkontingent */
   keyword?: string;
-  /** Bis wann das Kontingent reserviert ist, z. B. "30. April 2027" */
+  /** Bis wann das Kontingent reserviert ist (JJJJ-MM-TT) */
   bookingDeadline?: string;
   url?: string;
   phone?: string;
 }
 
 export interface ShuttleRide {
+  direction: 'hin' | 'zurueck';
+  /** Abfahrt "HH:MM" */
   time: string;
   from: string;
   to: string;
+  note?: string;
 }
 
 export interface Contact {
   name: string;
+  /** z. B. "Trauzeugin von Vera" */
   role: string;
   phone?: string;
   email?: string;
+  /** WhatsApp-Button anzeigen (nutzt die Telefonnummer) */
+  whatsapp?: boolean;
   note?: string;
 }
 
@@ -127,7 +180,7 @@ export interface ColorSwatch {
   hex: string;
 }
 
-export interface RsvpMenuOption {
+export interface RsvpOption {
   value: string;
   label: string;
   description?: string;
@@ -138,11 +191,14 @@ export interface RsvpEvent {
   label: string;
   /** z. B. "Samstag, 14:00 Uhr" */
   detail?: string;
+  icon: IconName;
 }
 
 export interface FaqItem {
   question: string;
   answer: string;
+  /** Optionaler Link in eine Sektion, z. B. { href: '#kontakt', label: 'Zu den Kontakten' } */
+  link?: { href: string; label: string };
 }
 
 export const site = {
@@ -167,8 +223,8 @@ export const site = {
     /** Ende (für Kalendereintrag) */
     end: '2027-06-20T02:00:00+02:00',
     timeZone: 'Europe/Berlin',
-    /** Kurzer Ort für Hero und Kalender. PLATZHALTER */
-    place: 'Hofgut Lindenhof, Musterstadt',
+    /** Kurzer Ort für Hero, Footer und Kalender. PLATZHALTER */
+    place: 'Hofgut Lindenhof · Musterstadt',
   },
 
   /** Titel im Browser-Tab und Beschreibung für Link-Vorschauen */
@@ -178,27 +234,32 @@ export const site = {
   },
 
   /* ------------------------------------------------------------------------
+   * Login-Seite (Gästecode)
+   * ---------------------------------------------------------------------- */
+  login: {
+    eyebrow: 'Herzlich willkommen',
+    text: 'Bitte gebt den Gästecode von eurer Einladungskarte ein.',
+    /** Wen können Gäste anrufen, wenn sie den Code nicht finden? PLATZHALTER */
+    helpName: 'Anna',
+    helpPhone: '+49 170 0000001',
+  },
+
+  /* ------------------------------------------------------------------------
    * Startbereich (Hero)
    * ---------------------------------------------------------------------- */
   hero: {
     eyebrow: 'Wir heiraten',
     intro:
       'Wir freuen uns riesig, diesen besonderen Tag mit euch zu feiern! Hier findet ihr alles, was ihr für die Planung wissen müsst.',
-  },
-
-  /* ------------------------------------------------------------------------
-   * Login-Seite (Gästecode)
-   * ---------------------------------------------------------------------- */
-  login: {
-    title: 'Schön, dass du da bist!',
-    text: 'Bitte gib den Gästecode ein, den du auf deiner Einladungskarte findest.',
-    help: 'Code verlegt? Melde dich einfach bei uns oder den Trauzeugen.',
+    dayOfText: 'Heute ist es so weit!',
+    afterText: 'Danke, dass ihr mit uns gefeiert habt!',
   },
 
   /* ------------------------------------------------------------------------
    * Unsere Geschichte
    * ---------------------------------------------------------------------- */
   story: {
+    eyebrow: 'Wie alles begann',
     title: 'Unsere Geschichte',
     intro: 'Wie aus einem zufälligen Hallo ein gemeinsames Leben wurde. PLATZHALTER',
     items: [
@@ -206,30 +267,37 @@ export const site = {
         date: 'Sommer 2016',
         title: 'Das erste Hallo',
         text: 'Auf dem Geburtstag einer gemeinsamen Freundin standen wir zufällig nebeneinander am Grill – und haben den Rest des Abends nicht mehr aufgehört zu reden. PLATZHALTER',
+        vignette: 'meet',
       },
       {
         date: 'Herbst 2017',
         title: 'Die erste gemeinsame Reise',
-        text: 'Mit Zelt und viel zu wenig Regenkleidung ging es an die Küste. Spätestens da war klar: Wir sind ein gutes Team. PLATZHALTER',
+        text: 'Mit Zelt und viel zu wenig Regenkleidung ging es in die Berge. Spätestens da war klar: Wir sind ein gutes Team. PLATZHALTER',
+        vignette: 'travel',
       },
       {
         date: 'Frühjahr 2020',
         title: 'Die erste gemeinsame Wohnung',
         text: 'Kisten schleppen, Möbel aufbauen, die erste eigene Küche – und ein Basilikum, das erstaunlich lange überlebt hat. PLATZHALTER',
+        vignette: 'home',
       },
       {
         date: 'Silvester 2025',
         title: 'Die große Frage',
         text: 'Kurz vor Mitternacht, unter freiem Himmel und mit zitternden Händen: Christoph hat gefragt, Vera hat Ja gesagt. PLATZHALTER',
+        vignette: 'proposal',
       },
     ] satisfies StoryItem[],
+    /** Abschlusszeile unter der Zeitleiste */
+    finale: 'Und jetzt: Ja!',
   },
 
   /* ------------------------------------------------------------------------
    * Tagesablauf
    * ---------------------------------------------------------------------- */
   schedule: {
-    title: 'Der Tagesablauf',
+    eyebrow: 'Der große Tag',
+    title: 'Tagesablauf',
     intro: 'So ungefähr haben wir uns den Tag vorgestellt – kleine Verschiebungen sind erlaubt. PLATZHALTER',
     items: [
       {
@@ -238,6 +306,7 @@ export const site = {
         description: 'Ankommen, durchatmen, Plätze suchen.',
         locationId: 'feier',
         icon: 'sun',
+        badge: 'Shuttle ab 13:00 Uhr',
       },
       {
         time: '14:00',
@@ -248,15 +317,21 @@ export const site = {
       },
       {
         time: '15:00',
-        title: 'Sektempfang & Kuchen',
+        title: 'Sektempfang',
         description: 'Anstoßen, gratulieren, Fotos machen.',
-        icon: 'glass',
+        icon: 'glasses',
+      },
+      {
+        time: '16:30',
+        title: 'Kaffee & Kuchen',
+        description: 'Selbstgebackenes von unseren Familien.',
+        icon: 'cake',
       },
       {
         time: '18:30',
         title: 'Abendessen',
         description: 'Gemeinsames Essen an langen Tafeln.',
-        icon: 'dinner',
+        icon: 'utensils',
       },
       {
         time: '21:00',
@@ -277,36 +352,44 @@ export const site = {
    * Orte & Anfahrt
    * ---------------------------------------------------------------------- */
   locations: {
+    eyebrow: 'Wo wir feiern',
     title: 'Orte & Anfahrt',
-    intro: 'Trauung und Feier finden am selben Ort statt. PLATZHALTER',
+    intro: 'Vormittags geht es aufs Standesamt, nachmittags feiern wir gemeinsam auf dem Hofgut. PLATZHALTER',
     items: [
       {
         id: 'standesamt',
-        label: 'Standesamtliche Trauung',
+        label: 'Standesamt',
+        time: '11:00 Uhr',
         name: 'Rathaus Musterstadt',
         street: 'Marktplatz 1',
         zipCity: '12345 Musterstadt',
-        description: 'Im engsten Familienkreis am Vormittag – wir freuen uns, euch danach auf dem Hofgut zu sehen. PLATZHALTER',
+        description: 'Im engsten Familienkreis – wir freuen uns, euch danach auf dem Hofgut zu sehen. PLATZHALTER',
         lat: 48.137154,
         lng: 11.576124,
-        icon: 'church',
+        vignette: 'chapel',
       },
       {
         id: 'feier',
         label: 'Freie Trauung & Feier',
+        time: '14:00 Uhr',
         name: 'Hofgut Lindenhof',
         street: 'Am Lindenhof 1',
         zipCity: '12345 Musterstadt',
         description: 'Ein alter Gutshof mit großem Garten, Scheune und viel Platz zum Feiern. PLATZHALTER',
         lat: 48.15,
         lng: 11.6,
-        parking: 'Kostenlose Parkplätze direkt am Hof (ausgeschildert). Ihr könnt euer Auto über Nacht stehen lassen.',
-        icon: 'heart',
+        vignette: 'barn',
       },
     ] satisfies Location[],
+    /** Fahrzeit zwischen den Orten (leer lassen = ausblenden) */
+    travelTimeBetween: 'ca. 10 Min. Fahrt',
     travel: {
-      car: 'Über die A9, Ausfahrt Musterstadt-Nord, dann der Beschilderung „Lindenhof“ folgen (ca. 10 Minuten). PLATZHALTER',
-      train: 'Nächster Bahnhof ist Musterstadt Hbf. Von dort sind es ca. 15 Minuten mit dem Taxi. Gebt uns gern Bescheid, dann organisieren wir eine Abholung. PLATZHALTER',
+      parking:
+        'Kostenlose Parkplätze direkt am Hofgut (ausgeschildert), ca. 3 Min. Fußweg über Kies. Ihr könnt euer Auto über Nacht stehen lassen. PLATZHALTER',
+      train:
+        'Nächster Bahnhof ist Musterstadt Hbf. Von dort sind es ca. 15 Minuten mit dem Taxi – oder ihr nutzt unseren Shuttle ab den Hotels. PLATZHALTER',
+      accessibility:
+        'Die Scheune und die Toiletten sind ebenerdig erreichbar. Zum Garten führt ein befestigter Weg. PLATZHALTER',
     },
   },
 
@@ -314,29 +397,35 @@ export const site = {
    * Übernachtung, Shuttle & Taxi
    * ---------------------------------------------------------------------- */
   stay: {
+    eyebrow: 'Für Anreisende',
     title: 'Übernachten & Shuttle',
     intro: 'Für alle, die von weiter weg anreisen oder nach der Party nicht mehr fahren möchten. PLATZHALTER',
     hotels: [
       {
         name: 'Landhotel Zur Post',
-        distance: '5 Min. mit dem Auto',
+        category: '3 Sterne',
+        distance: '2,4 km · 5 Min. Auto',
         price: 'ab 95 € / Nacht (DZ inkl. Frühstück)',
-        description: 'Gemütliches Familienhotel, Shuttle-Haltestelle direkt vor der Tür.',
+        description: 'Gemütliches Familienhotel mit großem Frühstücksbuffet.',
+        shuttleStop: true,
         keyword: 'Hochzeit C&V',
-        bookingDeadline: '30. April 2027',
+        bookingDeadline: '2027-04-30',
         url: 'https://example.com',
         phone: '+49 1234 567890',
       },
       {
         name: 'Gasthof Linde',
-        distance: '10 Min. mit dem Auto',
+        category: 'Gasthof',
+        distance: '4 km · 8 Min. Auto',
         price: 'ab 79 € / Nacht (DZ)',
         description: 'Einfache, saubere Zimmer im Ortskern.',
+        shuttleStop: true,
         url: 'https://example.com',
         phone: '+49 1234 567891',
       },
       {
         name: 'Ferienwohnungen am Hof',
+        category: 'Ferienwohnung',
         distance: 'direkt vor Ort',
         price: 'auf Anfrage',
         description: 'Wenige Apartments direkt auf dem Hofgut – bitte frühzeitig bei uns melden.',
@@ -344,73 +433,88 @@ export const site = {
     ] satisfies Hotel[],
     shuttle: {
       enabled: true,
-      text: 'Ein Shuttlebus pendelt zwischen den Hotels und dem Hofgut. Gebt bei der Zusage an, ob ihr ihn nutzen möchtet. PLATZHALTER',
+      text: 'Ein Shuttlebus pendelt zwischen den Hotels und dem Hofgut. Bitte gebt bei der Zusage an, ob ihr mitfahrt. PLATZHALTER',
       rides: [
-        { time: '13:00', from: 'Landhotel Zur Post', to: 'Hofgut Lindenhof' },
-        { time: '23:30', from: 'Hofgut Lindenhof', to: 'Landhotel Zur Post' },
-        { time: '01:00', from: 'Hofgut Lindenhof', to: 'Landhotel Zur Post' },
-        { time: '02:30', from: 'Hofgut Lindenhof', to: 'Landhotel Zur Post' },
+        { direction: 'hin', time: '13:00', from: 'Landhotel Zur Post', to: 'Hofgut Lindenhof' },
+        { direction: 'hin', time: '13:10', from: 'Gasthof Linde', to: 'Hofgut Lindenhof' },
+        { direction: 'zurueck', time: '23:30', from: 'Hofgut Lindenhof', to: 'beide Hotels' },
+        { direction: 'zurueck', time: '01:00', from: 'Hofgut Lindenhof', to: 'beide Hotels' },
+        { direction: 'zurueck', time: '02:30', from: 'Hofgut Lindenhof', to: 'beide Hotels', note: 'letzte Fahrt' },
       ] satisfies ShuttleRide[],
     },
     taxis: [
       { name: 'Taxi Musterstadt', phone: '+49 1234 111111' },
       { name: 'Funktaxi Müller', phone: '+49 1234 222222' },
     ],
+    taxiNote: 'Nachts bitte vorbestellen',
   },
 
   /* ------------------------------------------------------------------------
    * Dresscode
    * ---------------------------------------------------------------------- */
   dresscode: {
+    eyebrow: 'Was ziehe ich an?',
     title: 'Dresscode',
-    motto: 'Sommerlich-elegant',
-    text: 'Kommt so, wie ihr euch schick und wohl fühlt – gern in sanften, natürlichen Farben. Die Palette unten ist nur eine Inspiration, kein Muss. PLATZHALTER',
+    motto: 'Sommerlich-elegant, gern in natürlichen Farben.',
+    text: 'Kommt so, wie ihr euch schick und wohl fühlt. Die Farben unten sind nur eine Inspiration, kein Muss. PLATZHALTER',
     palette: [
-      { name: 'Salbei', hex: '#9CAF88' },
-      { name: 'Eukalyptus', hex: '#6F8C7A' },
-      { name: 'Sand', hex: '#D8C3A5' },
-      { name: 'Terrakotta', hex: '#C0785A' },
-      { name: 'Altrosa', hex: '#D4A5A0' },
-      { name: 'Creme', hex: '#F1E9DA' },
+      { name: 'Salbei', hex: '#9AAE97' },
+      { name: 'Eukalyptus', hex: '#6F8A78' },
+      { name: 'Sand', hex: '#E3D3BC' },
+      { name: 'Terrakotta', hex: '#C27453' },
+      { name: 'Rosenholz', hex: '#C49A8F' },
+      { name: 'Olive', hex: '#7D7A4F' },
     ] satisfies ColorSwatch[],
     dos: [
-      'Leichte Stoffe – wir feiern zum Teil draußen',
-      'Bequeme Schuhe zum Tanzen',
-      'Eine Jacke oder ein Tuch für den Abend',
+      'Blockabsatz oder flache Schuhe – wir feiern auf der Wiese',
+      'Leinen, Anzug gern ohne Krawatte',
+      'Jacke oder Stola für den Abend',
     ],
-    donts: [
-      'Bitte nicht in Weiß oder Creme – das bleibt der Braut vorbehalten',
-      'Pfennigabsätze versinken im Rasen – Blockabsätze sind eure Freunde',
-    ],
+    donts: ['Weiß, Creme oder Elfenbein – das bleibt der Braut vorbehalten', 'Stilettos auf dem Rasen'],
+    note: 'Absatzschoner liegen am Eingang bereit.',
   },
 
   /* ------------------------------------------------------------------------
    * Geschenke
    * ---------------------------------------------------------------------- */
   gifts: {
+    eyebrow: 'Von Herzen',
     title: 'Geschenke',
-    text: 'Das größte Geschenk ist, dass ihr diesen Tag mit uns feiert!\n\nWer uns darüber hinaus eine Freude machen möchte: Wir träumen von einer Reise nach Portugal und freuen uns über einen kleinen Beitrag zu unseren Flitterwochen. PLATZHALTER',
-    highlight: {
-      title: 'Unsere Flitterwochen',
-      text: 'Zwei Wochen Portugal – von Porto bis an die Algarve. PLATZHALTER',
-    },
+    quote: 'Das schönste Geschenk ist, dass ihr mit uns feiert.',
+    text: 'Wer uns darüber hinaus eine Freude machen möchte: Wir träumen von einer Reise durch Portugal und freuen uns über einen Beitrag zu unseren Flitterwochen. PLATZHALTER',
+    /** Kleine „Postkarten“ mit Reise-Stationen (leer = ausblenden) */
+    stations: [
+      { icon: 'city', label: 'Porto' },
+      { icon: 'mountain', label: 'Douro-Tal' },
+      { icon: 'wave', label: 'Algarve' },
+    ] satisfies { icon: IconName; label: string }[],
     note: 'Am Hochzeitstag steht eine Kartenbox für eure Umschläge bereit.',
+    /**
+     * Optional: Bankverbindung (wird erst nach Klick angezeigt).
+     * Beispiel: { holder: 'Christoph & Vera Muster', iban: 'DE00 0000 0000 0000 0000 00', bic: '' }
+     */
+    bank: null as null | { holder: string; iban: string; bic?: string },
   },
 
   /* ------------------------------------------------------------------------
    * Fotos
    * ---------------------------------------------------------------------- */
   photos: {
+    eyebrow: 'Erinnerungen teilen',
     title: 'Eure Fotos',
     text: 'Ihr habt den perfekten Moment eingefangen? Ladet eure Fotos und Videos in unser gemeinsames Album – wir freuen uns über jeden Schnappschuss!',
+    steps: ['Album öffnen', 'Fotos auswählen', 'Hochladen – ohne App und Konto'],
     /** Link zum geteilten Album (Google Fotos, iCloud, Dropbox …). PLATZHALTER */
     albumUrl: 'https://photos.google.com/',
     albumLabel: 'Zum gemeinsamen Album',
-    hint: 'Das Album ist ab dem Hochzeitstag freigeschaltet. Bitte ladet die Bilder in Originalqualität hoch.',
-    /** Text für die druckbare QR-Code-Karte (Seite /fotos/karte) */
+    /** Ab wann ist das Album freigeschaltet? (JJJJ-MM-TT, leer = sofort) */
+    albumOpensAt: '2027-06-19',
+    unpluggedNote:
+      'Unplugged-Trauung: Während der Zeremonie bitte keine Handys – unsere Fotografin hält alles für euch fest.',
+    /** Texte für die druckbare QR-Code-Tischkarte (Seite /fotos/karte) */
     printCard: {
-      title: 'Teilt eure schönsten Momente',
-      text: 'QR-Code scannen und Fotos direkt in unser Album laden.',
+      title: 'Teilt eure Fotos',
+      text: 'Scannt den Code und ladet eure schönsten Momente in unser Album.',
     },
   },
 
@@ -418,66 +522,98 @@ export const site = {
    * Zusage (RSVP)
    * ---------------------------------------------------------------------- */
   rsvp: {
+    eyebrow: 'Seid ihr dabei?',
     title: 'Zusage',
-    intro: 'Bitte gebt uns bis zum Stichtag Bescheid, ob ihr dabei seid. Ihr könnt eure Antwort jederzeit über dieses Formular ändern.',
-    /** Rückmeldefrist (Datum im Format JJJJ-MM-TT). PLATZHALTER */
+    intro: 'Bitte gebt uns bis zum Stichtag Bescheid, ob ihr dabei seid. Eure Antwort könnt ihr jederzeit über dieses Formular ändern.',
+    /** Rückmeldefrist (JJJJ-MM-TT). PLATZHALTER */
     deadline: '2027-04-30',
     /** Nach der Frist keine Antworten mehr annehmen? */
     closeAfterDeadline: false,
     /** Maximale Anzahl Personen pro Antwort */
     maxPersons: 6,
-    /** Sind Kinder eingeladen? (zeigt das Feld "Kind" pro Person) */
+    /** Sind Kinder eingeladen? (zeigt „Kind (unter 12 Jahren)“ pro Person) */
     allowChildren: true,
     menuOptions: [
       { value: 'fleisch', label: 'Fleisch', description: 'Rinderbraten mit Kartoffelgratin' },
       { value: 'fisch', label: 'Fisch', description: 'Saibling mit Kräuterkruste' },
       { value: 'vegetarisch', label: 'Vegetarisch', description: 'Gefüllte Pasta mit Salbeibutter' },
       { value: 'vegan', label: 'Vegan', description: 'Gemüse-Curry mit Kokos' },
-    ] satisfies RsvpMenuOption[],
+    ] satisfies RsvpOption[],
+    /** Zusätzliche Menüoption für Kinder */
+    childMenu: { value: 'kinder', label: 'Kindermenü' } satisfies RsvpOption,
+    childAgeOptions: ['0–2 Jahre', '3–6 Jahre', '7–12 Jahre'],
+    /** Schnellauswahl für Unverträglichkeiten (zusätzlich gibt es ein Freitextfeld) */
+    allergyOptions: ['Gluten', 'Laktose', 'Nüsse'],
     /** Programmpunkte, für die Gäste einzeln zusagen können (leer = ausblenden) */
     events: [
-      { id: 'trauung', label: 'Freie Trauung & Feier', detail: 'Samstag, ab 13:30 Uhr' },
-      { id: 'brunch', label: 'Katerfrühstück', detail: 'Sonntag, ab 10:30 Uhr' },
+      { id: 'trauung', label: 'Freie Trauung', detail: 'Samstag · 14:00 Uhr', icon: 'rings' },
+      { id: 'feier', label: 'Feier', detail: 'Samstag · ab 16:30 Uhr', icon: 'glasses' },
+      { id: 'brunch', label: 'Katerfrühstück', detail: 'Sonntag · 10:30 Uhr', icon: 'coffee' },
     ] satisfies RsvpEvent[],
-    /** Frage nach Übernachtungsbedarf anzeigen? */
+    /** Frage nach der Übernachtung anzeigen? */
     askOvernight: true,
-    /** Frage nach Shuttle anzeigen? (nur wenn stay.shuttle.enabled) */
+    overnightOptions: [
+      { value: 'hotel', label: 'Im Hotel-Kontingent' },
+      { value: 'self', label: 'Wir organisieren selbst' },
+      { value: 'home', label: 'Wir fahren heim' },
+    ] satisfies RsvpOption[],
+    /** Frage nach dem Shuttle anzeigen? (nur wenn stay.shuttle.enabled) */
     askShuttle: true,
-    successYes: 'Juhu, wir freuen uns riesig auf euch!',
-    successNo: 'Schade, dass ihr nicht dabei sein könnt – danke für eure Rückmeldung!',
+    /** Feld für einen Musikwunsch anzeigen? */
+    askSongWish: true,
+    successYes: 'Wir freuen uns riesig auf euch!',
+    successNo: 'Schade, dass ihr nicht dabei sein könnt. Danke für eure Rückmeldung!',
     privacyNote:
       'Wir nutzen eure Angaben (inkl. Unverträglichkeiten) ausschließlich für die Planung unserer Hochzeit und löschen sie spätestens drei Monate danach.',
+    /** Ansprechpartner für Änderungen nach der Frist. PLATZHALTER */
+    changeContactName: 'Anna',
+    changeContactPhone: '+49 170 0000001',
   },
 
   /* ------------------------------------------------------------------------
    * Häufige Fragen
    * ---------------------------------------------------------------------- */
   faq: {
+    eyebrow: 'Gut zu wissen',
     title: 'Häufige Fragen',
+    intro: 'Eure Frage fehlt? Schreibt uns einfach.',
     items: [
       {
         question: 'Bis wann sollen wir zusagen?',
-        answer: 'Bitte bis spätestens 30. April 2027 über das Formular auf dieser Seite. PLATZHALTER',
+        answer: 'Bitte bis spätestens 30. April 2027 über das Formular auf dieser Seite. Ändern könnt ihr eure Antwort jederzeit. PLATZHALTER',
+        link: { href: '#zusage', label: 'Zur Zusage' },
       },
       {
         question: 'Sind Kinder willkommen?',
         answer: 'Ja, sehr! Für die Kleinen gibt es eine Spielecke und am Abend einen ruhigen Rückzugsort. Bitte gebt Kinder bei der Zusage mit an. PLATZHALTER',
       },
       {
-        question: 'Wir möchten eine Rede halten oder ein Spiel vorbereiten – an wen wenden wir uns?',
-        answer: 'Sehr gern! Bitte sprecht alle Beiträge vorab mit unseren Trauzeugen ab, damit der Abend gut getaktet bleibt (Kontakt siehe unten). Uns müsst ihr nichts verraten.',
+        question: 'Wir möchten eine Rede, ein Spiel oder eine Überraschung beitragen – an wen wenden wir uns?',
+        answer: 'Sehr gern! Bitte sprecht alle Beiträge bis 1. Mai 2027 mit unseren Trauzeugen ab, damit alles gut in den Ablauf passt. Uns müsst ihr nichts verraten. PLATZHALTER',
+        link: { href: '#kontakt', label: 'Zu den Trauzeugen' },
       },
       {
-        question: 'Gibt es Parkplätze?',
-        answer: 'Ja, direkt am Hofgut gibt es ausreichend kostenlose Parkplätze. Ihr könnt euer Auto über Nacht stehen lassen.',
+        question: 'Wo kann ich parken?',
+        answer: 'Direkt am Hofgut gibt es ausreichend kostenlose Parkplätze. Ihr könnt euer Auto über Nacht stehen lassen.',
+        link: { href: '#anfahrt', label: 'Zur Anfahrt' },
       },
       {
         question: 'Was passiert bei Regen?',
         answer: 'Dann ziehen wir mit der Trauung in die geschmückte Scheune um. Gefeiert wird so oder so!',
       },
       {
-        question: 'Dürfen wir während der Trauung fotografieren?',
+        question: 'Darf ich während der Trauung fotografieren?',
         answer: 'Wir wünschen uns eine „unplugged“ Trauung: Bitte lasst die Handys während der Zeremonie in der Tasche – unsere Fotografin hält alles fest. Danach dürft ihr nach Herzenslust knipsen.',
+        link: { href: '#fotos', label: 'Zum Fotoalbum' },
+      },
+      {
+        question: 'Wie lange geht die Feier – und wie komme ich nachts zurück?',
+        answer: 'Open End! Der Shuttle fährt bis 2:30 Uhr zu den Hotels, Taxis solltet ihr nachts am besten vorbestellen.',
+        link: { href: '#uebernachten', label: 'Zu Shuttle & Taxi' },
+      },
+      {
+        question: 'Gibt es Essen für Allergiker, Vegetarier und Veganer?',
+        answer: 'Ja. Wählt im Zusageformular einfach euer Menü und gebt Unverträglichkeiten an – unser Caterer kümmert sich darum.',
       },
     ] satisfies FaqItem[],
   },
@@ -486,36 +622,37 @@ export const site = {
    * Ansprechpartner
    * ---------------------------------------------------------------------- */
   contacts: {
-    title: 'Fragen? Meldet euch!',
+    eyebrow: 'Fragen?',
+    title: 'Kontakt',
     intro: 'Für Überraschungen, Reden und alles, was wir (noch) nicht wissen sollen, sind unsere Trauzeugen für euch da.',
     people: [
       {
         name: 'Anna Beispiel',
-        role: 'Trauzeugin',
+        role: 'Trauzeugin von Vera',
         phone: '+49 170 0000001',
         email: 'anna@example.com',
-        note: 'Ansprechpartnerin für Beiträge & Überraschungen',
+        whatsapp: true,
+        note: 'Ansprechpartnerin für Reden, Spiele & Überraschungen',
       },
       {
         name: 'Markus Muster',
-        role: 'Trauzeuge',
+        role: 'Trauzeuge von Christoph',
         phone: '+49 170 0000002',
         email: 'markus@example.com',
-      },
-      {
-        name: 'Christoph & Vera',
-        role: 'Das Brautpaar',
-        email: 'hallo@example.com',
-        note: 'Für alle anderen Fragen',
+        whatsapp: true,
       },
     ] satisfies Contact[],
+    /** Hinweis-Box unter den Kontakten (leer lassen = ausblenden) */
+    notice: 'Reden, Spiele und Überraschungen bitte bis 1. Mai 2027 bei Anna & Markus anmelden, damit alles gut in den Ablauf passt. PLATZHALTER',
+    /** Kontaktzeile des Brautpaars */
+    couple: { email: 'hallo@example.com', phone: '' },
   },
 
   /* ------------------------------------------------------------------------
    * Fußzeile & Datenschutz
    * ---------------------------------------------------------------------- */
   footer: {
-    text: 'Wir können es kaum erwarten, mit euch zu feiern.',
+    text: 'Wir freuen uns auf euch.',
   },
   privacy: {
     /** Verantwortlich für die Datenverarbeitung. PLATZHALTER */

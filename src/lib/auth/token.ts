@@ -119,9 +119,9 @@ export async function verifySignedValue(
   return safeEqual(signed, expected) ? value : null;
 }
 
-/** Gästecodes werden tolerant verglichen: Groß-/Kleinschreibung und Leerzeichen egal. */
+/** Gästecodes werden tolerant verglichen: Groß-/Kleinschreibung, Leerzeichen und Bindestriche egal. */
 export function normalizeGuestCode(input: string): string {
-  return input.normalize('NFKC').toLowerCase().replace(/\s+/g, '');
+  return input.normalize('NFKC').toLowerCase().replace(/[\s\-_–]+/g, '');
 }
 
 /** Prüft einen eingegebenen Code und liefert die passende Rolle. */

@@ -16,7 +16,7 @@ test.describe('Zugangsschutz', () => {
   test('falscher Code zeigt eine Fehlermeldung', async ({ page }) => {
     await page.goto('/login');
     await page.getByLabel('Gästecode').fill('falsch');
-    await page.getByRole('button', { name: /eintreten/i }).click();
+    await page.getByRole('button', { name: /weiter/i }).click();
     await expect(page.getByRole('alert')).toBeVisible();
     await expect(page).toHaveURL(/\/login/);
   });
@@ -24,7 +24,7 @@ test.describe('Zugangsschutz', () => {
   test('richtiger Code (tolerant geschrieben) öffnet die Seite', async ({ page }) => {
     await page.goto('/login');
     await page.getByLabel('Gästecode').fill('  sonnenblume2027 ');
-    await page.getByRole('button', { name: /eintreten/i }).click();
+    await page.getByRole('button', { name: /weiter/i }).click();
     await expect(page).toHaveURL(/\/$/);
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Christoph');
   });

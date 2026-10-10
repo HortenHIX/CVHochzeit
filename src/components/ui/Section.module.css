@@ -1,0 +1,53 @@
+/* Sektionen – Hintergrund-Folge und Rhythmus (docs/design.md, Abschnitt D) */
+
+.section {
+  --section-bg: var(--bg);
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+  padding-block: var(--space-section);
+  background: var(--texture), var(--section-bg);
+}
+
+.base {
+  --section-bg: var(--c-linen);
+}
+
+.alt {
+  --section-bg: var(--c-sand);
+}
+
+.tint {
+  --section-bg: var(--c-sage-100);
+}
+
+.dark {
+  --section-bg: var(--c-sage-900);
+  background-blend-mode: soft-light;
+}
+
+.inner {
+  position: relative;
+  z-index: var(--z-content);
+  width: min(100% - 2 * var(--gutter), var(--w-content));
+  margin-inline: auto;
+}
+
+.narrow {
+  max-width: var(--w-form);
+}
+
+.default {
+  max-width: var(--w-content);
+}
+
+.wide {
+  max-width: var(--w-wide);
+}
+
+@media print {
+  .section {
+    background: none;
+    padding-block: 1.5rem;
+  }
+}

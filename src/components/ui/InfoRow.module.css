@@ -1,0 +1,30 @@
+.row {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.iconWrap {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--c-sand);
+  color: var(--c-sage-700);
+}
+
+.body {
+  min-width: 0;
+  padding-top: 0.4rem;
+}
+
+.title {
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+}
+
+.text > * + * {
+  margin-top: var(--space-2);
+}

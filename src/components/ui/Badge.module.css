@@ -1,0 +1,36 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  font-family: var(--ff-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.neutral {
+  background: var(--c-sand);
+  color: var(--c-ink);
+}
+
+.sage {
+  background: var(--c-sage-100);
+  color: var(--c-sage-900);
+}
+
+.terra {
+  background: transparent;
+  border-color: var(--c-terra-700);
+  color: var(--c-terra-700);
+}
+
+.now {
+  background: var(--c-terra-700);
+  color: var(--c-paper);
+}
