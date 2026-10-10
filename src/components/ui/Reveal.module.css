@@ -1,0 +1,24 @@
+.reveal {
+  transition:
+    opacity 700ms var(--ease-out, ease-out),
+    transform 700ms var(--ease-out, ease-out);
+}
+
+.reveal[data-state='hidden'] {
+  opacity: 0;
+  transform: translateY(1.25rem);
+}
+
+.reveal[data-state='shown'] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal[data-state] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
