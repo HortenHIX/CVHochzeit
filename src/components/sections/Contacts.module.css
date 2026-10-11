@@ -1,0 +1,200 @@
+/* Kontakt (docs/design.md F12): Karten mit Bogen-Avatar, Telefonnummer sichtbar */
+
+.cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gap-cards);
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.cardItem {
+  display: flex;
+  min-width: 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: var(--space-5);
+  border: var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--c-paper);
+}
+
+/* ---------- Kopf: Bogen-Avatar + Name/Rolle ---------- */
+.head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.avatar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 80px;
+  /* Bogen 4:5 – explizite Radien, damit die unteren Ecken nicht mitskaliert werden */
+  border-radius: 32px 32px var(--radius-card-inner) var(--radius-card-inner);
+  background: var(--c-sage-100);
+}
+
+/* innerer Bogen wie beim Einladungsrahmen (E5) */
+.avatar::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid var(--double-line-color);
+  border-radius: 28px 28px 8px 8px;
+  pointer-events: none;
+}
+
+.initials {
+  padding-top: 0.35rem;
+  font-family: var(--ff-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--c-sage-700);
+}
+
+.who {
+  min-width: 0;
+}
+
+.name {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-h4);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--c-ink);
+}
+
+.role {
+  margin-top: var(--space-1);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--tr-eyebrow);
+  text-transform: uppercase;
+  line-height: 1.35;
+  color: var(--c-sage-700);
+}
+
+.note {
+  margin-top: var(--space-4);
+  color: var(--c-ink);
+}
+
+/* ---------- Telefon & Aktionen (unten bündig über alle Karten) ---------- */
+.phone {
+  margin-top: auto;
+  padding-top: var(--space-5);
+  font-size: var(--fs-lead);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: var(--c-ink);
+}
+
+.printOnly {
+  display: none;
+}
+
+.actions {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.secondary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-5);
+}
+
+/* ---------- Hinweis & Brautpaar ---------- */
+.notice {
+  max-width: 52rem;
+  margin: var(--space-6) auto 0;
+}
+
+.couple {
+  max-width: 52rem;
+  margin: var(--space-6) auto 0;
+  text-align: center;
+  color: var(--c-ink);
+}
+
+.couple a {
+  padding-block: 0.15em;
+  font-weight: 600;
+}
+
+.coupleLead {
+  font-weight: 600;
+}
+
+@media (min-width: 45em) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 52rem;
+  }
+
+  .cards[data-count='1'] {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 30rem;
+  }
+}
+
+@media (min-width: 64em) {
+  .cards[data-count='3'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: none;
+  }
+
+  .card {
+    padding: var(--space-6);
+  }
+
+  .head {
+    gap: var(--space-5);
+  }
+
+  .avatar {
+    width: 96px;
+    height: 120px;
+    border-radius: 48px 48px var(--radius-card-inner) var(--radius-card-inner);
+  }
+
+  .avatar::before {
+    inset: 5px;
+    border-radius: 43px 43px 7px 7px;
+  }
+
+  .initials {
+    font-size: 2.5rem;
+  }
+}
+
+@media print {
+  .cardItem {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .card {
+    break-inside: avoid;
+  }
+
+  .printOnly {
+    display: block;
+    margin-top: var(--space-1);
+  }
+}

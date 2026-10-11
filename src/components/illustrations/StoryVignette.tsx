@@ -17,19 +17,20 @@ function heartPath(x: number, y: number, w: number): string {
 
 /** Je Motiv: Zeichnung und untere Motivkante (dort sitzt die Halbsonne). */
 const MOTIFS: Record<Variant, { base: number; art: ReactNode }> = {
-  /* Kennenlernen: zwei Tassen, deren Dampf oben in einem Herz zusammenläuft */
+  /* Kennenlernen: zwei Tassen, deren Dampf oben in einem Herz zusammenläuft
+     (je 2.5 Einheiten weiter außen als in der Bauanleitung, damit sich die Henkel nicht berühren) */
   meet: {
     base: 95,
     art: (
       <g>
-        <path d="M41 65C38 60.5 44 57.5 42 52.5C40.6 49 43 45.5 47.5 44.5" stroke={STEM} strokeWidth={1.1} strokeOpacity={0.7} {...LINE} />
-        <path d="M79 65C82 60.5 76 57.5 78 52.5C79.4 49 77 45.5 72.5 44.5" stroke={STEM} strokeWidth={1.1} strokeOpacity={0.7} {...LINE} />
+        <path d="M38.5 65C35.5 60.5 41.5 57.5 39.5 52.5C38.2 49.2 41.2 45.6 47.5 44.5" stroke={STEM} strokeWidth={1.1} strokeOpacity={0.7} {...LINE} />
+        <path d="M81.5 65C84.5 60.5 78.5 57.5 80.5 52.5C81.8 49.2 78.8 45.6 72.5 44.5" stroke={STEM} strokeWidth={1.1} strokeOpacity={0.7} {...LINE} />
         <path d={heartPath(60, 40, 11)} fill={WARM} fillOpacity={0.6} />
-        <path d="M28 70h26v14a10 10 0 0 1-10 10h-6a10 10 0 0 1-10-10Z" {...FILL} />
-        <path d="M54 74a5 5 0 0 1 0 10" {...S} />
-        <path d="M92 70h-26v14a10 10 0 0 0 10 10h6a10 10 0 0 0 10-10Z" {...FILL} />
-        <path d="M66 74a5 5 0 0 0 0 10" {...S} />
-        <path d="M24 97.5h36M60 97.5h36" stroke={STEM} strokeWidth={1.25} strokeOpacity={0.6} {...LINE} />
+        <path d="M25.5 70h26v14a10 10 0 0 1-10 10h-6a10 10 0 0 1-10-10Z" {...FILL} />
+        <path d="M51.5 74a5 5 0 0 1 0 10" {...S} />
+        <path d="M94.5 70h-26v14a10 10 0 0 0 10 10h6a10 10 0 0 0 10-10Z" {...FILL} />
+        <path d="M68.5 74a5 5 0 0 0 0 10" {...S} />
+        <path d="M22 97.5h76" stroke={STEM} strokeWidth={1.25} strokeOpacity={0.6} {...LINE} />
       </g>
     ),
   },

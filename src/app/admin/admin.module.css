@@ -1,0 +1,750 @@
+/* Verwaltung – docs/design.md F „Admin“, G (Buttons, Karten, Popover), I */
+
+/* ---------- Kopf ---------- */
+
+.header {
+  padding-top: env(safe-area-inset-top);
+  background: var(--c-linen);
+  border-bottom: var(--hairline);
+}
+
+.headerBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: min(100% - 2 * var(--gutter), var(--w-wide));
+  min-height: var(--header-h);
+  margin-inline: auto;
+}
+
+.brand {
+  display: inline-flex;
+  flex: none;
+  padding: 2px;
+  margin-inline-start: -2px;
+  border-radius: 50%;
+  color: var(--c-ink);
+}
+
+.brand:focus-visible {
+  outline-offset: 1px;
+}
+
+.headerSpacer {
+  flex: 1;
+}
+
+.headerLink {
+  display: none;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--space-2);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.logout {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border: 1.5px solid var(--c-ink);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--c-ink);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  touch-action: manipulation;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.logout:active {
+  background: color-mix(in srgb, var(--c-ink) 10%, transparent);
+  transform: translateY(1px);
+}
+
+@media (hover: hover) {
+  .logout:hover {
+    background: color-mix(in srgb, var(--c-ink) 6%, transparent);
+  }
+}
+
+/* ---------- Inhalt ---------- */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: min(100% - 2 * var(--gutter), var(--w-wide));
+  margin-inline: auto;
+  padding-block: var(--space-6) calc(var(--space-9) + env(safe-area-inset-bottom));
+  /* Admin: Fließtext darf auf 1rem sinken */
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.main > *,
+.block {
+  min-width: 0;
+}
+
+/* ---------- Kopfzeile ---------- */
+
+.pageHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-5) var(--space-6);
+}
+
+.titleBlock {
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-4);
+}
+
+.title {
+  font-size: var(--fs-h1);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: var(--c-ink);
+}
+
+.stand {
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--c-ink-soft);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.titleOrnament {
+  margin-top: var(--space-3);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  width: 100%;
+}
+
+.actionButton {
+  flex: 1 1 auto;
+}
+
+.ghostAction {
+  flex: 0 1 auto;
+}
+
+/* ---------- CSV-Popover ---------- */
+
+.exportMenu {
+  position: relative;
+  flex: 1 1 100%;
+}
+
+.exportButton {
+  width: 100%;
+}
+
+.exportChevron {
+  transition: rotate var(--dur-base) var(--ease);
+}
+
+[aria-expanded='true'] > .exportChevron {
+  rotate: 180deg;
+}
+
+.popover {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  right: 0;
+  padding: var(--space-2);
+  border: var(--hairline);
+  border-radius: var(--radius-card-inner);
+  background: var(--c-paper);
+  box-shadow: var(--shadow-lg);
+  animation: popoverIn var(--dur-fast) var(--ease) both;
+}
+
+.popover[hidden] {
+  display: none;
+}
+
+@keyframes popoverIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.popoverList {
+  margin: 0;
+  padding: 0;
+}
+
+.popoverItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 48px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--c-ink);
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.popoverItem:focus-visible {
+  outline-offset: -3px;
+}
+
+@media (hover: hover) {
+  .popoverItem:hover {
+    background: var(--c-sand);
+    color: var(--c-ink);
+  }
+}
+
+.popoverIcon {
+  flex: none;
+  color: var(--c-sage-700);
+}
+
+.popoverText {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.35em;
+  line-height: 1.3;
+}
+
+.popoverTitle {
+  font-size: var(--fs-ui);
+  font-weight: 600;
+}
+
+.popoverDetail {
+  font-size: var(--fs-small);
+  color: var(--c-ink-soft);
+}
+
+.popoverNote {
+  margin-top: var(--space-1);
+  padding: var(--space-2) var(--space-4) var(--space-1);
+  border-top: var(--hairline);
+  font-size: var(--fs-small);
+  color: var(--c-ink-soft);
+}
+
+/* ---------- Kacheln ---------- */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-cards);
+  margin: 0;
+}
+
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 20px;
+  border: var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--c-paper);
+}
+
+.tileLabel {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--c-ink-soft);
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+.tileLabel > span {
+  min-width: 0;
+}
+
+.tileIcon {
+  order: 2;
+  flex: none;
+  margin-top: -1px;
+  color: var(--c-sage-700);
+}
+
+.tileValue {
+  margin-top: auto;
+  padding-top: var(--space-3);
+  font-family: var(--ff-display);
+  font-size: 2.5rem;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--c-ink);
+}
+
+.tileSlash {
+  color: var(--c-ink-soft);
+}
+
+.tileSub {
+  margin-top: var(--space-1);
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  color: var(--c-ink-soft);
+  font-variant-numeric: lining-nums;
+}
+
+.tileAction {
+  margin-top: var(--space-1);
+}
+
+.tileInteractive {
+  transition:
+    box-shadow var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease),
+    border-color var(--dur-base) var(--ease);
+}
+
+.tileButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--c-terra-700);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: start;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  touch-action: manipulation;
+}
+
+/* Trefferfläche: die ganze Kachel */
+.tileButton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+}
+
+.tileButton:focus-visible {
+  outline: none;
+}
+
+.tileButton:focus-visible::after {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.tileButtonIcon {
+  flex: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tileInteractive:hover {
+    border-color: var(--c-stone);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .tileInteractive:hover .tileButton {
+    color: var(--c-terra-800);
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* ---------- Karten ---------- */
+
+.pair {
+  display: grid;
+  gap: var(--gap-cards);
+  align-items: start;
+}
+
+.card {
+  min-width: 0;
+  padding: var(--space-5);
+  border: var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--c-paper);
+}
+
+.cardHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.cardTitle {
+  font-family: var(--ff-display);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--c-ink);
+}
+
+.cardMeta {
+  font-size: var(--fs-small);
+  color: var(--c-ink-soft);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.cardFoot {
+  margin-top: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: var(--hairline);
+}
+
+.empty {
+  color: var(--c-ink-soft);
+}
+
+/* ---------- Menüwahl (Balkenliste) ---------- */
+
+.bars {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 36px;
+}
+
+.barLabel {
+  color: var(--c-ink);
+  font-weight: 500;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.barTrack {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.bar {
+  flex: none;
+  width: calc((100% - 3.5rem) * var(--bar, 0));
+  min-width: 3px;
+  height: 12px;
+  border-radius: 0 4px 4px 0;
+  background: var(--c-sage-700);
+}
+
+.bar[data-empty] {
+  width: 2px;
+  min-width: 2px;
+  background: var(--c-line);
+}
+
+.barValue {
+  flex: none;
+  font-weight: 600;
+  color: var(--c-ink);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* ---------- Unverträglichkeiten ---------- */
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--c-sand);
+  font-size: var(--fs-small);
+  color: var(--c-ink);
+}
+
+.tagCount {
+  font-weight: 600;
+}
+
+.allergyList {
+  margin: 0;
+}
+
+.allergyItem {
+  display: flex;
+  gap: var(--space-3);
+  padding-block: var(--space-3);
+  border-top: var(--hairline);
+}
+
+.allergyIcon {
+  flex: none;
+  margin-top: 3px;
+  color: var(--c-terra-700);
+}
+
+.allergyBody {
+  min-width: 0;
+}
+
+.allergyWho {
+  line-height: 1.4;
+}
+
+.allergyName {
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+.allergyMeta {
+  color: var(--c-ink-soft);
+}
+
+.allergyText {
+  color: var(--c-ink);
+}
+
+.allergyHousehold {
+  font-size: var(--fs-small);
+  color: var(--c-ink-soft);
+}
+
+/* ---------- Nachrichten & Musikwünsche ---------- */
+
+.notes,
+.songs {
+  margin: 0;
+}
+
+.note,
+.song {
+  padding-block: var(--space-4);
+  border-top: var(--hairline);
+}
+
+.note:first-child,
+.song:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.noteFigure {
+  margin: 0;
+}
+
+.noteText {
+  margin: 0;
+  color: var(--c-ink);
+}
+
+.noteText > p + p {
+  margin-top: var(--space-2);
+}
+
+.noteBy {
+  margin-top: var(--space-2);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+.noteBy::before {
+  content: '– ';
+  color: var(--c-ink-soft);
+}
+
+.noteDate {
+  font-weight: 400;
+  color: var(--c-ink-soft);
+  font-variant-numeric: lining-nums;
+}
+
+.song {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.songIcon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--c-sage-700);
+}
+
+.songTitle {
+  font-weight: 500;
+  color: var(--c-ink);
+}
+
+.songBy {
+  font-size: var(--fs-small);
+  color: var(--c-ink-soft);
+}
+
+/* ---------- Einrichtungs-Hinweis ---------- */
+
+.setup {
+  max-width: 48rem;
+  font-size: 1rem;
+}
+
+.setupSteps {
+  display: grid;
+  gap: var(--space-2);
+  padding-left: 1.4rem;
+}
+
+.setupSteps li::marker {
+  font-weight: 600;
+  color: var(--c-terra-700);
+}
+
+.setupNote {
+  font-size: var(--fs-small);
+  color: var(--c-ink-soft);
+}
+
+.setup code {
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Lade-Platzhalter ---------- */
+
+.skeleton {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.skeletonTitle {
+  width: min(16rem, 70%);
+  height: 3rem;
+  border-radius: var(--radius-md);
+  background: var(--c-sand);
+}
+
+.skeletonTile {
+  min-height: 8rem;
+  background: color-mix(in srgb, var(--c-sand) 45%, var(--c-paper));
+  animation: pulse 1.4s var(--ease) infinite alternate;
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.55;
+  }
+}
+
+/* ---------- Breakpoints ---------- */
+
+@media (min-width: 30em) {
+  .actions {
+    width: auto;
+  }
+
+  .exportMenu {
+    flex: 0 0 auto;
+  }
+
+  .exportButton {
+    width: auto;
+  }
+
+  .actionButton {
+    flex: 0 0 auto;
+  }
+
+  .popover {
+    right: auto;
+    min-width: 21rem;
+  }
+}
+
+@media (min-width: 45em) {
+  .headerLink {
+    display: inline-flex;
+  }
+}
+
+@media (min-width: 64em) {
+  .main {
+    gap: var(--space-7);
+    padding-top: var(--space-7);
+  }
+
+  .tiles {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card {
+    padding: var(--space-6);
+  }
+}
+
+/* ---------- Druck ---------- */
+
+@media print {
+  .header,
+  .actions {
+    display: none;
+  }
+
+  .tile,
+  .card {
+    break-inside: avoid;
+  }
+}
+
+@media (forced-colors: active) {
+  .bar {
+    background: CanvasText;
+  }
+
+  .logout {
+    border-color: ButtonText;
+  }
+}

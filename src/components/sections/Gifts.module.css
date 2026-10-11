@@ -1,0 +1,256 @@
+/* Geschenke (docs/design.md F8): einspaltig, max. 36rem, zentriert, E4 über der H2 */
+
+/* Der Olivenzweig steht im Markup nach dem Kopf; die Spalte wird zum Flex-Stapel,
+   damit er per `order` darüber erscheint (Section selbst bleibt unverändert). */
+.section > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.olive {
+  order: -1;
+  align-self: center;
+  width: 160px;
+  margin-bottom: var(--space-4);
+}
+
+.body {
+  width: 100%;
+  max-width: 36rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.quote {
+  font-family: var(--ff-display);
+  font-size: var(--fs-quote);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--c-ink);
+  text-wrap: balance;
+}
+
+.text {
+  margin-top: var(--space-5);
+  color: var(--c-ink);
+}
+
+.text + .text {
+  margin-top: var(--space-3);
+}
+
+/* ---------- Postkarten mit Reise-Stationen ---------- */
+.postcards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 30rem;
+  margin: var(--space-7) auto 0;
+  padding: 0;
+  list-style: none;
+}
+
+.postcardItem {
+  display: flex;
+  min-width: 0;
+}
+
+.postcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  aspect-ratio: 4 / 3.1;
+  padding: var(--space-4) var(--space-2) var(--space-3);
+  border: 1px solid var(--c-line);
+  border-radius: 4px;
+  background: var(--c-paper);
+  box-shadow: var(--shadow-sm);
+  rotate: var(--tilt, 0deg);
+}
+
+/* Innenrahmen wie bei einer Bildpostkarte */
+.postcard::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid color-mix(in srgb, var(--c-line) 70%, transparent);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* kleine Briefmarke oben rechts (dekorativ) */
+.stamp {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 12px;
+  height: 15px;
+  border: 1px dashed color-mix(in srgb, var(--c-terra-500) 70%, transparent);
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--c-terra-500) 12%, transparent);
+}
+
+.postcardIcon {
+  color: var(--c-sage-700);
+}
+
+.postcardLabel {
+  max-width: 100%;
+  font-family: var(--ff-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--c-ink);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Info-Zeile ---------- */
+.note {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 36rem;
+  margin: var(--space-7) auto 0;
+}
+
+.note > * {
+  max-width: 27rem;
+}
+
+/* ---------- Bankverbindung (optional, standardmäßig zu) ---------- */
+.bank {
+  width: 100%;
+  max-width: 36rem;
+  margin: var(--space-5) auto 0;
+  text-align: center;
+}
+
+.bankSummary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 10px 4px;
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.bankSummary::-webkit-details-marker {
+  display: none;
+}
+
+.bankSummaryText {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+@media (hover: hover) {
+  .bankSummary:hover {
+    color: var(--accent-hover);
+  }
+
+  .bankSummary:hover .bankSummaryText {
+    text-decoration-thickness: 2px;
+  }
+}
+
+.chevron {
+  transition: rotate var(--dur-base) var(--ease);
+}
+
+.bank[open] .chevron {
+  rotate: 180deg;
+}
+
+.bank::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size var(--dur-base) var(--ease),
+    content-visibility var(--dur-base) allow-discrete;
+}
+
+.bank[open]::details-content {
+  block-size: auto;
+}
+
+.bankBody {
+  margin-top: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-card-inner);
+  background: var(--c-paper);
+  text-align: start;
+}
+
+.bankList {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.bankRow dt {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--tr-eyebrow);
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: var(--c-sage-700);
+}
+
+.bankRow dd {
+  margin-top: var(--space-1);
+  color: var(--c-ink);
+}
+
+.ibanRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.iban {
+  font-size: var(--fs-lead);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+  word-spacing: 0.08em;
+}
+
+@media (min-width: 64em) {
+  .olive {
+    width: 200px;
+  }
+
+  .postcards {
+    max-width: 33rem;
+    gap: var(--space-5);
+  }
+}
+
+@media print {
+  .postcardItem {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .postcard {
+    box-shadow: none;
+  }
+
+  .bank {
+    display: none;
+  }
+}

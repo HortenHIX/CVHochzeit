@@ -1,0 +1,245 @@
+/* Dresscode (docs/design.md F7) – keine Illustration, die Farbfelder sind das Bild */
+
+/* ---------- Motto & Erklärung: sitzen wie ein Lead direkt unter dem Kopf ---------- */
+.intro {
+  max-width: var(--w-text);
+  margin-inline: auto;
+  margin-top: calc(var(--space-5) - var(--space-stack));
+  text-align: center;
+}
+
+.motto {
+  font-family: var(--ff-display);
+  font-size: var(--fs-quote);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--c-ink);
+  text-wrap: balance;
+}
+
+.text {
+  margin-top: var(--space-4);
+  color: var(--c-ink);
+}
+
+.text + .text {
+  margin-top: var(--space-3);
+}
+
+/* ---------- Farbfelder im Bogen: 3 pro Reihe, ab 45em 6 in einer Reihe ---------- */
+.palette {
+  margin-top: var(--space-7);
+  text-align: center;
+}
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(3, 64px);
+  justify-content: center;
+  column-gap: var(--space-6);
+  row-gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.chip {
+  position: relative;
+  display: block;
+  width: 64px;
+  height: 88px;
+  border: 1px solid color-mix(in srgb, var(--c-ink) 15%, transparent);
+  border-radius: 50% 50% 8px 8px / 37% 37% 8px 8px;
+  background: var(--swatch);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* zarte Innenlinie wie bei einem Papeterie-Muster */
+.chip::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid color-mix(in srgb, var(--c-paper) 40%, transparent);
+  border-radius: 50% 50% 5px 5px / 37% 37% 5px 5px;
+  pointer-events: none;
+}
+
+.swatchName {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--c-ink);
+  white-space: nowrap;
+}
+
+.caption {
+  margin-top: var(--space-5);
+  font-family: var(--ff-display);
+  font-size: 1.25rem;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--c-ink-soft);
+}
+
+/* ---------- „Gerne“ / „Lieber nicht“ ---------- */
+.cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gap-cards);
+  max-width: 56rem;
+  margin: var(--space-stack) auto 0;
+}
+
+.card {
+  min-width: 0;
+  padding: var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+}
+
+.do {
+  border-color: var(--c-line);
+  background: var(--c-paper);
+}
+
+.dont {
+  background: var(--c-terra-100);
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--c-ink);
+}
+
+.badge {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--c-paper);
+}
+
+.do .badge {
+  background: var(--c-sage-700);
+}
+
+.dont .badge {
+  background: var(--c-terra-700);
+}
+
+.rules {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rule {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+  color: var(--c-ink);
+}
+
+.ruleIcon {
+  margin-top: 0.22em;
+}
+
+.do .ruleIcon {
+  color: var(--c-sage-700);
+}
+
+.dont .ruleIcon {
+  color: var(--c-terra-700);
+}
+
+/* ---------- Info-Zeile ---------- */
+.note {
+  display: flex;
+  justify-content: center;
+  max-width: 56rem;
+  margin: var(--space-6) auto 0;
+}
+
+.note > * {
+  max-width: var(--w-text);
+}
+
+@media (min-width: 45em) {
+  .swatches {
+    grid-template-columns: repeat(6, 88px);
+    column-gap: var(--space-5);
+  }
+
+  .chip {
+    width: 88px;
+    height: 120px;
+  }
+
+  .chip::after {
+    inset: 6px;
+  }
+
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64em) {
+  .swatches {
+    column-gap: var(--space-6);
+  }
+
+  .card {
+    padding: var(--space-6);
+  }
+}
+
+@media (forced-colors: active) {
+  .chip {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+  }
+
+  .badge {
+    border: 1px solid CanvasText;
+  }
+}
+
+@media print {
+  /* Einblende-Effekt (Reveal) darf im Druck nichts verstecken */
+  .swatch {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .card {
+    break-inside: avoid;
+    background: none;
+    border-color: var(--c-line);
+  }
+
+  .palette {
+    break-inside: avoid;
+  }
+}

@@ -1,0 +1,309 @@
+/* Eure Fotos (docs/design.md F9) – ab 64em zweispaltig: Schritte links, QR-Karte rechts */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-7);
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.main {
+  min-width: 0;
+}
+
+/* ---------- Drei nummerierte Schritte ---------- */
+.steps {
+  display: grid;
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: center;
+  min-height: 36px;
+}
+
+/* feine Verbindung zwischen den Kreisen */
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 17.5px;
+  top: calc(50% + 23px);
+  height: calc(var(--space-5) - 10px);
+  border-left: 1px dashed var(--c-line);
+}
+
+.stepNumber {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--c-sage-700);
+  border-radius: 50%;
+  background: var(--c-paper);
+  font-family: var(--ff-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-variant-numeric: lining-nums tabular-nums;
+  line-height: 1;
+  color: var(--c-sage-700);
+}
+
+.stepText {
+  font-size: var(--fs-lead);
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--c-ink);
+}
+
+/* ---------- Album-Button (mobil volle Breite, ab 30em inline) ---------- */
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.opens {
+  margin: 0;
+}
+
+.notice {
+  margin-top: var(--space-6);
+}
+
+.hashtag {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+  font-size: var(--fs-small);
+  color: var(--c-ink-soft);
+}
+
+.hashtagIcon {
+  color: var(--c-terra-500);
+}
+
+.hashtagValue {
+  color: var(--c-sage-700);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- QR-Code ---------- */
+.qrLarge,
+.qrSmall {
+  display: block;
+  height: auto;
+  aspect-ratio: 1;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.qrLarge {
+  width: 240px;
+  max-width: 100%;
+}
+
+.qrSmall {
+  width: 180px;
+}
+
+.qrCaption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--c-ink-soft);
+  text-align: center;
+}
+
+.qrCaption svg {
+  color: var(--c-sage-700);
+}
+
+/* Mobil: Aufklapper „QR-Code für andere zeigen“ */
+.qrDetails {
+  margin-top: var(--space-6);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-card-inner);
+  background: var(--c-paper);
+}
+
+.qrSummary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 60px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-card-inner);
+  font-weight: 600;
+  color: var(--c-ink);
+  list-style: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.qrSummary::-webkit-details-marker {
+  display: none;
+}
+
+.qrSummary:focus-visible {
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .qrSummary:hover {
+    color: var(--c-terra-700);
+  }
+}
+
+.qrSummaryIcon {
+  color: var(--c-sage-700);
+}
+
+.qrSummaryText {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Plus → Minus (wie im FAQ) */
+.qrToggle {
+  position: relative;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--c-stone);
+  border-radius: 50%;
+}
+
+.qrToggle::before,
+.qrToggle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 1.5px;
+  margin: -0.75px 0 0 -6px;
+  border-radius: 1px;
+  background: var(--c-ink);
+  transition: rotate 200ms var(--ease);
+}
+
+.qrToggle::after {
+  rotate: 90deg;
+}
+
+.qrDetails[open] .qrToggle::after {
+  rotate: 180deg;
+}
+
+.qrDetails::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size var(--dur-base) var(--ease),
+    content-visibility var(--dur-base) allow-discrete;
+}
+
+.qrDetails[open]::details-content {
+  block-size: auto;
+}
+
+.qrPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-2) var(--space-4) var(--space-5);
+}
+
+/* Desktop: QR-Karte (paper, Doppel-Haarlinie) */
+.qrCard {
+  display: none;
+}
+
+@media (min-width: 30em) {
+  .cta {
+    align-items: flex-start;
+  }
+}
+
+@media (min-width: 64em) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-9);
+    align-items: center;
+    max-width: 58rem;
+  }
+
+  .qrDetails {
+    display: none;
+  }
+
+  .qrCard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: var(--space-6) var(--space-6) var(--space-5);
+    border: 1px solid var(--double-line-color);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+  }
+
+  .qrCard::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid var(--double-line-color);
+    border-radius: var(--radius-card-inner);
+    pointer-events: none;
+  }
+}
+
+.printUrl {
+  display: none;
+}
+
+@media print {
+  .layout {
+    display: block;
+  }
+
+  .printUrl {
+    display: block;
+    margin-top: var(--space-4);
+    font-weight: 600;
+  }
+
+  .qrCard {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .qrToggle::before,
+  .qrToggle::after {
+    background: CanvasText;
+  }
+
+  .qrLarge,
+  .qrSmall {
+    forced-color-adjust: none;
+  }
+}

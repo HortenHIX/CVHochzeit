@@ -1,0 +1,545 @@
+/* Orte & Anfahrt (docs/design.md F5, G, I „Druck der Hauptseite“) */
+
+/* ---------- Orts-Karten ---------- */
+.venues {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.venue {
+  display: flex;
+  min-width: 0;
+}
+
+.venues[data-count='1'] .venue,
+.venues:not([data-count='2']) .venue + .venue {
+  margin-top: var(--gap-cards);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: var(--space-5);
+  border: var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--c-paper);
+}
+
+/* Bogenkopf: sand, 160 px hoch, mit Orts-Vignette (E11) */
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: min(100%, 20rem);
+  height: 160px;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 999px 999px 0 0;
+  background: var(--c-sand);
+  box-shadow: inset 0 -1px 0 var(--c-line);
+}
+
+.vignette {
+  width: 168px;
+  margin-bottom: -2px;
+}
+
+.cardBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding-top: var(--space-5);
+}
+
+.cardLabel {
+  margin-bottom: var(--space-2);
+}
+
+.cardTitle {
+  font-size: var(--fs-h3);
+  color: var(--c-ink);
+}
+
+.address {
+  margin-top: var(--space-3);
+  font-size: var(--fs-body);
+  color: var(--c-ink);
+}
+
+.cardText {
+  margin-top: var(--space-3);
+  color: var(--c-ink-soft);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  max-width: var(--w-text);
+}
+
+.cardActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-5);
+}
+
+.mapButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.mapButton {
+  flex: 1 1 12rem;
+}
+
+.copy {
+  margin-left: -4px;
+}
+
+/* ---------- Fahrzeit-Chip ---------- */
+.connector {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding-block: var(--space-4);
+  margin: 0;
+}
+
+/* Gestrichelte senkrechte Linie (1 px stone, Strich 3 Lücke 4) */
+.connector::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 0.5px);
+  width: 1px;
+  background: repeating-linear-gradient(to bottom, var(--c-stone) 0 3px, transparent 3px 7px);
+}
+
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 36px;
+  padding: 0 var(--space-4);
+  border: var(--hairline);
+  border-radius: var(--radius-pill);
+  background: var(--c-paper);
+  color: var(--c-ink);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.chip svg {
+  color: var(--c-sage-700);
+}
+
+/* ---------- Karte + Info-Zeilen ---------- */
+.travel {
+  display: grid;
+  gap: var(--space-7);
+  margin-top: var(--space-7);
+}
+
+/* ---------- Karte mit Einwilligung ---------- */
+.map {
+  min-width: 0;
+}
+
+.mapFrame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 10;
+  padding: var(--space-5) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--c-sand);
+  border: var(--hairline);
+}
+
+.mapFrame:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.mapFrame[data-loaded] {
+  display: block;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Die Zeichnung füllt die Fläche; das Panel darf die Fläche mobil verlängern */
+.mapArt {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.mapArt svg {
+  width: 100%;
+  height: 100%;
+}
+
+.consent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  width: min(100%, 26rem);
+  padding: var(--space-5);
+  border: var(--hairline);
+  border-radius: var(--radius-card-inner);
+  background: var(--c-paper);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.consentText {
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--c-ink-soft);
+}
+
+.consentText a {
+  padding-block: 0.15em;
+}
+
+/* Checkbox: 24 × 24, 1.5 px stone, Radius 6; ganze Zeile ist das Label (≥ 48 px) */
+.check {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 48px;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--c-ink);
+  cursor: pointer;
+  text-align: start;
+}
+
+.checkInput {
+  position: absolute;
+  opacity: 0;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.checkBox {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid var(--c-stone);
+  border-radius: var(--radius-sm);
+  background: var(--c-paper);
+  color: transparent;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .check:hover .checkBox {
+    border-color: var(--c-ink-soft);
+  }
+}
+
+.checkInput:checked + .checkBox {
+  border-color: var(--c-sage-700);
+  background: var(--c-sage-700);
+  color: var(--c-paper);
+}
+
+.checkInput:focus-visible + .checkBox {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.mapFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-3);
+}
+
+.mapNote {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-small);
+  color: var(--c-ink-soft);
+}
+
+.mapNote svg {
+  color: var(--c-terra-700);
+}
+
+.mapLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mapLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 10px 4px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--accent);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+@media (hover: hover) {
+  .mapLink:hover {
+    color: var(--accent-hover);
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* ---------- Info-Zeilen ---------- */
+.infoRows {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+
+.inlineLink {
+  display: inline-block;
+  padding-block: 0.15em;
+  font-weight: 600;
+}
+
+/* ---------- Infoblatt drucken ---------- */
+.printRow {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: var(--hairline);
+}
+
+/* ---------- ab 45em: zwei Spalten ---------- */
+@media (min-width: 45em) {
+  .venues[data-count='2'] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap-cards);
+  }
+
+  .venues:not([data-count='2']) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap-cards);
+  }
+
+  .venues:not([data-count='2']) .venue + .venue,
+  .venues[data-count='1'] .venue {
+    margin-top: 0;
+  }
+
+  .venues[data-count='1'] {
+    grid-template-columns: minmax(0, 36rem);
+    justify-content: center;
+  }
+
+  /* Chip waagerecht zwischen den Kartenköpfen */
+  .connector {
+    position: absolute;
+    z-index: 2;
+    top: calc(var(--space-5) + 80px);
+    left: 50%;
+    width: 15rem;
+    padding: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .connector::before {
+    top: calc(50% - 0.5px);
+    bottom: auto;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 1px;
+    background: repeating-linear-gradient(to right, var(--c-stone) 0 3px, transparent 3px 7px);
+  }
+
+  .infoRows {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6) var(--space-7);
+  }
+}
+
+@media (min-width: 64em) {
+  .card {
+    padding: var(--space-6);
+  }
+
+  .connector {
+    top: calc(var(--space-6) + 80px);
+  }
+
+  /* Karte und Info-Zeilen nebeneinander */
+  .travel {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: var(--space-7);
+    align-items: start;
+    margin-top: var(--space-8);
+  }
+
+  .infoRows {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+    padding-top: var(--space-2);
+  }
+}
+
+@media (forced-colors: active) {
+  .checkBox {
+    border-color: CanvasText;
+  }
+
+  .checkInput:checked + .checkBox {
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+/* ==========================================================================
+   Druck
+   - Normaler Druck: Karte, Buttons und Kopf-Vignetten ausblenden.
+   - Infoblatt (body.print-infosheet): nur Hero-Daten, Ablauf, Orte & Kontakt.
+   ========================================================================== */
+@media print {
+  .head,
+  .connector,
+  .map,
+  .printRow,
+  .cardActions {
+    display: none !important;
+  }
+
+  .card {
+    padding: 0 0 var(--space-4);
+    border: 0;
+    border-bottom: 1px solid #999;
+    border-radius: 0;
+    background: none;
+    break-inside: avoid;
+  }
+
+  .cardBody {
+    padding-top: 0;
+  }
+
+  .cardText {
+    color: var(--c-ink);
+  }
+
+  .venues[data-count='2'] {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+  }
+
+  .travel {
+    grid-template-columns: minmax(0, 1fr) !important;
+    margin-top: var(--space-5);
+  }
+
+  .infoRows {
+    grid-template-columns: 1fr 1fr !important;
+    gap: var(--space-4) var(--space-6);
+    padding-top: 0;
+  }
+
+  .inlineLink {
+    display: none;
+  }
+
+  .infoRows > * {
+    break-inside: avoid;
+  }
+
+  /* ---------- Infoblatt ---------- */
+  :global(body.print-infosheet) {
+    background: #fff !important;
+    color: var(--c-ink) !important;
+  }
+
+  :global(body.print-infosheet main > section:not(#start, #ablauf, #anfahrt, #kontakt)),
+  :global(body.print-infosheet > header),
+  :global(body.print-infosheet > footer),
+  :global(body.print-infosheet main form),
+  :global(body.print-infosheet main button),
+  :global(body.print-infosheet .skip-link) {
+    display: none !important;
+  }
+
+  :global(body.print-infosheet main > section) {
+    padding-block: 0.5rem 0.25rem !important;
+    background: none !important;
+    color: var(--c-ink) !important;
+    break-inside: auto;
+  }
+
+  :global(body.print-infosheet main > section + section) {
+    border-top: 1px solid #bbb;
+  }
+
+  :global(body.print-infosheet main :where(article, li, address)) {
+    break-inside: avoid;
+  }
+
+  /* Sektionsköpfe kompakt (Einleitungstexte entfallen im Infoblatt) */
+  :global(body.print-infosheet main > section > div > header) {
+    margin-bottom: 1rem !important;
+  }
+
+  :global(body.print-infosheet main > section > div > header > svg ~ p) {
+    display: none !important;
+  }
+
+  /* Hero-Daten kompakt, damit Ablauf noch auf die erste Seite passt */
+  :global(body.print-infosheet #start) {
+    padding-block: 0 0.25rem !important;
+    zoom: 0.5;
+  }
+
+  :global(body.print-infosheet #anfahrt) {
+    break-before: page;
+    border-top: 0 !important;
+  }
+}

@@ -1,0 +1,517 @@
+/* Formularfelder des Zusage-Formulars – docs/design.md G „Formularfelder“ */
+
+/* ---------- Gruppen (fieldset + Nummernkreis) ---------- */
+
+.group,
+.subGroup {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.groupSeparated {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: var(--hairline);
+}
+
+/* Legend als normaler Block (float-Trick), damit Abstände berechenbar bleiben */
+.groupLegend {
+  float: left;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  font-family: var(--ff-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--c-ink);
+}
+
+.groupNumber {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--c-sage-700);
+  border-radius: 50%;
+  font-family: var(--ff-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--c-sage-700);
+}
+
+.groupBody {
+  clear: both;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.subLegend {
+  float: left;
+  width: 100%;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--c-ink);
+}
+
+.subLegend + * {
+  clear: both;
+}
+
+.subGroup > .hint {
+  margin-bottom: var(--space-3);
+}
+
+/* ---------- Label, Hinweis, Fehler ---------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.label {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--c-ink);
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--c-ink-soft);
+}
+
+.hint {
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--c-ink-soft);
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: var(--space-1);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--c-error);
+}
+
+.errorIcon {
+  flex: none;
+  margin-top: 0.15em;
+}
+
+/* ---------- Eingabefelder ---------- */
+
+.input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--c-stone);
+  border-radius: var(--radius-md);
+  background: var(--c-paper);
+  color: var(--c-ink);
+  font-family: var(--ff-sans);
+  font-size: 1.0625rem;
+  line-height: 1.4;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .input:hover {
+    border-color: var(--c-ink-soft);
+  }
+}
+
+.input:focus {
+  border-color: var(--c-ink);
+}
+
+.input[aria-invalid='true'] {
+  border: 2px solid var(--c-error);
+  padding-inline: calc(var(--space-4) - 1px);
+}
+
+.textarea {
+  display: block;
+  min-height: 128px;
+  padding-block: 14px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.selectWrap {
+  position: relative;
+}
+
+.select {
+  appearance: none;
+  padding-right: 48px;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+.select[aria-invalid='true'] {
+  padding-right: 47px;
+}
+
+.selectIcon {
+  position: absolute;
+  top: 50%;
+  right: var(--space-4);
+  translate: 0 -50%;
+  color: var(--c-ink);
+  pointer-events: none;
+}
+
+/* Natives Input unsichtbar, aber fokussierbar und über die ganze Fläche klickbar */
+.hiddenInput {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* ---------- Checkbox-Zeile (24 × 24, ganze Zeile ist das Label) ---------- */
+
+.check {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-height: 48px;
+  padding-block: 12px;
+  color: var(--c-ink);
+  font-size: var(--fs-ui);
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.checkBox {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-top: calc((1.45em - 24px) / 2);
+  border: 1.5px solid var(--c-stone);
+  border-radius: var(--radius-sm);
+  background: var(--c-paper);
+  color: transparent;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .check:hover .checkBox {
+    border-color: var(--c-ink-soft);
+  }
+}
+
+.check[data-checked='true'] .checkBox {
+  border-color: var(--c-sage-700);
+  background: var(--c-sage-700);
+  color: var(--c-paper);
+}
+
+.check[data-invalid='true'] .checkBox {
+  border: 2px solid var(--c-error);
+}
+
+.check:has(.hiddenInput:focus-visible) .checkBox {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.checkLabel {
+  min-width: 0;
+}
+
+/* ---------- Radio- und Checkbox-Karten ---------- */
+
+.choice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 0;
+  padding: 20px 52px 20px 20px;
+  border: 1px solid var(--c-stone);
+  border-radius: var(--radius-card-inner);
+  background: var(--c-paper);
+  color: var(--c-ink);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+.choiceLarge {
+  min-height: 88px;
+}
+
+.choiceMedium {
+  min-height: 64px;
+  padding-block: var(--space-4);
+}
+
+@media (hover: hover) {
+  .choice:hover {
+    border-color: var(--c-ink-soft);
+  }
+}
+
+/* Gewählt: 2 px sage-700 (1 px Rahmen + 1 px innen, ohne Sprung), sage-100-Fläche */
+.choice[data-checked='true'] {
+  --illu-bg: var(--c-sage-100);
+  border-color: var(--c-sage-700);
+  background: var(--c-sage-100);
+  box-shadow: inset 0 0 0 1px var(--c-sage-700);
+}
+
+.choice[data-invalid='true']:not([data-checked='true']) {
+  border-color: var(--c-error);
+  box-shadow: inset 0 0 0 1px var(--c-error);
+}
+
+.choice:has(.hiddenInput:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.choiceIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--c-sage-700);
+}
+
+.choiceLarge .choiceIcon {
+  width: 64px;
+  height: 44px;
+}
+
+/* Zu-/Absage nebeneinander (ab 30em): Motiv über dem Titel, Titel einzeilig */
+@media (min-width: 30em) {
+  .choiceLarge {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    padding-right: 20px;
+  }
+  .choiceLarge .choiceIcon {
+    justify-items: start;
+  }
+}
+
+.choiceText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.choiceTitle {
+  font-size: var(--fs-ui);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.choiceLarge .choiceTitle {
+  font-family: var(--ff-display);
+  font-size: 1.5rem;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.choiceSub {
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--c-ink-soft);
+}
+
+/* Markierung oben rechts: leerer Kreis (Radio) bzw. Quadrat (Checkbox), gewählt mit Häkchen */
+.choiceMark {
+  position: absolute;
+  top: 50%;
+  right: var(--space-4);
+  translate: 0 -50%;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid var(--c-stone);
+  border-radius: 50%;
+  background: var(--c-paper);
+  color: transparent;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.choiceLarge .choiceMark {
+  top: var(--space-3);
+  right: var(--space-3);
+  translate: none;
+}
+
+.choiceMarkSquare {
+  border-radius: var(--radius-sm);
+}
+
+.choice[data-checked='true'] .choiceMark {
+  border-color: var(--c-sage-700);
+  background: var(--c-sage-700);
+  color: var(--c-paper);
+}
+
+/* ---------- Chips (Pill 48 px) ---------- */
+
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1px solid var(--c-stone);
+  border-radius: var(--radius-pill);
+  background: var(--c-paper);
+  color: var(--c-ink);
+  font-size: var(--fs-ui);
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .chip:hover {
+    border-color: var(--c-ink-soft);
+  }
+}
+
+.chip[data-checked='true'] {
+  border-color: var(--c-sage-700);
+  background: var(--c-sage-700);
+  color: var(--c-paper);
+  font-weight: 600;
+}
+
+.chip[data-invalid='true']:not([data-checked='true']) {
+  border-color: var(--c-error);
+  box-shadow: inset 0 0 0 1px var(--c-error);
+}
+
+.chip:has(.hiddenInput:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.chipIcon {
+  flex: none;
+  margin-left: -4px;
+}
+
+/* ---------- Stepper ---------- */
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 52px;
+}
+
+.stepButton {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--c-stone);
+  border-radius: 50%;
+  background: var(--c-paper);
+  color: var(--c-ink);
+  touch-action: manipulation;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .stepButton:not([aria-disabled='true']):hover {
+    border-color: var(--c-ink-soft);
+    background: color-mix(in srgb, var(--c-ink) 6%, var(--c-paper));
+  }
+}
+
+.stepButton:not([aria-disabled='true']):active {
+  translate: 0 1px;
+}
+
+.stepButton[aria-disabled='true'] {
+  border-color: var(--c-line);
+  background: var(--c-line);
+  color: var(--c-ink-soft);
+  cursor: not-allowed;
+}
+
+.stepValue {
+  min-width: 56px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--c-ink);
+}
+
+/* ---------- Kontrast-Modi ---------- */
+
+@media (forced-colors: active) {
+  .choice,
+  .chip,
+  .checkBox,
+  .choiceMark,
+  .stepButton {
+    border: 1px solid CanvasText;
+  }
+  .choice[data-checked='true'],
+  .chip[data-checked='true'] {
+    border: 3px solid Highlight;
+  }
+  .check[data-checked='true'] .checkBox,
+  .choice[data-checked='true'] .choiceMark {
+    background: Highlight;
+    color: HighlightText;
+  }
+}

@@ -311,6 +311,33 @@ export const PAMPAS_FRONDS_FINE = Array.from({ length: 44 }, (_, i) =>
   frond(i, 44, { length: 0.82, spread: 38, jitter: 10, seed: 7 }),
 ).join('');
 
+/**
+ * Feine, weiche Härchen über der ganzen Rispe – unregelmäßig verteilt, mit
+ * leicht überhängender Spitze. Sie brechen das Fischgrät-Muster der Fiedern auf
+ * und machen die Rispe flauschig und luftig (wie echtes Pampasgras).
+ */
+function wisp(k: number, count: number): string {
+  const p = Math.min(1, Math.max(0, (k + 0.5 + wobble(k, 11) * 0.9) / count));
+  const tTip = 0.02 + 0.48 * p;
+  const t = 1 - tTip;
+  const P = quadPoint(PAMPAS_P0, PAMPAS_P1, PAMPAS_P2, t);
+  const growth = norm(quadTangent(PAMPAS_P0, PAMPAS_P1, PAMPAS_P2, t));
+  const side = (k + (wobble(k, 5) > 0.3 ? 1 : 0)) % 2 === 0 ? -1 : 1;
+  const deg = side * (34 + wobble(k, 13) * 26);
+  const dir = rot(growth, deg);
+  const L = (5 + 21 * Math.sin(Math.PI * Math.pow(p, 0.85))) * (0.95 + wobble(k, 17) * 0.45);
+  const outward = rot(dir, side * 90);
+  // Spitze hängt leicht über: zum Halmfuß hin und nach außen
+  const droop = mul(growth, -L * (0.1 + 0.12 * p));
+  const c1 = add(P, mul(dir, L * 0.42));
+  const c2 = add(add(P, mul(dir, L * 0.82)), mul(outward, L * 0.06));
+  const end = add(add(add(P, mul(dir, L)), mul(outward, L * 0.1)), droop);
+  return `M${fmt(P)}C${fmt(c1)} ${fmt(c2)} ${fmt(end)}`;
+}
+
+/** 56 Härchen (ein Pfad), sehr fein und hell. */
+export const PAMPAS_WISPS = Array.from({ length: 56 }, (_, k) => wisp(k, 56)).join('');
+
 /* ==========================================================================
    E3 Bündel – drei Rispen aus einem Fußpunkt
    ========================================================================== */
@@ -343,7 +370,7 @@ export const OLIVE_STEM = 'M6 36 Q100 20 194 28';
  * (Q12 ±3.2) minimal asymmetrisch: die Außenseite wölbt sich etwas mehr – das
  * Blatt wirkt leicht gebogen statt gestanzt.
  */
-export const OLIVE_LEAF = 'M0 0C5.5 -3.3 14.5 -3.7 24 0C14.5 2.5 5.5 2.7 0 0Z';
+export const OLIVE_LEAF = 'M0 0C3.6 -2.5 11 -3.5 24 0C12.5 2.3 4.5 2.1 0 0Z';
 const OLIVE_JITTER = [3, -4, 2, -2, 4, -3, 1, -4, 3, -1];
 
 /** x(t) ist linear: x = 6 + 188 t */

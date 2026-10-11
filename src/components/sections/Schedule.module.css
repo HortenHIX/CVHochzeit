@@ -1,0 +1,231 @@
+/* Tagesablauf – „Sonnenlauf, vom Tag in die Nacht“ (docs/design.md F4, J E14) */
+
+/* ---------- Kopfgrafik ---------- */
+.sun {
+  width: 100%;
+  max-width: 640px;
+  margin: calc(-1 * var(--space-4)) auto var(--space-7);
+}
+
+/* ---------- Liste ---------- */
+.list {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  --medal: 44px;
+  --gap-y: var(--space-6);
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--medal) minmax(0, 1fr);
+  grid-template-areas:
+    'medal time'
+    '.     body';
+  column-gap: var(--space-4);
+  padding-bottom: var(--gap-y);
+}
+
+.step:last-child {
+  padding-bottom: 0;
+}
+
+/* Verbindungslinie: je Abschnitt ein Verlauf von Tageszeit zu Tageszeit */
+.step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--medal) / 2);
+  bottom: calc(var(--medal) / -2);
+  left: calc(var(--medal) / 2 - 0.5px);
+  width: 1px;
+  background: linear-gradient(var(--line-from, var(--c-terra-500)), var(--line-to, var(--c-sage-700)));
+}
+
+/* ---------- Medaillon je Tageszeit ---------- */
+.medal {
+  grid-area: medal;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--medal);
+  height: var(--medal);
+  border: 1.5px solid var(--c-terra-700);
+  border-radius: 50%;
+  background: var(--c-paper);
+  color: var(--c-terra-700);
+  transition: outline-color var(--dur-base) var(--ease);
+}
+
+.medal[data-part='evening'] {
+  border-color: var(--c-sage-700);
+  background: var(--c-sage-100);
+  color: var(--c-sage-700);
+}
+
+.medal[data-part='night'] {
+  border-color: var(--c-sage-900);
+  background: var(--c-sage-900);
+  color: var(--c-sand);
+}
+
+/* Laufender Punkt: 3-px-Ring mit 2 px Abstand */
+.step[data-now] .medal {
+  outline: 3px solid var(--c-terra-700);
+  outline-offset: 2px;
+}
+
+/* ---------- Uhrzeit ---------- */
+.time {
+  grid-area: time;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-height: var(--medal);
+  padding-top: calc((var(--medal) - var(--fs-time)) / 2);
+  line-height: 1;
+}
+
+.clock {
+  font-family: var(--ff-display);
+  font-size: var(--fs-time);
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--c-terra-700);
+}
+
+.uhr {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--tr-eyebrow);
+  text-transform: uppercase;
+  color: var(--c-terra-700);
+}
+
+/* ---------- Inhalt ---------- */
+.body {
+  grid-area: body;
+  min-width: 0;
+  max-width: var(--w-text);
+  padding-top: var(--space-1);
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+
+/* Optik H4 (Figtree 600), semantisch H3 unter der Sektions-H2 */
+.title {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-h4);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--c-ink);
+}
+
+.place {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-2);
+}
+
+.place svg {
+  flex: none;
+}
+
+.desc {
+  margin-top: var(--space-2);
+  color: var(--c-ink);
+}
+
+.badge {
+  margin-top: var(--space-3);
+}
+
+/* ---------- ab 64em: Uhrzeit rechtsbündig links ---------- */
+@media (min-width: 64em) {
+  .step {
+    grid-template-columns: 7rem var(--medal) minmax(0, 1fr);
+    grid-template-areas: 'time medal body';
+    column-gap: var(--space-5);
+    --gap-y: var(--space-7);
+  }
+
+  .step:not(:last-child)::before {
+    left: calc(7rem + var(--space-5) + var(--medal) / 2 - 0.5px);
+  }
+
+  .time {
+    justify-content: flex-end;
+  }
+
+  .body {
+    /* Titel auf Höhe der Medaillon-Mitte */
+    padding-top: calc((var(--medal) - 1.3 * var(--fs-h4)) / 2);
+  }
+}
+
+@media (forced-colors: active) {
+  .medal {
+    border-color: CanvasText;
+  }
+
+  .step[data-now] .medal {
+    outline-color: Highlight;
+  }
+}
+
+@media print {
+  .sun {
+    display: none;
+  }
+
+  /* Kompakt: Uhrzeit links neben dem Medaillon wie am Desktop */
+  .step {
+    break-inside: avoid;
+    --gap-y: var(--space-2);
+    grid-template-columns: 6.5rem var(--medal) minmax(0, 1fr);
+    grid-template-areas: 'time medal body';
+    column-gap: var(--space-4);
+  }
+
+  .step:not(:last-child)::before {
+    left: calc(6.5rem + var(--space-4) + var(--medal) / 2 - 0.5px);
+  }
+
+  .time {
+    justify-content: flex-end;
+  }
+
+  .body {
+    padding-top: calc((var(--medal) - 1.3 * var(--fs-h4)) / 2);
+  }
+
+  .place,
+  .desc {
+    margin-top: 2px;
+  }
+
+  .badge {
+    margin-top: var(--space-1);
+  }
+
+  /* Drucker lassen Hintergründe meist weg: Medaillons einheitlich als Kontur */
+  .medal,
+  .medal[data-part] {
+    background: #fff;
+    color: var(--c-ink);
+    border-color: var(--c-ink);
+  }
+
+  .step::before {
+    background: var(--c-line) !important;
+  }
+}

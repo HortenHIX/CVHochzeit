@@ -56,11 +56,12 @@ export function Monogram({
         <>
           <circle cx={60} cy={60} r={57} stroke={ring} strokeWidth={1} strokeOpacity={0.7} {...LINE} />
           <circle cx={60} cy={60} r={53} stroke={ring} strokeWidth={1} strokeOpacity={0.4} {...LINE} />
+          {/* C und V je 2.5 Einheiten weiter außen als in der Bauanleitung (40/80): das „&“ berührt sie sonst */}
           <g style={font} fill={ink} fontSize={44} fontWeight={500} textAnchor="middle">
-            <text x={40} y={variant === 'large' ? 62 : 70}>
+            <text x={37.5} y={variant === 'large' ? 62 : 70}>
               {a}
             </text>
-            <text x={80} y={variant === 'large' ? 62 : 70}>
+            <text x={82.5} y={variant === 'large' ? 62 : 70}>
               {b}
             </text>
           </g>

@@ -1,0 +1,257 @@
+/* Häufige Fragen (docs/design.md F11, G „Akkordeon“, H „Akkordeon“) */
+
+/* ---------- Sektion: wie Section tone="base" (linen + Papier-Textur) ---------- */
+.section {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+  padding-block: var(--space-section);
+  background: var(--texture), var(--c-linen);
+}
+
+.inner {
+  position: relative;
+  z-index: var(--z-content);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'head'
+    'list'
+    'more';
+  width: min(100% - 2 * var(--gutter), var(--w-content));
+  margin-inline: auto;
+}
+
+/* mobil lösen sich Kopf und Kontakt-Link aus der Spalte (eigene Rasterflächen) */
+.aside {
+  display: contents;
+}
+
+.head {
+  grid-area: head;
+}
+
+/* Sektionskopf mobil zentriert, ab 64em linksbündig */
+.head > header {
+  align-items: center;
+  text-align: center;
+}
+
+.more {
+  grid-area: more;
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-6);
+}
+
+.accordion {
+  grid-area: list;
+  width: 100%;
+  max-width: var(--w-form);
+  margin-inline: auto;
+  min-width: 0;
+}
+
+/* ---------- „Alle aufklappen“ ---------- */
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  min-height: 44px;
+  margin-bottom: var(--space-2);
+}
+
+.toggleAll {
+  margin-right: -4px;
+}
+
+/* ---------- Akkordeon ---------- */
+.list {
+  border-bottom: 1px solid var(--c-line);
+}
+
+.item {
+  border-top: 1px solid var(--c-line);
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 56px;
+  padding: 20px 0;
+  border-radius: 8px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--c-ink);
+  list-style: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary::marker {
+  content: '';
+}
+
+.summary:focus-visible {
+  outline-offset: 4px;
+}
+
+@media (hover: hover) {
+  .summary:hover {
+    color: var(--c-terra-700);
+  }
+}
+
+.question {
+  min-width: 0;
+  text-wrap: pretty;
+  hyphens: auto;
+}
+
+/* Plus aus zwei 12-px-Linien; die senkrechte dreht sich beim Öffnen zum Minus */
+.symbol {
+  position: relative;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--c-stone);
+  border-radius: 50%;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.symbol::before,
+.symbol::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 1.5px;
+  margin: -0.75px 0 0 -6px;
+  border-radius: 1px;
+  background: var(--c-ink);
+}
+
+.symbol::after {
+  rotate: 90deg;
+  transition: rotate 200ms var(--ease);
+}
+
+.item[open] .symbol::after {
+  rotate: 180deg;
+}
+
+@media (hover: hover) {
+  .summary:hover .symbol {
+    border-color: var(--c-terra-700);
+  }
+}
+
+.item::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size var(--dur-base) var(--ease),
+    content-visibility var(--dur-base) allow-discrete;
+}
+
+.item[open]::details-content {
+  block-size: auto;
+}
+
+.answer {
+  max-width: var(--w-text);
+  padding: 0 0 var(--space-5);
+  color: var(--c-ink);
+}
+
+.answer > p + p {
+  margin-top: var(--space-3);
+}
+
+.answerLink {
+  margin-top: var(--space-2);
+  margin-left: -4px;
+}
+
+/* ---------- ab 64em: 1fr 2fr, linke Spalte läuft mit ---------- */
+@media (min-width: 64em) {
+  .inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    grid-template-areas: 'aside list';
+    column-gap: var(--space-9);
+    align-items: start;
+  }
+
+  .aside {
+    grid-area: aside;
+    display: block;
+    position: sticky;
+    top: calc(var(--header-h) + var(--space-6));
+  }
+
+  .head > header {
+    align-items: flex-start;
+    text-align: start;
+    margin-bottom: 0;
+  }
+
+  .more {
+    justify-content: flex-start;
+    margin-top: var(--space-4);
+    margin-left: -4px;
+  }
+
+  .accordion {
+    max-width: none;
+    margin-inline: 0;
+  }
+}
+
+/* ---------- Druck: alle Einträge offen ---------- */
+@media print {
+  .section {
+    background: none;
+    padding-block: 1.5rem;
+  }
+
+  .inner {
+    display: block;
+  }
+
+  .aside {
+    position: static;
+  }
+
+  .item::details-content {
+    block-size: auto;
+    content-visibility: visible;
+  }
+
+  .item {
+    break-inside: avoid;
+  }
+
+  .summary {
+    padding-block: 12px 6px;
+    min-height: 0;
+  }
+
+  .symbol {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .symbol::before,
+  .symbol::after {
+    background: CanvasText;
+  }
+}

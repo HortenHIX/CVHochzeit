@@ -5,6 +5,7 @@ import {
   PAMPAS_FRONDS,
   PAMPAS_FRONDS_FINE,
   PAMPAS_STEM,
+  PAMPAS_WISPS,
 } from './geometry';
 import styles from './illustrations.module.css';
 import { LINE, vars, WARM, type IllustrationProps } from './shared';
@@ -17,6 +18,7 @@ import { Svg } from './Svg';
 export function PampasArt({ animated = false, swayDelay = 0 }: { animated?: boolean; swayDelay?: number }) {
   const art = (
     <g>
+      <path d={PAMPAS_WISPS} stroke={WARM} strokeWidth={0.5} strokeOpacity={0.24} {...LINE} />
       <path d={PAMPAS_FRONDS_FINE} stroke={WARM} strokeWidth={0.6} strokeOpacity={0.3} {...LINE} />
       <path d={PAMPAS_FRONDS} stroke={WARM} strokeWidth={0.75} strokeOpacity={0.45} {...LINE} />
       <path d={PAMPAS_STEM} stroke={WARM} strokeWidth={1} strokeOpacity={0.55} {...LINE} />

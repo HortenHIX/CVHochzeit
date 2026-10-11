@@ -1,0 +1,546 @@
+/* Übernachten & Shuttle (docs/design.md F6, G „Karten“, „Badges“) */
+
+/* ---------- Hotelkarten: 1 / 2 / 3 Spalten ---------- */
+.hotels {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gap-cards);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hotelItem {
+  display: flex;
+  min-width: 0;
+}
+
+.hotel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: var(--space-5);
+  border: var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--c-paper);
+}
+
+.hotelName {
+  font-family: var(--ff-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--c-ink);
+}
+
+/* Cormorant unter 1.75rem immer 600 – auf großen Schirmen etwas größer */
+@media (min-width: 64em) {
+  .hotelName {
+    font-size: 1.5rem;
+  }
+}
+
+.category {
+  margin-top: var(--space-1);
+  font-size: var(--fs-small);
+  color: var(--c-ink-soft);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.price {
+  margin-top: var(--space-4);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+.priceDetail {
+  display: block;
+  font-size: var(--fs-small);
+  font-weight: 400;
+  color: var(--c-ink-soft);
+}
+
+.hotelText {
+  margin-top: var(--space-2);
+  color: var(--c-ink);
+}
+
+/* ---------- Stichwort-Coupon & Frist ---------- */
+.deal {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.coupon {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px dashed var(--c-terra-700);
+  border-radius: var(--radius-md);
+  background: var(--c-terra-100);
+}
+
+.couponText {
+  min-width: 0;
+}
+
+.couponLabel {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--tr-eyebrow);
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: var(--c-terra-700);
+}
+
+.couponValue {
+  margin-top: 2px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  color: var(--c-ink);
+  overflow-wrap: anywhere;
+  hyphens: none;
+}
+
+/* Frist-Badge darf umbrechen (lange Texte auf schmalen Karten) */
+.deadline.deadline {
+  max-width: 100%;
+  min-height: 28px;
+  height: auto;
+  padding-block: 4px;
+  border-radius: 14px;
+  white-space: normal;
+  gap: 6px;
+}
+
+.deadline svg {
+  flex: none;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+.deadlineText {
+  min-width: 0;
+  font-weight: 500;
+}
+
+.deadlineRest {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ---------- Aktionen ---------- */
+.hotelActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin-top: auto;
+  padding-top: var(--space-5);
+}
+
+.printPhone {
+  display: none;
+}
+
+/* ---------- Shuttle & Taxi ---------- */
+.transport {
+  display: grid;
+  gap: var(--space-7);
+  margin-top: var(--space-8);
+}
+
+/* ---------- Ticket-Karte ---------- */
+.ticket {
+  --notch: 12px;
+  width: 100%;
+  max-width: 46rem;
+  min-width: 0;
+}
+
+.ticketHead,
+.ticketBody,
+.ticketFoot {
+  background: var(--c-paper);
+  border-inline: var(--hairline);
+}
+
+.ticketHead {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  grid-template-areas:
+    'icon title'
+    'text text';
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  padding: var(--space-5);
+  border-top: var(--hairline);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  /* halbrunde Kerben (r 12) links und rechts an der Perforation */
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at 0 100%, #0000 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 100%, #0000 98%, #000) right / 51% 100% no-repeat;
+  mask:
+    radial-gradient(circle var(--notch) at 0 100%, #0000 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 100%, #0000 98%, #000) right / 51% 100% no-repeat;
+}
+
+.ticketIcon {
+  grid-area: icon;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--c-sage-100);
+  color: var(--c-sage-700);
+}
+
+.ticketIntro {
+  display: contents;
+}
+
+.ticketTitle {
+  grid-area: title;
+  font-size: var(--fs-h3);
+  color: var(--c-ink);
+}
+
+.ticketText {
+  grid-area: text;
+  color: var(--c-ink);
+  max-width: var(--w-text);
+}
+
+.ticketBody {
+  position: relative;
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-5) var(--space-5);
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at 0 0, #0000 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 0, #0000 98%, #000) right / 51% 100% no-repeat;
+  mask:
+    radial-gradient(circle var(--notch) at 0 0, #0000 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 0, #0000 98%, #000) right / 51% 100% no-repeat;
+}
+
+/* Perforation */
+.ticketBody::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: calc(var(--notch) + 8px);
+  right: calc(var(--notch) + 8px);
+  border-top: 1.5px dashed color-mix(in srgb, var(--c-stone) 55%, transparent);
+}
+
+.ticketBody:last-child,
+.ticketFoot {
+  border-bottom: var(--hairline);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.ticketBody:not(:last-child) {
+  padding-bottom: var(--space-2);
+}
+
+.blockTitle {
+  margin-bottom: var(--space-2);
+  font-family: var(--ff-sans);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--tr-eyebrow);
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: var(--c-sage-700);
+  text-align: start;
+}
+
+.depart {
+  font-family: var(--ff-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--c-terra-700);
+  white-space: nowrap;
+}
+
+.uhr {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--tr-eyebrow);
+  text-transform: uppercase;
+}
+
+.note {
+  font-size: var(--fs-small);
+  color: var(--c-ink-soft);
+}
+
+/* Mobil: Liste */
+.table {
+  display: none;
+}
+
+.rides {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ride {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: baseline;
+  padding-block: var(--space-3);
+  min-height: 52px;
+}
+
+.ride + .ride {
+  border-top: 1px dotted var(--c-stone);
+}
+
+.ride .depart {
+  padding-top: 2px;
+}
+
+.route {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--space-2);
+  color: var(--c-ink);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.routeArrow {
+  color: var(--c-sage-700);
+}
+
+.ticketFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 var(--space-4);
+  padding: var(--space-3) var(--space-5) var(--space-4);
+  border-top: var(--hairline);
+  font-size: var(--fs-small);
+  color: var(--c-ink-soft);
+}
+
+/* ---------- Taxi ---------- */
+.taxi {
+  min-width: 0;
+}
+
+.taxiHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.taxiTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--fs-h3);
+  color: var(--c-ink);
+}
+
+.taxiIcon {
+  color: var(--c-sage-700);
+}
+
+.taxiList {
+  display: grid;
+  gap: var(--gap-cards);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.taxiCard {
+  padding: var(--space-5);
+  border: var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--c-paper);
+}
+
+.taxiName {
+  margin-bottom: var(--space-3);
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+/* ---------- ab 45em ---------- */
+@media (min-width: 45em) {
+  .hotels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hotels[data-count='1'] {
+    grid-template-columns: minmax(0, 32rem);
+    justify-content: center;
+  }
+
+  .table {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  /* gleiche Spaltenbreiten in Hin- und Rückfahrt */
+  .table th:first-child {
+    width: 7.5rem;
+  }
+
+  .table th:nth-child(2),
+  .table th:nth-child(3) {
+    width: 31%;
+  }
+
+  .listView {
+    display: none;
+  }
+
+  .table th {
+    padding: 0 var(--space-3) var(--space-2) 0;
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: var(--c-ink-soft);
+    text-align: start;
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .table td {
+    height: 52px;
+    padding: var(--space-2) var(--space-3) var(--space-2) 0;
+    vertical-align: middle;
+    color: var(--c-ink);
+  }
+
+  .table tbody tr + tr td {
+    border-top: 1px dotted var(--c-stone);
+  }
+
+  .table td.depart {
+    color: var(--c-terra-700);
+  }
+
+  .table td.note {
+    color: var(--c-ink-soft);
+  }
+
+  .ticketHead {
+    grid-template-areas:
+      'icon title'
+      '.    text';
+    row-gap: var(--space-1);
+    padding: var(--space-6) var(--space-6) var(--space-5);
+  }
+
+  .ticketBody {
+    padding: var(--space-6);
+  }
+
+  .ticketBody:not(:last-child) {
+    padding-bottom: var(--space-3);
+  }
+
+  .ticketFoot {
+    padding-inline: var(--space-6);
+  }
+
+  .taxiList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- ab 64em ---------- */
+@media (min-width: 64em) {
+  .hotels {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .hotels[data-count='2'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hotel,
+  .taxiCard {
+    padding: var(--space-6);
+  }
+
+  .transport[data-both] {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .transport[data-both] .taxiList {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .taxi {
+    padding-top: var(--space-2);
+  }
+}
+
+@media (forced-colors: active) {
+  .ticketHead,
+  .ticketBody {
+    -webkit-mask: none;
+    mask: none;
+  }
+
+  .coupon {
+    border-color: CanvasText;
+  }
+}
+
+@media print {
+  .hotel,
+  .taxiCard,
+  .ticketHead,
+  .ticketBody,
+  .ticketFoot {
+    background: none;
+    break-inside: avoid;
+  }
+
+  .printPhone {
+    display: block;
+    margin-top: var(--space-3);
+  }
+
+  .ticketHead,
+  .ticketBody {
+    -webkit-mask: none;
+    mask: none;
+  }
+}

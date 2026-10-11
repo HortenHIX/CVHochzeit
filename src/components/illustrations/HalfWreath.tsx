@@ -62,7 +62,9 @@ export function HalfWreath({
   ...props
 }: IllustrationProps & { withCheck?: boolean; animated?: boolean }) {
   return (
-    <Svg props={props} viewBox="0 0 160 100" defaultSize={160}>
+    // Fenster um 2.5 Einheiten nach unten verschoben (gleiche Proportion 160 × 100):
+    // die unteren Außenblätter reichen bis y ≈ 100 und würden sonst angeschnitten.
+    <Svg props={props} viewBox="0 2.5 160 100" defaultSize={160}>
       <HalfWreathArt withCheck={withCheck} animated={animated} />
     </Svg>
   );

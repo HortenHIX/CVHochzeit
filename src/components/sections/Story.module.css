@@ -1,0 +1,315 @@
+/* Unsere Geschichte – „Herbarium-Ranke“ (docs/design.md F3, H, J E12/E13) */
+
+.timeline {
+  --track: 48px;
+  --node-y: 9px; /* Mitte des Knotens = Mitte der Datumszeile */
+  position: relative;
+  max-width: 62rem;
+  margin-inline: auto;
+}
+
+/* ---------- Ranke (E13, repeat-y) ---------- */
+.vine {
+  position: absolute;
+  top: 0;
+  bottom: 28px; /* endet in der Mitte des Ringe-Siegels */
+  left: 0;
+  width: var(--track);
+  background: var(--vine-tile) center top / 48px 160px repeat-y;
+  pointer-events: none;
+  /* Weicher Beginn: die Ranke wächst aus dem Nichts */
+  mask-image: linear-gradient(to bottom, transparent 0, #000 2.5rem);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 2.5rem);
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .vine {
+      animation: vine-grow linear both;
+      animation-timeline: view();
+      /* Die Spitze bleibt dadurch etwa bei 80 % der Bildschirmhöhe – vor dem Lesefluss */
+      animation-range: entry 20% exit 20%;
+    }
+  }
+}
+
+@keyframes vine-grow {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+/* Fallback ohne Scroll-Timeline: einmaliges Einblenden über 1.2 s */
+.vine[data-fallback='hidden'] {
+  opacity: 0;
+}
+
+.vine[data-fallback='shown'] {
+  opacity: 1;
+  transition: opacity 1200ms var(--ease);
+}
+
+/* ---------- Liste ---------- */
+.list {
+  position: relative;
+  display: grid;
+  gap: var(--space-7);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: var(--track) minmax(0, 1fr);
+  column-gap: var(--space-4);
+  align-items: start;
+}
+
+.node {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: center;
+  width: 40px;
+  margin-top: calc(var(--node-y) - 12px);
+  position: relative;
+  z-index: 1;
+}
+
+.text {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  max-width: var(--w-text);
+}
+
+.date {
+  margin-bottom: var(--space-2);
+}
+
+.title {
+  font-size: var(--fs-h3);
+  line-height: 1.2;
+  color: var(--c-ink);
+}
+
+.body {
+  margin-top: var(--space-3);
+  color: var(--c-ink);
+}
+
+.media {
+  grid-column: 2;
+  grid-row: 2;
+  margin-top: var(--space-5);
+  width: 100%;
+  max-width: 15rem;
+}
+
+/* ---------- Bogenbild 4:5 ---------- */
+.arch {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 50% 50% 16px 16px / 40% 40% 16px 16px;
+  overflow: hidden;
+}
+
+/* 1 px Innenlinie mit 6 px Einzug */
+.arch::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid var(--c-line);
+  border-radius: 50% 50% 11px 11px / 40% 40% 11px 11px;
+  pointer-events: none;
+}
+
+.vignetteArch {
+  display: grid;
+  place-items: center;
+  background: var(--c-sage-100);
+}
+
+.vignetteArch::after {
+  border-color: rgb(72 96 76 / 0.22);
+}
+
+.vignette {
+  width: 100%;
+  margin-top: 14%;
+}
+
+.photo {
+  background: var(--c-sand);
+}
+
+.photo::after {
+  border-color: rgb(255 253 248 / 0.75);
+}
+
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Abschluss: Ringe im Kreis + „Und jetzt: Ja!“ ---------- */
+.finale {
+  display: grid;
+  grid-template-columns: var(--track) minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: var(--space-4);
+  align-items: center;
+  min-height: 56px;
+  margin-top: var(--space-7);
+}
+
+.finaleSeal {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  justify-self: center;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--c-line);
+  border-radius: 50%;
+  background: var(--c-paper);
+}
+
+.finaleDate {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+}
+
+.finaleTitle {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: start;
+  font-family: var(--ff-display);
+  font-size: var(--fs-h3);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--c-terra-700);
+  text-wrap: balance;
+}
+
+/* ---------- Tablet: Bild neben dem Text ---------- */
+@media (min-width: 45em) {
+  .item {
+    grid-template-columns: var(--track) minmax(0, 1fr) minmax(0, 13rem);
+    column-gap: var(--space-5);
+  }
+
+  .media {
+    grid-column: 3;
+    grid-row: 1;
+    margin-top: 0;
+  }
+}
+
+/* ---------- Desktop: Ranke in der Mitte, alternierend ---------- */
+@media (min-width: 64em) {
+  .timeline {
+    --track: 96px;
+  }
+
+  .vine {
+    left: calc(50% - 24px);
+    width: 48px;
+    mask-image: linear-gradient(to bottom, transparent 0, #000 7rem);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 7rem);
+  }
+
+  .list {
+    gap: var(--space-8);
+  }
+
+  .item {
+    grid-template-columns: minmax(0, 1fr) var(--track) minmax(0, 1fr);
+    column-gap: var(--space-5);
+    align-items: center;
+  }
+
+  .node {
+    grid-column: 2;
+    margin-top: 0;
+  }
+
+  .text {
+    grid-column: 1;
+    justify-self: end;
+    width: 100%;
+    max-width: 25rem;
+  }
+
+  .media {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: start;
+    margin-top: 0;
+    max-width: 17rem;
+  }
+
+  .item:nth-child(even) .text {
+    grid-column: 3;
+    justify-self: start;
+  }
+
+  .item:nth-child(even) .media {
+    grid-column: 1;
+    justify-self: end;
+  }
+
+  .finale {
+    grid-template-columns: minmax(0, 1fr) var(--track) minmax(0, 1fr);
+    grid-template-rows: auto;
+    column-gap: var(--space-5);
+    margin-top: var(--space-8);
+  }
+
+  .finaleSeal {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .finaleDate {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+    justify-self: end;
+    text-align: end;
+  }
+
+  .finaleTitle {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: center;
+  }
+}
+
+@media (forced-colors: active) {
+  .vine {
+    display: none;
+  }
+}
+
+@media print {
+  .vine,
+  .media {
+    display: none;
+  }
+
+  .item {
+    break-inside: avoid;
+  }
+}

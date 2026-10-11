@@ -260,9 +260,9 @@ const ICONS: Record<IconName, ReactNode> = {
   ),
   glasses: (
     <>
-      <path transform="rotate(6 8 19.5)" d="M6.1 3.5h3.8l-.35 6.4a1.55 1.55 0 0 1-3.1 0zM8 11.5v8M5.9 19.5h4.2" />
-      <path transform="rotate(-6 16 19.5)" d="M14.1 3.5h3.8l-.35 6.4a1.55 1.55 0 0 1-3.1 0zM16 11.5v8M13.9 19.5h4.2" />
-      <path d="M12 1.4v1M9.9 2l.45.75M14.1 2l-.45.75" />
+      {/* zwei Sektflöten, die anstoßen */}
+      <path transform="rotate(5 8 20)" d="M6.2 3.5h3.6l-.35 5.8a1.45 1.45 0 0 1-2.9 0zM8 10.8V20M6 20h4" />
+      <path transform="rotate(-5 16 20)" d="M14.2 3.5h3.6l-.35 5.8a1.45 1.45 0 0 1-2.9 0zM16 10.8V20M14 20h4" />
     </>
   ),
   utensils: (
@@ -309,7 +309,7 @@ const ICONS: Record<IconName, ReactNode> = {
     <>
       <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
       <circle cx="9" cy="9.5" r="1.6" />
-      <path d="M3.5 17l5-5 4 4 2.5-2.5 5.5 5.5" />
+      <path d="M3.5 16l5-5 8.5 8.5M12.5 15l2.5-2.5 5.5 5.5" />
     </>
   ),
   qr: (
@@ -335,8 +335,9 @@ const ICONS: Record<IconName, ReactNode> = {
   ),
   shoe: (
     <>
-      <path d="M4.8 8.6L5.6 14C8 15.4 10 18.6 12.5 18.6h7.3c.6 0 .9-.6.8-1.4-.2-1.2-1.6-2-3.1-2.2-2.2-.3-4.2-.9-5.7-1.8C9.5 11.6 7.2 8.6 4.8 8.6z" />
-      <path d="M5.6 14l.9 6.5M5.4 20.5h2.2" />
+      {/* Pumps: Schaft mit Ausschnitt, Spitze rechts, Fußgewölbe, Absatz */}
+      <path d="M3.5 7.5c2.2.3 3.6 2.4 5.2 4.2 1.4 1.5 3.3 2.3 5.9 2.6 3.6.4 5.9 1.3 5.9 3.2v.5H12c-2.2 0-3.4-1.4-4.6-2.9l-2-2.5z" />
+      <path d="M4.3 11.2l1.1 7.8M4.3 19h2.2" />
     </>
   ),
   leaf: <path d="M5 19C5 10 11 5 19 5c0 8-5 14-14 14zM5 19l7-7" />,
@@ -366,9 +367,10 @@ const ICONS: Record<IconName, ReactNode> = {
   ),
   child: (
     <>
-      <circle cx="12" cy="6" r="2.8" />
-      <path d="M12 10v5M7.6 9.4L12 11.8l4.4-2.4" />
-      <path d="M9.4 20.4L12 15l2.6 5.4" />
+      {/* Kindergesicht mit Locke – unterscheidet sich klar von „user“ */}
+      <circle cx="12" cy="13" r="7.5" />
+      <path d="M12 5.5c0-1.7 1.1-2.7 2.7-2.5M9.4 12.3h.01M14.6 12.3h.01" />
+      <path d="M9.8 15.6c1.2 1.1 3.2 1.1 4.4 0" />
     </>
   ),
 };

@@ -1,0 +1,40 @@
+/* Formularkarte der Zusage – docs/design.md F10 „Rahmen“ */
+
+.card {
+  position: relative;
+  width: 100%;
+  max-width: var(--w-form);
+  margin: 28px auto 0;
+  padding: calc(28px + var(--space-5)) var(--space-5) var(--space-6);
+  border: var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--c-paper);
+  box-shadow: var(--shadow-md);
+}
+
+/* E10-Siegel (56 px) mittig auf der Oberkante */
+.seal {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  border-radius: 50%;
+  background: var(--c-paper);
+  box-shadow: 0 -1px 0 var(--c-line);
+}
+
+@media (min-width: 64em) {
+  .card {
+    padding: calc(28px + var(--space-6)) 40px 40px;
+  }
+}
+
+@media print {
+  .card {
+    box-shadow: none;
+    border-color: #999;
+  }
+}

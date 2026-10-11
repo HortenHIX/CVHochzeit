@@ -32,20 +32,7 @@ export const BG = 'var(--illu-bg, var(--c-paper))';
 export const VEIN = 'var(--illu-vein, var(--c-linen))';
 
 /** Feste HEX-Werte der Tokens – nur für Data-URIs, Favicon und Bild-Routen. */
-export const HEX = {
-  linen: '#FAF7F2',
-  paper: '#FFFDF8',
-  sand: '#F0E8DB',
-  ink: '#2B3530',
-  line: '#DCD1C1',
-  sage100: '#E2E9DF',
-  sage400: '#9AAE97',
-  sage700: '#48604C',
-  sage900: '#2E4136',
-  terra100: '#F6E4D8',
-  terra500: '#C27453',
-  terra700: '#96492E',
-} as const;
+export { HEX } from './palette';
 
 /** Linien-Attribute laut Abschnitt J (runde Enden, nicht skalierende Konturen). */
 export const LINE = {

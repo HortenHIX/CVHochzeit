@@ -132,6 +132,10 @@
   background: var(--c-sage-900);
 }
 
+.dark .caption {
+  color: var(--c-sage-100);
+}
+
 .replay {
   display: flex;
   flex-direction: column;

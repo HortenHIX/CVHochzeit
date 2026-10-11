@@ -1,0 +1,540 @@
+/* Zusage-Formular – docs/design.md F10, G, H, I */
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Kopf der Karte ---------- */
+
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  text-align: center;
+}
+
+.title {
+  font-size: var(--fs-h3);
+  scroll-margin-top: calc(var(--header-h) + var(--space-8));
+}
+
+.title:focus {
+  outline: none;
+}
+
+.title:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 6px;
+  border-radius: var(--radius-sm);
+}
+
+.deadline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.deadline time {
+  font-variant-numeric: lining-nums;
+}
+
+.notice {
+  margin-bottom: var(--space-6);
+}
+
+.inlineAction {
+  min-height: 44px;
+  padding: 10px 0;
+  border: 0;
+  background: none;
+  color: var(--c-terra-700);
+  font-weight: 600;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  touch-action: manipulation;
+}
+
+@media (hover: hover) {
+  .inlineAction:hover {
+    color: var(--c-terra-800);
+    text-decoration-thickness: 2px;
+  }
+}
+
+.notice .inlineAction {
+  margin-top: 0;
+}
+
+/* ---------- Fehlerbox ---------- */
+
+.errorBox {
+  margin-bottom: var(--space-6);
+  border-radius: var(--radius-card-inner);
+  scroll-margin-top: calc(var(--header-h) + var(--space-4));
+}
+
+.errorList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-left: 1em;
+  font-size: var(--fs-body);
+}
+
+.errorList li::marker {
+  color: var(--c-error);
+}
+
+.errorList a {
+  color: var(--c-error);
+  font-weight: 600;
+  padding-block: 0.15em;
+}
+
+@media (hover: hover) {
+  .errorList a:hover {
+    color: var(--c-ink);
+  }
+}
+
+/* ---------- Gruppe 1 ---------- */
+
+.attendanceWrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.attendance {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (min-width: 30em) {
+  .attendance {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Höhen-Transition für die Gruppen 2–4 ---------- */
+
+.collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--dur-slow) var(--ease),
+    opacity var(--dur-base) var(--ease),
+    visibility 0s linear var(--dur-slow);
+}
+
+.collapse[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    grid-template-rows var(--dur-slow) var(--ease),
+    opacity var(--dur-slow) var(--ease) 80ms,
+    visibility 0s;
+}
+
+/* Ohne JavaScript (vor dem Laden): Auswahl „Ja“ blendet die Gruppen per CSS ein. */
+.form:not([data-ready]):has(input[name='attendance'][value='yes']:checked) .collapse {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition: none;
+}
+
+.collapseInner {
+  min-height: 0;
+  overflow: hidden;
+  /* Platz für Fokusringe am Rand */
+  margin-inline: -8px;
+  padding-inline: 8px;
+}
+
+.groupIntro {
+  color: var(--c-ink-soft);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  margin-top: calc(-1 * var(--space-2));
+}
+
+/* ---------- Personenkarten ---------- */
+
+.persons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.person {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  padding: 20px;
+  border: var(--hairline);
+  border-radius: var(--radius-card-inner);
+  background: var(--c-linen);
+}
+
+.personLegend {
+  float: left;
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 0.35em;
+  margin: -6px 0 var(--space-3);
+  padding: 0;
+  font-family: var(--ff-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: lining-nums;
+  color: var(--c-ink);
+}
+
+.personRemovable .personLegend {
+  padding-right: 7.5rem;
+}
+
+.personRemove {
+  position: absolute;
+  top: 14px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--c-terra-700);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  touch-action: manipulation;
+}
+
+@media (hover: hover) {
+  .personRemove:hover {
+    color: var(--c-terra-800);
+    text-decoration-thickness: 2px;
+  }
+}
+
+.personBody {
+  clear: both;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.childBlock {
+  display: flex;
+  flex-direction: column;
+  margin-block: calc(-1 * var(--space-3));
+}
+
+.childDetails {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-1) 0 var(--space-3);
+  padding: var(--space-4);
+  border-left: 2px solid var(--c-sage-400);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: color-mix(in srgb, var(--c-sage-100) 55%, var(--c-linen));
+}
+
+.highChair {
+  align-self: start;
+}
+
+@media (min-width: 45em) {
+  .childDetails {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    column-gap: var(--space-5);
+  }
+  .highChair {
+    align-self: end;
+    padding-bottom: 2px;
+  }
+}
+
+.menuGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.menuChip {
+  width: 100%;
+  padding-inline: 12px;
+}
+
+.dish {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--c-ink);
+}
+
+.dishIcon {
+  flex: none;
+  margin-top: 0.1em;
+  color: var(--c-sage-700);
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.allergyNote {
+  margin-top: var(--space-4);
+}
+
+/* „Person entfernt – Rückgängig“ (Toast-Stil, aber an Ort und Stelle) */
+.undo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  min-height: 48px;
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--c-sage-900);
+  color: var(--c-linen);
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+.undoText {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.undoButton {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--c-sand);
+  font-weight: 600;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  touch-action: manipulation;
+}
+
+.undoButton:focus-visible {
+  outline-color: var(--c-sand);
+  outline-offset: 0;
+}
+
+@media (hover: hover) {
+  .undoButton:hover {
+    color: var(--c-linen);
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* „Weitere Person hinzufügen“: Sekundär, 56 px, gestrichelter stone-Rahmen */
+.addRow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+.addButton {
+  padding-inline: var(--space-4);
+  border-style: dashed;
+  border-color: var(--c-stone);
+}
+
+.addButton[aria-disabled='true'] {
+  border-style: dashed;
+}
+
+.addCount {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  text-align: center;
+  color: var(--c-ink-soft);
+}
+
+.addLimit {
+  color: var(--c-ink);
+}
+
+/* ---------- Gruppen 3 & 4 ---------- */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.overnight,
+.shuttle {
+  display: grid;
+  gap: var(--space-2);
+}
+
+@media (min-width: 30em) {
+  .shuttle {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.shuttleDetails {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+}
+
+@media (min-width: 45em) {
+  .shuttleDetails {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+}
+
+.inlineLink {
+  padding-block: 0.15em;
+}
+
+/* ---------- Gruppe 5 ---------- */
+
+.counter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: calc(-1 * var(--space-1));
+  font-size: var(--fs-small);
+  color: var(--c-ink-soft);
+}
+
+.consent {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2) var(--space-4) var(--space-4);
+  border-radius: var(--radius-card-inner);
+  background: var(--c-linen);
+  border: var(--hairline);
+}
+
+.consentNote {
+  padding-left: calc(24px + var(--space-3));
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--c-ink-soft);
+}
+
+.consent > p:last-child {
+  padding-left: calc(24px + var(--space-3));
+}
+
+.honeypot {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ---------- Absenden ---------- */
+
+.submitArea {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: var(--hairline);
+  text-align: center;
+}
+
+.submit {
+  width: 100%;
+}
+
+.submitHint {
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--c-ink-soft);
+}
+
+.draftState {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: var(--fs-small);
+  color: var(--c-sage-700);
+}
+
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: var(--space-2);
+  vertical-align: -3px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 1600ms !important;
+    animation-iteration-count: infinite !important;
+  }
+}
+
+@media (min-width: 45em) {
+  .submitArea {
+    align-items: center;
+  }
+  .submit {
+    width: auto;
+    min-width: 16rem;
+  }
+}
+
+@media print {
+  .form {
+    display: none;
+  }
+}
