@@ -11,12 +11,12 @@ function plural(count: number, one: string, many: string): string {
 }
 
 /** Unterzeile aus Teilen („Personen · 2 Haushalte“): umbrochen wird nur zwischen den Teilen. */
-function Parts({ parts }: { parts: string[] }) {
+function Parts({ parts, separator = ' ·' }: { parts: string[]; separator?: string }) {
   return parts.map((part, index) => (
     <Fragment key={index}>
       <span className={styles.nowrap}>
         {part}
-        {index < parts.length - 1 ? ' ·' : ''}
+        {index < parts.length - 1 ? separator : ''}
       </span>
       {index < parts.length - 1 ? ' ' : ''}
     </Fragment>
@@ -78,8 +78,9 @@ export function StatTiles({ stats }: { stats: RsvpStats }) {
           value={stats.total}
           sub={
             stats.lastUpdatedAt ? (
+              // Datum und Uhrzeit dürfen getrennt umbrechen (schmale Kacheln bei 320 px).
               <>
-                zuletzt <span className={styles.nowrap}>{dateTimeLabel(stats.lastUpdatedAt)}</span>
+                zuletzt <Parts parts={dateTimeLabel(stats.lastUpdatedAt).split(', ')} separator="," />
               </>
             ) : (
               'noch keine'

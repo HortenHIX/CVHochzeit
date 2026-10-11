@@ -1,7 +1,10 @@
 import { expect, test } from '@playwright/test';
 import { TEST_ENV } from '../../playwright.config';
 
-/** Eigene (Test-)Adresse je Test, damit das Login-Rate-Limit (5 Versuche/Min.) nicht greift. */
+/**
+ * Eigene (Test-)Adresse je Test, damit das Login-Rate-Limit nicht greift
+ * (Gäste: 10 Fehlversuche/Min.; Verwaltung: 5 Versuche/5 Min.).
+ */
 test.beforeEach(async ({ page }) => {
   const part = () => Math.floor(Math.random() * 250) + 1;
   await page.setExtraHTTPHeaders({ 'x-forwarded-for': `10.${part()}.${part()}.${part()}` });
@@ -57,6 +60,26 @@ test.describe('Zugangsschutz', () => {
     await page.getByLabel('Gästecode').fill(TEST_ENV.GUEST_CODE);
     await page.getByRole('button', { name: /weiter/i }).click();
     await expect(page).toHaveURL(/\/fotos\/karte$/);
+  });
+
+  test('Login über /#zusage landet wieder bei der Zusage', async ({ page }) => {
+    await page.goto('/#zusage');
+    await expect(page).toHaveURL(/\/login#zusage$/);
+    await page.getByLabel('Gästecode').fill(TEST_ENV.GUEST_CODE);
+    await page.getByRole('button', { name: /weiter/i }).click();
+    await expect(page).toHaveURL(/\/#zusage$/);
+    await expect(page.locator('#zusage')).toBeInViewport();
+  });
+
+  test('Abmelden mit abgelaufener Anmeldung führt ohne Fehlerseite zum Login', async ({ page, context }) => {
+    await page.goto(`/?code=${encodeURIComponent(TEST_ENV.GUEST_CODE)}`);
+    await expect(page).toHaveURL(/\/$/);
+    await page.waitForLoadState('networkidle');
+    await context.clearCookies();
+    await page.locator('footer').getByRole('button', { name: 'Abmelden' }).click();
+    await expect(page).toHaveURL(/\/login/);
+    await expect(page.getByLabel('Gästecode')).toBeVisible();
+    await expect(page.getByText(/couldn.t load/i)).toHaveCount(0);
   });
 
   test('Gäste kommen nicht in den Admin-Bereich', async ({ page }) => {

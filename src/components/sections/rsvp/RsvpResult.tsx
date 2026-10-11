@@ -3,7 +3,7 @@ import { Icon } from '@/components/icons/Icon';
 import { HalfWreath, OliveBranch, Rings } from '@/components/illustrations';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { Notice } from '@/components/ui/Notice';
-import { formatDateIn, telHref } from '@/lib/format-pure';
+import { formatDateIn, formatPhone, telHref } from '@/lib/format-pure';
 import { eventLabel, menuLabel, overnightLabel, type RsvpConfig } from '@/lib/rsvp/config';
 import { greetingName, personCountText, type RsvpSummary } from '@/lib/rsvp/form-state';
 import { allergyText, type RsvpPerson, type RsvpShuttle } from '@/lib/rsvp/types';
@@ -177,7 +177,7 @@ export function RsvpResult({
           <p>
             Für Änderungen meldet euch bitte direkt bei {rsvp.changeContactName}:{' '}
             <a href={telHref(rsvp.changeContactPhone)} className={styles.tel}>
-              {rsvp.changeContactPhone}
+              {formatPhone(rsvp.changeContactPhone)}
             </a>
           </p>
         </Notice>

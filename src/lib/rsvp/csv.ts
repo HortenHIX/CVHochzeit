@@ -158,9 +158,10 @@ export function personRows(entries: readonly RsvpEntry[], labels: RsvpLabels): C
     'Unverträglichkeiten',
     ...labels.events.map((e) => `Programm: ${e.label}`),
     'Übernachtung',
-    'Shuttle hin',
-    'Shuttle zurück',
+    'Shuttle hin (Haushalt)',
+    'Shuttle zurück (Haushalt)',
     'Shuttle ab',
+    'Shuttle-Plätze (Haushalt)',
     'E-Mail (Haushalt)',
   ];
 
@@ -181,6 +182,7 @@ export function personRows(entries: readonly RsvpEntry[], labels: RsvpLabels): C
         yesNo(shuttle?.there, shuttle !== null),
         yesNo(shuttle?.back, shuttle !== null),
         wantsShuttle ? shuttle?.from : '',
+        wantsShuttle ? (shuttle?.seats ?? '') : '',
         entry.email,
       ];
     }),

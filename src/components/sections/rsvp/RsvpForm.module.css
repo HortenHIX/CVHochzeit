@@ -276,7 +276,8 @@
 
 .menuGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Zweispaltig, solange „Vegetarisch“ samt Häkchen hineinpasst – sonst untereinander */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
   gap: var(--space-2);
 }
 
@@ -425,6 +426,14 @@
 
 .inlineLink {
   padding-block: 0.15em;
+  /* Icon „neuer Tab“ bleibt beim Linktext */
+  white-space: nowrap;
+}
+
+.inlineLinkIcon {
+  display: inline-block;
+  margin-inline-start: 2px;
+  vertical-align: -0.15em;
 }
 
 /* ---------- Gruppe 5 ---------- */

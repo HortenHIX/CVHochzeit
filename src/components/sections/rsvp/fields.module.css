@@ -421,6 +421,9 @@
 }
 
 .chip[data-checked='true'] {
+  /* Platz für das Häkchen links – es liegt im Innenabstand und nimmt dem Text keine Breite.
+     Beidseitig, damit der Text mittig bleibt. */
+  padding-inline: 32px;
   border-color: var(--c-sage-700);
   background: var(--c-sage-700);
   color: var(--c-paper);
@@ -438,8 +441,10 @@
 }
 
 .chipIcon {
-  flex: none;
-  margin-left: -4px;
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  translate: 0 -50%;
 }
 
 /* ---------- Stepper ---------- */

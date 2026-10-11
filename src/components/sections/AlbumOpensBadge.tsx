@@ -5,7 +5,9 @@ import { Badge } from '@/components/ui/Badge';
 
 /**
  * „Album öffnet am …“ – nur solange das Album noch gesperrt ist.
- * Vor dem Mount (Server, Hydration, ohne JavaScript) wird nichts angezeigt.
+ * Vor dem Mount (Server, Hydration, ohne JavaScript) steht das Badge immer da,
+ * weil das Album vor der Feier fast immer gesperrt ist – so verschiebt sich
+ * nach dem Laden nichts. Erst im Browser wird es ab `opensAt` ausgeblendet.
  */
 export function AlbumOpensBadge({
   opensAt,
@@ -21,14 +23,15 @@ export function AlbumOpensBadge({
   className?: string;
 }) {
   const now = useMinuteClock();
-  if (now === null) return null;
-  const today = new Intl.DateTimeFormat('en-CA', {
-    timeZone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(new Date(now));
-  if (today >= opensAt) return null;
+  if (now !== null) {
+    const today = new Intl.DateTimeFormat('en-CA', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date(now));
+    if (today >= opensAt) return null;
+  }
 
   return (
     <p className={className}>

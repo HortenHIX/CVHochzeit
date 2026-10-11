@@ -44,9 +44,13 @@ function VenueCard({ place }: { place: Location }) {
           {place.label}
           {place.time ? (
             <>
-              <span aria-hidden="true"> · </span>
-              <span className="visually-hidden">, </span>
-              <span className="nums">{place.time}</span>
+              {' '}
+              {/* Trenner und Uhrzeit umbrechen nur gemeinsam */}
+              <span className={styles.timePart}>
+                <span aria-hidden="true">·&nbsp;</span>
+                <span className="visually-hidden">, </span>
+                <span className="nums">{place.time}</span>
+              </span>
             </>
           ) : null}
         </p>
@@ -139,7 +143,7 @@ export function Locations() {
                   <Paragraphs text={row.text} />
                   {'shuttle' in row && row.shuttle ? (
                     <p>
-                      <a href={`#${SECTION_IDS.stay}`} className={styles.inlineLink}>
+                      <a href="#shuttle" className={styles.inlineLink}>
                         Zum Shuttle-Fahrplan
                       </a>
                     </p>

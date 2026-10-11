@@ -14,6 +14,7 @@ import { buttonClassName } from '@/components/ui/Button';
 import type { IconName } from '@/content/site';
 import { logout } from '@/lib/auth/actions';
 import type { NavItem } from '@/lib/navigation';
+import { useMinuteClock } from './clock';
 import { useActiveSection } from './useActiveSection';
 import styles from './Header.module.css';
 
@@ -45,6 +46,7 @@ export function MobileMenu({
   spyIds,
   rsvpId,
   rsvpLabel,
+  rsvpHideAfter,
   brand,
   decoration,
 }: {
@@ -52,6 +54,8 @@ export function MobileMenu({
   spyIds: readonly string[];
   rsvpId: string;
   rsvpLabel: string;
+  /** ISO-Zeitpunkt, ab dem der Zusage-Button entfällt (wie im Header; nur ohne Antwort gesetzt) */
+  rsvpHideAfter?: string;
   brand: ReactNode;
   decoration?: ReactNode;
 }) {
@@ -62,6 +66,8 @@ export function MobileMenu({
   const active = useActiveSection(spyIds);
   const dialogId = useId();
   const titleId = useId();
+  const now = useMinuteClock();
+  const showRsvp = !rsvpHideAfter || now === null || now <= new Date(rsvpHideAfter).getTime();
 
   // Öffnen/Schließen mit dem Dialog synchronisieren, Body-Scroll sperren.
   useEffect(() => {
@@ -193,14 +199,16 @@ export function MobileMenu({
           </nav>
 
           <div className={styles.menuFooter}>
-            <a
-              href={`#${rsvpId}`}
-              className={buttonClassName({ variant: 'primary', size: 'lg', block: true })}
-              onClick={(event) => navigate(event, rsvpId)}
-            >
-              <span>{rsvpLabel}</span>
-              <Icon name="arrow-right" size={20} />
-            </a>
+            {showRsvp ? (
+              <a
+                href={`#${rsvpId}`}
+                className={buttonClassName({ variant: 'primary', size: 'lg', block: true })}
+                onClick={(event) => navigate(event, rsvpId)}
+              >
+                <span>{rsvpLabel}</span>
+                <Icon name="arrow-right" size={20} />
+              </a>
+            ) : null}
             <form action={logout} className={styles.menuLogout}>
               <button type="submit" className={buttonClassName({ variant: 'ghost' })}>
                 <Icon name="logout" size={20} />

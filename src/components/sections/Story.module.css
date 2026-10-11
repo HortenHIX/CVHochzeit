@@ -199,7 +199,7 @@
   font-style: italic;
   font-weight: 500;
   line-height: 1.2;
-  color: var(--c-terra-700);
+  color: var(--c-ink);
   text-wrap: balance;
 }
 
@@ -311,5 +311,10 @@
 
   .item {
     break-inside: avoid;
+  }
+
+  /* Ohne Ringe (E7, im Druck ausgeblendet) bliebe nur ein leerer Kreis */
+  .finaleSeal {
+    display: none;
   }
 }

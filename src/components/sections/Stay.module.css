@@ -538,6 +538,15 @@
     margin-top: var(--space-3);
   }
 
+  /* Shuttle-Fahrplan als Ganzes, Taxi-Kopf nie allein am Seitenende */
+  .ticket {
+    break-inside: avoid;
+  }
+
+  .taxiHead {
+    break-after: avoid;
+  }
+
   .ticketHead,
   .ticketBody {
     -webkit-mask: none;

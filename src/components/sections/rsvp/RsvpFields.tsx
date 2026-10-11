@@ -339,8 +339,9 @@ export function CheckboxRow({
         aria-describedby={describedBy}
         className={styles.hiddenInput}
       />
+      {/* Häkchen nur, wenn angehakt – im Kontrastmodus würde ein „durchsichtiges“ sichtbar. */}
       <span className={styles.checkBox} aria-hidden="true">
-        <Icon name="check" size={18} />
+        {checked ? <Icon name="check" size={18} /> : null}
       </span>
       <span className={styles.checkLabel}>{children}</span>
     </label>
@@ -406,7 +407,7 @@ export function ChoiceCard({
         {subtitle ? <span className={styles.choiceSub}>{subtitle}</span> : null}
       </span>
       <span className={cx(styles.choiceMark, type === 'checkbox' && styles.choiceMarkSquare)} aria-hidden="true">
-        <Icon name="check" size={16} />
+        {checked ? <Icon name="check" size={16} /> : null}
       </span>
     </label>
   );

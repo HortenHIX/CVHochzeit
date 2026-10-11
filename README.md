@@ -18,7 +18,7 @@ src/content/site.ts
 
 Alles, was mit `PLATZHALTER` markiert ist, muss noch ersetzt werden. Hinweise
 zum Format stehen oben in der Datei. Eigene Fotos (z. B. für „Unsere
-Geschichte") legt ihr in `public/images/` ab und tragt den Pfad, etwa
+Geschichte“) legt ihr in `public/images/` ab und tragt den Pfad, etwa
 `/images/antrag.jpg`, beim jeweiligen Eintrag ein.
 
 ## Seiten im Überblick
@@ -85,8 +85,10 @@ wird automatisch die Produktions-Domain genommen. Die Adresse steckt im
 Vorschaubild für WhatsApp & Co. und im Kalendereintrag.
 
 Wird ein Code geändert, sind alle bestehenden Anmeldungen mit diesem Code
-automatisch ungültig. Gegen Durchprobieren sind die Login-Formulare begrenzt:
-höchstens fünf Versuche pro Minute (Verwaltung: pro fünf Minuten) und Adresse.
+automatisch ungültig. Gegen Durchprobieren sind Anmeldung und Direkt-Link (`/?code=…`)
+begrenzt: höchstens zehn Fehlversuche pro Minute und IP-Adresse – erfolgreiche Anmeldungen
+zählen nicht mit, damit viele Gäste im selben WLAN sich problemlos anmelden können.
+Für die Verwaltung gilt: höchstens fünf Versuche pro fünf Minuten und IP-Adresse.
 
 **Tipp für die Einladungskarte:** Ein QR-Code auf `https://eure-domain.de/?code=EUERCODE`
 meldet Gäste direkt an – sie müssen nichts eintippen.

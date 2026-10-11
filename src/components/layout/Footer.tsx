@@ -33,8 +33,12 @@ export function Footer({ topHref = '#start', logout: showLogout = true }: { topH
           <Monogram variant="large" onDark size={72} className={styles.monogram} />
           <p className={styles.date}>
             <time dateTime={site.wedding.start.slice(0, 10)}>{formatDate(site.wedding.start)}</time>
-            <span aria-hidden="true">{'\u00A0·'}</span>
-            <span className="visually-hidden">,</span> <span className={styles.place}>{site.wedding.place}</span>
+            <span className="visually-hidden">,</span>{' '}
+            {/* Trenner gehört zum Ort: bricht die Zeile um, wandert „·“ mit */}
+            <span className={styles.place}>
+              <span aria-hidden="true">{'·\u00A0'}</span>
+              {site.wedding.place}
+            </span>
           </p>
           <p className={styles.text}>{site.footer.text}</p>
 

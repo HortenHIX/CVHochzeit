@@ -217,4 +217,27 @@ test.describe('Zusage', () => {
     await expect(section.getByRole('heading', { name: 'Eure Antwort' })).toBeVisible();
     await expect(section.getByRole('heading', { name: /Ihr habt schon/ })).toHaveCount(0);
   });
+
+  test('abgelaufene Anmeldung beim Absenden führt zur Anmeldung, der Entwurf bleibt erhalten', async ({
+    page,
+    context,
+  }, testInfo) => {
+    const section = await openRsvp(page);
+    await readyForm(section);
+    const household = `Abgelaufen ${uniqueSuffix(testInfo)}`;
+    await section.getByRole('radio', { name: /Leider nicht/ }).check();
+    await section.getByLabel('Euer Name').fill(household);
+    await section.getByRole('checkbox', { name: /Ich bin einverstanden/ }).check();
+    // Entwurf wird kurz nach der letzten Änderung gespeichert.
+    await expect(section.getByText('Entwurf auf diesem Gerät gespeichert')).toBeVisible();
+
+    await context.clearCookies();
+    await submit(section);
+
+    await expect(page).toHaveURL(/\/login\?(.*&)?fehler=sitzung/, SERVER);
+    await expect(page.getByText('Eure Anmeldung ist abgelaufen.')).toBeVisible();
+    await expect(page.getByText(/couldn.t load/i)).toHaveCount(0);
+    const draft = await page.evaluate(() => window.localStorage.getItem('cv-hochzeit:zusage-entwurf'));
+    expect(draft).toContain(household);
+  });
 });

@@ -1,5 +1,6 @@
 'use client';
 
+import { unstable_rethrow } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { Icon } from '@/components/icons/Icon';
 import { deleteRsvpAction } from '../actions';
@@ -39,7 +40,9 @@ export function DeleteControl({
         const result = await deleteRsvpAction(id);
         if (result.ok) onDeleted(id, name);
         else setError(result.message ?? 'Das Löschen hat nicht geklappt.');
-      } catch {
+      } catch (error) {
+        // Weiterleitungen (z. B. abgelaufene Anmeldung → /admin/login) nicht verschlucken.
+        unstable_rethrow(error);
         setError('Das Löschen hat nicht geklappt. Bitte prüft die Verbindung und versucht es noch einmal.');
       }
     });

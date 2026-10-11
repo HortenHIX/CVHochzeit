@@ -69,6 +69,7 @@ function HeaderActions({ state }: { state: RsvpState }) {
         spyIds={SPY_IDS}
         rsvpId={RSVP_NAV.id}
         rsvpLabel={state === 'yes' ? 'Eure Zusage ansehen' : state === 'no' ? 'Eure Antwort ansehen' : 'Jetzt zusagen'}
+        rsvpHideAfter={state === 'none' ? CTA_HIDE_AFTER : undefined}
         brand={<Monogram variant="small" size={40} />}
         decoration={<CornerBouquet corner="bottom-right" size={160} className={styles.menuBouquet} />}
       />

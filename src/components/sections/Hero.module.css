@@ -119,9 +119,10 @@
   overflow: visible;
 }
 
+/* Zweig unter der Bogenfläche: verbleibende Überdeckung wird gedämpft */
 .branch {
   position: absolute;
-  z-index: 2;
+  z-index: 0;
   top: -1.5rem;
   right: calc(-1 * var(--gutter) - 1.25rem);
   width: 96px;
@@ -132,8 +133,8 @@
 .bouquet {
   position: absolute;
   z-index: 2;
-  left: calc(-1 * var(--gutter) - 1.5rem);
-  bottom: -3.25rem;
+  left: calc(-1 * var(--gutter) - 1.75rem);
+  bottom: -2.25rem;
   width: 140px;
   pointer-events: none;
 }
@@ -183,8 +184,9 @@
 }
 
 .cellValue {
-  /* Feste Breite je Stellenzahl: kein Zucken, wenn „–“ zur Zahl wird */
-  min-width: 2ch;
+  /* Feste Breite je Stellenzahl: kein Zucken, wenn „–“ zur Zahl wird
+     (tabellarische Versalziffern sind etwas breiter als 1ch) */
+  min-width: 2.1ch;
   text-align: center;
   font-family: var(--ff-display);
   font-size: var(--fs-count);
@@ -195,7 +197,7 @@
 }
 
 .cell:first-child .cellValue {
-  min-width: 3ch;
+  min-width: 3.15ch;
 }
 
 .cellValue[data-pending] {
@@ -290,6 +292,8 @@
   background: var(--c-paper);
   box-shadow: var(--shadow-lg);
   text-align: start;
+  /* Abstand zum Bildrand, wenn das Menü beim Öffnen ins Bild gescrollt wird */
+  scroll-margin-block: var(--space-4);
   animation: popoverIn var(--dur-fast) var(--ease) both;
 }
 
@@ -376,6 +380,20 @@
 
 /* ---------- Breakpoints ---------- */
 
+/* Sehr schmal (< 360 px): Deko kleiner und weiter nach außen, nichts auf Text */
+@media (max-width: 22.49em) {
+  .branch {
+    top: -2rem;
+    width: 80px;
+  }
+
+  .bouquet {
+    bottom: -2.25rem;
+    left: calc(-1 * var(--gutter) - 2.25rem);
+    width: 112px;
+  }
+}
+
 @media (min-width: 30em) {
   .bouquet {
     left: -5.5rem;
@@ -391,6 +409,18 @@
   .bouquet {
     left: -7rem;
     width: 190px;
+  }
+}
+
+/* Tablet: Bühne breiter, Zweig weiter nach außen – nie direkt an den Namen */
+@media (min-width: 45em) and (max-width: 63.99em) {
+  .stage {
+    width: 26rem;
+  }
+
+  .branch {
+    top: -2.5rem;
+    right: -7rem;
   }
 }
 

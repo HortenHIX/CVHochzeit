@@ -245,6 +245,8 @@
   min-height: 100%;
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
+  /* Angeschnittene Deko erzeugt keinen Scrollbereich */
+  overflow: clip;
 }
 
 /* Kopfzeile deckungsgleich mit dem Header: „Schließen“ liegt genau über „Menü“ */
@@ -337,7 +339,8 @@
 }
 
 .menuDecoration {
-  position: fixed;
+  /* Am Menü-Inhalt verankert (unter dem Fußbereich), nie über den Menüzeilen */
+  position: absolute;
   right: calc(-1 * var(--space-5));
   bottom: calc(-1 * var(--space-4));
   z-index: -1;
@@ -347,6 +350,28 @@
 
 .menuBouquet {
   display: block;
+}
+
+/* Geringe Höhe (z. B. 320 × 568): kompaktere Zeilen, damit der Zusage-Button
+   ohne Scrollen sichtbar ist; die Deko hätte hier keinen freien Platz. */
+@media (max-height: 40em) {
+  .menuNav {
+    margin-top: var(--space-2);
+  }
+
+  .menuLink {
+    min-height: 46px;
+    padding-block: var(--space-1);
+    font-size: 1.375rem;
+  }
+
+  .menuFooter {
+    padding-block: var(--space-4);
+  }
+
+  .menuDecoration {
+    display: none;
+  }
 }
 
 /* ---------- Kontrast-Modi und Druck ---------- */
@@ -364,6 +389,10 @@
   .ctaDone,
   .menuToggle {
     border: 1px solid ButtonText;
+  }
+
+  .menuIcon {
+    color: CanvasText;
   }
 
   .navLink[aria-current='true'],

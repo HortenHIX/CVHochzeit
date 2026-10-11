@@ -1,6 +1,7 @@
 import { site } from '@/content/site';
 import { HalfWreathArt } from './HalfWreath';
-import { LINE, vars, type IllustrationProps } from './shared';
+import styles from './illustrations.module.css';
+import { cx, LINE, vars, type IllustrationProps } from './shared';
 import { Svg } from './Svg';
 
 export type MonogramVariant = 'small' | 'default' | 'large';
@@ -30,7 +31,7 @@ export function Monogram({
   const font = { fontFamily: 'var(--ff-display)' };
 
   return (
-    <Svg props={props} viewBox="0 0 120 120" defaultSize={DEFAULT_SIZE[variant]} extra={a11y}>
+    <Svg props={{ ...props, className: cx(styles.monogram, props.className) }} viewBox="0 0 120 120" defaultSize={DEFAULT_SIZE[variant]} extra={a11y}>
       {variant === 'small' ? (
         <>
           <circle cx={60} cy={60} r={57} stroke={ring} strokeWidth={1.5} {...LINE} />

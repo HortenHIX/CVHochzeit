@@ -57,6 +57,10 @@
   margin-bottom: var(--space-2);
 }
 
+.timePart {
+  white-space: nowrap;
+}
+
 .cardTitle {
   font-size: var(--fs-h3);
   color: var(--c-ink);
@@ -257,6 +261,11 @@
   }
 }
 
+/* Häkchen nur im gesetzten Zustand – im Kontrastmodus wird `color` erzwungen */
+.checkInput:not(:checked) + .checkBox svg {
+  visibility: hidden;
+}
+
 .checkInput:checked + .checkBox {
   border-color: var(--c-sage-700);
   background: var(--c-sage-700);
@@ -337,8 +346,9 @@
 }
 
 .inlineLink {
-  display: inline-block;
-  padding-block: 0.15em;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-weight: 600;
 }
 
@@ -399,6 +409,31 @@
   .infoRows {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-6) var(--space-7);
+  }
+}
+
+/* ---------- ab 45em, nur Bildschirm: Kartenzeilen angleichen ---------- */
+@media screen and (min-width: 45em) {
+  /* Zwei Karten: Zeilen (Kopf, Label, Titel, Adresse, Text, Aktionen) per
+     Subgrid angleichen – Titel und Adressen stehen auf gleicher Höhe */
+  @supports (grid-template-rows: subgrid) {
+    .venues[data-count='2'] {
+      grid-template-rows: repeat(6, auto);
+      row-gap: 0;
+    }
+
+    .venues[data-count='2'] .venue,
+    .venues[data-count='2'] .card {
+      display: grid;
+      grid-row: span 6;
+      grid-template-rows: subgrid;
+    }
+
+    .venues[data-count='2'] .cardBody {
+      display: grid;
+      grid-row: span 5;
+      grid-template-rows: subgrid;
+    }
   }
 }
 
@@ -497,6 +532,11 @@
   :global(body.print-infosheet) {
     background: #fff !important;
     color: var(--c-ink) !important;
+    /* Kompakte Überschriften, aber keine Schrift unter 11 pt */
+    --fs-label: 11pt;
+    --fs-h2: 22pt;
+    --fs-h3: 15pt;
+    --fs-time: 18pt;
   }
 
   :global(body.print-infosheet main > section:not(#start, #ablauf, #anfahrt, #kontakt)),
@@ -533,6 +573,11 @@
 
   :global(body.print-infosheet main > section > div > header > svg ~ p) {
     display: none !important;
+  }
+
+  /* Etiketten mit Icon im Ablauf (Badge, fest 14 px) auf 11 pt */
+  :global(body.print-infosheet #ablauf span:has(> svg)) {
+    font-size: 11pt;
   }
 
   /* Hero als kompakter Textkopf: Regeln in Hero.module.css */

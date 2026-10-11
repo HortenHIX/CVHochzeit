@@ -6,6 +6,7 @@ import { Reveal } from '@/components/ui/Reveal';
 import { Section } from '@/components/ui/Section';
 import { site, type Hotel, type ShuttleRide } from '@/content/site';
 import { formatDate, formatTime, telHref } from '@/lib/format';
+import { formatPhone } from '@/lib/format-pure';
 import { SECTION_IDS } from '@/lib/navigation';
 import { StayDeadline } from './StayDeadline';
 import { timesOnWeddingDay } from './wedding-time';
@@ -72,7 +73,7 @@ function HotelCard({ hotel, index }: { hotel: Hotel; index: number }) {
             <ButtonLink href={telHref(hotel.phone)} variant="secondary" icon="phone">
               Anrufen
               <span className="visually-hidden">
-                : {hotel.name}, {hotel.phone}
+                : {hotel.name}, {formatPhone(hotel.phone)}
               </span>
             </ButtonLink>
           ) : null}
@@ -83,7 +84,7 @@ function HotelCard({ hotel, index }: { hotel: Hotel; index: number }) {
           ) : null}
         </div>
       ) : null}
-      {hotel.phone ? <p className={styles.printPhone}>Telefon: {hotel.phone}</p> : null}
+      {hotel.phone ? <p className={`${styles.printPhone} nums`}>Telefon: {formatPhone(hotel.phone)}</p> : null}
     </article>
   );
 }
@@ -108,7 +109,7 @@ function ShuttleTicket() {
   }).filter((b) => b.rides.length > 0);
 
   return (
-    <article className={styles.ticket} aria-labelledby="shuttle-titel">
+    <article id="shuttle" className={styles.ticket} aria-labelledby="shuttle-titel">
       <div className={styles.ticketHead}>
         <span className={styles.ticketIcon}>
           <Icon name="bus" size={24} />
@@ -208,7 +209,7 @@ function Taxis() {
             <p className={styles.taxiName}>{taxi.name}</p>
             <ButtonLink href={telHref(taxi.phone)} variant="secondary" size="lg" icon="phone" block>
               <span className="visually-hidden">{taxi.name} anrufen: </span>
-              <span className="nums">{taxi.phone}</span>
+              <span className="nums">{formatPhone(taxi.phone)}</span>
             </ButtonLink>
           </li>
         ))}

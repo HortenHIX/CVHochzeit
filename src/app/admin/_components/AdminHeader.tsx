@@ -11,8 +11,12 @@ export function AdminHeader() {
   return (
     <header className={styles.header}>
       <div className={styles.headerBar}>
-        <Link href="/" className={styles.brand} aria-label={`Zur Website von ${site.couple.first} & ${site.couple.second}`}>
-          <Monogram variant="small" size={40} />
+        <Link href="/" className={styles.brand}>
+          <Monogram
+            variant="small"
+            size={40}
+            label={`C&V – zur Website von ${site.couple.first} & ${site.couple.second}`}
+          />
         </Link>
         <Badge variant="neutral">Verwaltung</Badge>
         <span className={styles.headerSpacer} />
@@ -22,7 +26,7 @@ export function AdminHeader() {
         <form action={logout}>
           <button type="submit" className={styles.logout}>
             <Icon name="logout" size={20} />
-            <span>Abmelden</span>
+            <span className={styles.logoutText}>Abmelden</span>
           </button>
         </form>
       </div>

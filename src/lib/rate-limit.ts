@@ -75,7 +75,11 @@ export function clientIpFrom(headers: Headers): string {
   return forwarded || headers.get('x-real-ip')?.trim() || 'unbekannt';
 }
 
-/** Gemeinsame Limits, damit Formular und Direkt-Link dasselbe Kontingent teilen. */
+/**
+ * Gemeinsame Limits, damit Formular und Direkt-Link dasselbe Kontingent teilen.
+ * Gäste-Login: 10 FEHLversuche pro Minute (Erfolge werden per refundRateLimit
+ * zurückgebucht) – am Hochzeitsort sitzen viele Gäste hinter derselben WLAN-IP.
+ */
 export const LIMITS = {
   guestLogin: { key: (ip: string) => `login:${ip}`, limit: 10, window: 60 },
   adminLogin: { key: (ip: string) => `admin-login:${ip}`, limit: 5, window: 300 },

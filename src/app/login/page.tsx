@@ -7,6 +7,7 @@ import { ArchFrame, CornerBouquet, HalfSun, Monogram, Ornament, PampasBundle } f
 import { site } from '@/content/site';
 import { getAuthSecrets } from '@/lib/auth/config';
 import { formatLongDate, telHref } from '@/lib/format';
+import { formatPhone } from '@/lib/format-pure';
 import { LoginForm } from './LoginForm';
 import styles from './login.module.css';
 
@@ -50,10 +51,11 @@ export default function LoginPage() {
           <LoginForm />
 
           <p className={styles.help}>
-            Code nicht zur Hand? Ruft {helpName} an:{' '}
+            Code nicht zur Hand? <span style={{ whiteSpace: 'nowrap' }}>Ruft {helpName} an:</span>
+            <br />
             <a href={telHref(helpPhone)} className={styles.helpLink}>
               <Icon name="phone" size={16} className={styles.helpIcon} />
-              <span className="nums">{helpPhone}</span>
+              <span className="nums">{formatPhone(helpPhone)}</span>
             </a>
           </p>
           <p className={styles.privacy}>

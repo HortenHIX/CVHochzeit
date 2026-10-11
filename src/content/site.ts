@@ -306,7 +306,7 @@ export const site = {
         description: 'Ankommen, durchatmen, Plätze suchen.',
         locationId: 'feier',
         icon: 'sun',
-        badge: 'Shuttle ab 13:00 Uhr',
+        badge: 'Shuttle ab 13:00\u00A0Uhr',
       },
       {
         time: '14:00',
@@ -359,7 +359,7 @@ export const site = {
       {
         id: 'standesamt',
         label: 'Standesamt',
-        time: '11:00 Uhr',
+        time: '11:00\u00A0Uhr',
         name: 'Rathaus Musterstadt',
         street: 'Marktplatz 1',
         zipCity: '12345 Musterstadt',
@@ -371,7 +371,7 @@ export const site = {
       {
         id: 'feier',
         label: 'Freie Trauung & Feier',
-        time: '14:00 Uhr',
+        time: '14:00\u00A0Uhr',
         name: 'Hofgut Lindenhof',
         street: 'Am Lindenhof 1',
         zipCity: '12345 Musterstadt',
@@ -456,7 +456,7 @@ export const site = {
     eyebrow: 'Was ziehe ich an?',
     title: 'Dresscode',
     motto: 'Sommerlich-elegant, gern in natürlichen Farben.',
-    text: 'Kommt so, wie ihr euch schick und wohl fühlt. Die Farben unten sind nur eine Inspiration, kein Muss. PLATZHALTER',
+    text: 'Kommt so, wie ihr euch schick und wohl fühlt. Die Farben unten dienen als Anregung. PLATZHALTER',
     palette: [
       { name: 'Salbei', hex: '#9AAE97' },
       { name: 'Eukalyptus', hex: '#6F8A78' },
@@ -541,14 +541,14 @@ export const site = {
     ] satisfies RsvpOption[],
     /** Zusätzliche Menüoption für Kinder */
     childMenu: { value: 'kinder', label: 'Kindermenü' } satisfies RsvpOption,
-    childAgeOptions: ['0–2 Jahre', '3–6 Jahre', '7–12 Jahre'],
+    childAgeOptions: ['0–2 Jahre', '3–6 Jahre', '7–11 Jahre'],
     /** Schnellauswahl für Unverträglichkeiten (zusätzlich gibt es ein Freitextfeld) */
     allergyOptions: ['Gluten', 'Laktose', 'Nüsse'],
     /** Programmpunkte, für die Gäste einzeln zusagen können (leer = ausblenden) */
     events: [
-      { id: 'trauung', label: 'Freie Trauung', detail: 'Samstag · 14:00 Uhr', icon: 'rings' },
-      { id: 'feier', label: 'Feier', detail: 'Samstag · ab 16:30 Uhr', icon: 'glasses' },
-      { id: 'brunch', label: 'Katerfrühstück', detail: 'Sonntag · 10:30 Uhr', icon: 'coffee' },
+      { id: 'trauung', label: 'Freie Trauung', detail: 'Samstag · 14:00\u00A0Uhr', icon: 'rings' },
+      { id: 'feier', label: 'Feier', detail: 'Samstag · ab 16:30\u00A0Uhr', icon: 'glasses' },
+      { id: 'brunch', label: 'Katerfrühstück', detail: 'Sonntag · 10:30\u00A0Uhr', icon: 'coffee' },
     ] satisfies RsvpEvent[],
     /** Frage nach der Übernachtung anzeigen? */
     askOvernight: true,
@@ -603,12 +603,12 @@ export const site = {
       },
       {
         question: 'Darf ich während der Trauung fotografieren?',
-        answer: 'Wir wünschen uns eine „unplugged“ Trauung: Bitte lasst die Handys während der Zeremonie in der Tasche – unsere Fotografin hält alles fest. Danach dürft ihr nach Herzenslust knipsen.',
+        answer: 'Wir wünschen uns eine Unplugged-Trauung: Bitte lasst die Handys während der Zeremonie in der Tasche – unsere Fotografin hält alles fest. Danach dürft ihr nach Herzenslust knipsen.',
         link: { href: '#fotos', label: 'Zum Fotoalbum' },
       },
       {
         question: 'Wie lange geht die Feier – und wie komme ich nachts zurück?',
-        answer: 'Open End! Der Shuttle fährt bis 2:30 Uhr zu den Hotels, Taxis solltet ihr nachts am besten vorbestellen.',
+        answer: 'Open End! Der Shuttle fährt bis 02:30\u00A0Uhr zu den Hotels, Taxis solltet ihr nachts am besten vorbestellen.',
         link: { href: '#uebernachten', label: 'Zu Shuttle & Taxi' },
       },
       {

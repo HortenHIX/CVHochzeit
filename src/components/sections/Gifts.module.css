@@ -103,12 +103,14 @@
 .postcardLabel {
   max-width: 100%;
   font-family: var(--ff-display);
-  font-size: 1.25rem;
+  /* 20 px, auf sehr schmalen Displays etwas kleiner, damit einzeilig Platz ist */
+  font-size: clamp(1rem, 5.2vw, 1.25rem);
   font-weight: 600;
   line-height: 1.15;
   color: var(--c-ink);
   text-align: center;
-  overflow-wrap: anywhere;
+  /* Kurze Ortsnamen nie trennen („Douro-Tal“) */
+  white-space: nowrap;
 }
 
 /* ---------- Info-Zeile ---------- */

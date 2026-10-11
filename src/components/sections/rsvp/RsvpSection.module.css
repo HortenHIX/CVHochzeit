@@ -32,9 +32,15 @@
   }
 }
 
+/* Druck: Das Formular entfällt (RsvpForm.module.css) – ohne Inhalt bliebe nur
+   die leere Karte mit Siegel stehen. Eine gespeicherte Antwort wird gedruckt. */
 @media print {
   .card {
     box-shadow: none;
     border-color: #999;
+  }
+
+  .card:has(form) {
+    display: none;
   }
 }

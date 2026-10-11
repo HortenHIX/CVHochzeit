@@ -60,6 +60,24 @@
   transition: background-color var(--dur-fast) var(--ease);
 }
 
+/* Sehr schmal (320 px): nur das Icon, der Text bleibt für Screenreader */
+@media (max-width: 22.49em) {
+  .logout {
+    justify-content: center;
+    width: 44px;
+    padding: 0;
+  }
+
+  .logoutText {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
 .logout:active {
   background: color-mix(in srgb, var(--c-ink) 10%, transparent);
   transform: translateY(1px);
@@ -251,15 +269,23 @@
 .tiles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--gap-cards);
-  margin: 0;
+  /* Zeilenabstand als Außenabstand der Kacheln – die Zeilen gehören zum Subgrid */
+  gap: 0 var(--gap-cards);
+  margin: 0 0 calc(-1 * var(--gap-cards));
 }
 
+/* Jede Kachel nutzt vier Zeilen des Rasters (Label, Zahl, Unterzeile, Aktion):
+   so stehen Zahlen einer Reihe auf einer Höhe, auch wenn ein Label länger ist. */
 .tile {
   position: relative;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 0;
+  align-content: start;
   min-width: 0;
+  margin-bottom: var(--gap-cards);
   padding: var(--space-4);
   border: var(--hairline);
   border-radius: var(--radius-lg);
@@ -278,7 +304,7 @@
   text-transform: uppercase;
   color: var(--c-ink-soft);
   hyphens: auto;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .tileLabel > span {
@@ -303,8 +329,18 @@
   }
 }
 
+/* 320 px: etwas weniger Innenabstand, damit Wörter wie „Organisieren“ ganz in die Zeile passen */
+@media (max-width: 22.49em) {
+  .tile {
+    padding: var(--space-3);
+  }
+
+  .tileLabel {
+    letter-spacing: 0;
+  }
+}
+
 .tileValue {
-  margin-top: auto;
   padding-top: var(--space-3);
   font-family: var(--ff-display);
   font-size: 2.5rem;
@@ -486,6 +522,14 @@
   width: 2px;
   min-width: 2px;
   background: var(--c-line);
+}
+
+/* Schmal: Label über dem Balken, damit der Balken die volle Breite bekommt */
+@media (max-width: 29.99em) {
+  .barRow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+  }
 }
 
 .barValue {

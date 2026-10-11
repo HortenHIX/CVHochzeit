@@ -224,6 +224,10 @@
   .toTop {
     border-color: ButtonText;
   }
+
+  .toTopIcon {
+    color: ButtonText;
+  }
 }
 
 @media print {
