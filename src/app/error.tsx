@@ -22,6 +22,11 @@ export default function Error({ error, retry }: { error: Error & { digest?: stri
           Die Seite konnte gerade nicht geladen werden. Prüft bitte eure Internetverbindung und versucht es noch
           einmal.
         </p>
+        {error.digest || error.message ? (
+          <p className={styles.text} style={{ fontSize: 'var(--fs-small)', color: 'var(--text-muted)' }}>
+            Fehlercode: <code className="break-anywhere">{error.digest ?? error.message}</code>
+          </p>
+        ) : null}
         <Button type="button" size="lg" icon="refresh" onClick={() => retry()} className={styles.button}>
           Erneut versuchen
         </Button>
