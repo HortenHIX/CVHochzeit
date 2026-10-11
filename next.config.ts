@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   devIndicators: false,
   poweredByHeader: false,
+  // Schriften für Link-Vorschau und Apple-Icon werden zur Laufzeit gelesen.
+  outputFileTracingIncludes: {
+    '/**/*': ['./assets/fonts/**/*'],
+  },
   async headers() {
     return [
       {
