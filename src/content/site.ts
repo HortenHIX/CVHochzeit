@@ -219,17 +219,17 @@ export const site = {
    * ---------------------------------------------------------------------- */
   wedding: {
     /** Beginn (für Countdown und Kalendereintrag). PLATZHALTER */
-    start: '2027-06-19T14:00:00+02:00',
+    start: '2027-05-22T14:00:00+02:00',
     /** Ende (für Kalendereintrag) */
-    end: '2027-06-20T02:00:00+02:00',
+    end: '2027-05-23T03:00:00+02:00',
     timeZone: 'Europe/Berlin',
     /** Kurzer Ort für Hero, Footer und Kalender. PLATZHALTER */
-    place: 'Hofgut Lindenhof · Musterstadt',
+    place: 'Bergwelt Kandel · Auf dem Kandel',
   },
 
   /** Titel im Browser-Tab und Beschreibung für Link-Vorschauen */
   meta: {
-    title: 'Christoph & Vera – 19. Juni 2027',
+    title: 'Christoph & Vera – 22. Mai 2027',
     description: 'Alle Infos rund um unsere Hochzeit: Ablauf, Anfahrt, Übernachtung und Zusage.',
   },
 
@@ -240,8 +240,8 @@ export const site = {
     eyebrow: 'Herzlich willkommen',
     text: 'Bitte gebt den Gästecode von eurer Einladungskarte ein.',
     /** Wen können Gäste anrufen, wenn sie den Code nicht finden? PLATZHALTER */
-    helpName: 'Anna',
-    helpPhone: '+49 170 0000001',
+    helpName: 'Christoph',
+    helpPhone: '+49 771 8965614',
   },
 
   /* ------------------------------------------------------------------------
