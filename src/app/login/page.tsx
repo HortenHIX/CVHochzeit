@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { Icon } from '@/components/icons/Icon';
 import { ArchFrame, CornerBouquet, HalfSun, Monogram, Ornament, PampasBundle } from '@/components/illustrations';
@@ -13,14 +14,8 @@ export const metadata: Metadata = {
   title: `Willkommen – ${site.couple.first} & ${site.couple.second}`,
 };
 
-type SearchParams = Promise<Record<string, string | string[] | undefined>>;
-
-function first(value: string | string[] | undefined): string {
-  return (Array.isArray(value) ? value[0] : value) ?? '';
-}
-
 /** Login mit dem Gästecode (design.md F „Login“). Kein Header. */
-export default function LoginPage({ searchParams }: { searchParams: SearchParams }) {
+export default function LoginPage() {
   const { first: firstName, second } = site.couple;
   const { helpName, helpPhone } = site.login;
 
@@ -48,9 +43,11 @@ export default function LoginPage({ searchParams }: { searchParams: SearchParams
           <Ornament size={120} className={styles.ornament} />
           <p className={styles.text}>{site.login.text}</p>
 
-          <Suspense fallback={<LoginForm />}>
-            <LoginSlot searchParams={searchParams} />
+          {/* Hinweis bei fehlender Konfiguration; blendet das Formular per CSS aus */}
+          <Suspense fallback={null}>
+            <SetupNotice />
           </Suspense>
+          <LoginForm />
 
           <p className={styles.help}>
             Code nicht zur Hand? Ruft {helpName} an:{' '}
@@ -68,27 +65,24 @@ export default function LoginPage({ searchParams }: { searchParams: SearchParams
   );
 }
 
-/** Liest die Adress-Parameter (Request-Daten) – deshalb hinter <Suspense>. */
-async function LoginSlot({ searchParams }: { searchParams: SearchParams }) {
-  const params = await searchParams;
-  const next = first(params.next);
-  const linkCodeInvalid = first(params.fehler) === 'code';
-
-  // In Produktion ohne GUEST_CODE: freundlicher Hinweis statt Formular.
-  if (getAuthSecrets().guestCode === null) {
-    return (
-      <div className={styles.config} role="status">
-        <Icon name="key" size={24} className={styles.configIcon} />
-        <div>
-          <p className={styles.configTitle}>Die Seite ist noch nicht ganz fertig eingerichtet.</p>
-          <p>
-            Der Gästecode fehlt noch in den Einstellungen (Umgebungsvariable <code>GUEST_CODE</code>). Bitte schaut
-            später noch einmal vorbei.
-          </p>
-        </div>
+/**
+ * Prüft zur Laufzeit, ob ein Gästecode eingerichtet ist – deshalb hinter
+ * <Suspense>. Ohne GUEST_CODE (Produktion) erscheint ein freundlicher Hinweis
+ * statt des Formulars (`.cardInner:has(.config) .form` in login.module.css).
+ */
+async function SetupNotice() {
+  await connection();
+  if (getAuthSecrets().guestCode !== null) return null;
+  return (
+    <div className={styles.config} role="status">
+      <Icon name="key" size={24} className={styles.configIcon} />
+      <div>
+        <p className={styles.configTitle}>Die Seite ist noch nicht ganz fertig eingerichtet.</p>
+        <p>
+          Der Gästecode fehlt noch in den Einstellungen (Umgebungsvariable <code>GUEST_CODE</code>). Bitte schaut
+          später noch einmal vorbei.
+        </p>
       </div>
-    );
-  }
-
-  return <LoginForm next={next} linkCodeInvalid={linkCodeInvalid} />;
+    </div>
+  );
 }

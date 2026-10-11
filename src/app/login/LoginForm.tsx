@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState, type FormEvent } from 'react';
 import { Icon } from '@/components/icons/Icon';
 import { Button } from '@/components/ui/Button';
+import { useSearchParam } from '@/lib/use-search-param';
 import { login, type LoginState } from './actions';
 import styles from './login.module.css';
 
@@ -11,8 +12,14 @@ const INITIAL: LoginState = { status: 'idle', attempt: 0 };
 /**
  * Gästecode-Formular. Fehler werden als role="alert" angesagt, das Feld
  * bekommt aria-invalid und der Fokus bleibt bzw. kommt zurück ins Feld.
+ *
+ * Steht bewusst im statischen Seitengerüst (nicht hinter <Suspense>), damit
+ * nichts verloren geht, was vor dem vollständigen Laden eingetippt wurde.
+ * `?next=` und `?fehler=code` liest es deshalb selbst aus der Adresse.
  */
-export function LoginForm({ next = '', linkCodeInvalid = false }: { next?: string; linkCodeInvalid?: boolean }) {
+export function LoginForm() {
+  const next = useSearchParam('next');
+  const linkCodeInvalid = useSearchParam('fehler') === 'code';
   const [state, formAction, pending] = useActionState(login, INITIAL);
   const [code, setCode] = useState('');
   const [remember, setRemember] = useState(true);

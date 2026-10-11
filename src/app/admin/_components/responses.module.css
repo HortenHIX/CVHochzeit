@@ -80,13 +80,49 @@
 .searchInput {
   width: 100%;
   height: 48px;
-  padding: 0 var(--space-4) 0 44px;
+  padding: 0 46px 0 44px;
   border: 1px solid var(--c-stone);
   border-radius: var(--radius-md);
   background: var(--c-paper);
   color: var(--c-ink);
   font-size: var(--fs-ui);
   transition: border-color var(--dur-fast) var(--ease);
+}
+
+.searchInput::-webkit-search-cancel-button,
+.searchInput::-webkit-search-decoration {
+  appearance: none;
+}
+
+.searchClear {
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--c-ink-soft);
+  translate: 0 -50%;
+  touch-action: manipulation;
+}
+
+@media (hover: hover) {
+  .searchClear:hover {
+    color: var(--c-ink);
+  }
+}
+
+.searchClear:focus-visible {
+  outline-offset: -3px;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 .searchInput::placeholder {
@@ -341,13 +377,13 @@
 .row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    'name status'
-    'persons persons'
-    'allergies allergies'
-    'toggle toggle';
   gap: var(--space-2) var(--space-3);
   padding: var(--space-4) var(--space-4) 0;
+}
+
+/* Karte: Name + Badge oben, darunter alles volle Breite, „Details“ zuletzt */
+.row > .td {
+  grid-column: 1 / -1;
 }
 
 .td {
@@ -357,41 +393,56 @@
   font-weight: 400;
 }
 
-.cToggle {
-  grid-area: toggle;
+.row > .cToggle {
+  order: 99;
   margin: var(--space-1) calc(-1 * var(--space-4)) 0;
   border-top: var(--hairline);
 }
 
-.cName {
-  grid-area: name;
+.row > .cName {
+  grid-row: 1;
+  grid-column: 1;
   align-self: center;
 }
 
-.cStatus {
-  grid-area: status;
+.row > .cStatus {
+  grid-row: 1;
+  grid-column: 2;
   justify-self: end;
   align-self: start;
 }
 
 .cPersons {
-  grid-area: persons;
   color: var(--c-ink);
 }
 
-.cAllergies {
-  grid-area: allergies;
+/* Spalten, die erst in breiteren Tabellen erscheinen (gilt für th und td) */
+.table .cPersons[data-empty],
+.table .cAllergies[data-empty],
+.table .cMenus,
+.table .cChildren,
+.table .cEvents,
+.table .cOvernight,
+.table .cShuttle,
+.table .cMessage {
+  display: none;
 }
 
-.cAllergies[data-empty],
-.cMenus,
-.cChildren,
-.cEvents,
-.cOvernight,
-.cShuttle,
-.cMessage,
+/* Karte: Datum als leise Zeile („11.10.2026, 14:32 Uhr · geändert“) */
 .cDate {
-  display: none;
+  font-size: var(--fs-small);
+  color: var(--c-ink-soft);
+}
+
+.cDate .date,
+.cDate .changed {
+  display: inline;
+  color: inherit;
+}
+
+.cDate .changed::before {
+  content: ' · ';
+  font-weight: 400;
 }
 
 .name {
@@ -598,7 +649,8 @@
 
 .personFacts {
   display: grid;
-  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+  gap: var(--space-2) var(--space-4);
   margin-top: var(--space-3);
 }
 
@@ -632,7 +684,8 @@
 }
 
 .mail {
-  display: inline-block;
+  /* inline: bleibt an der ersten Grundlinie, Polster vergrößert nur die Trefferfläche */
+  display: inline;
   padding-block: 0.35em;
 }
 
@@ -796,6 +849,15 @@
    Ab 30em: Werkzeugleiste in einer Zeile, Rückfrage-Buttons inline
    ========================================================================== */
 
+/* Haushalt-Angaben: Begriff links, Wert rechts – auch schon auf dem Handy */
+@media (min-width: 22em) {
+  .facts .fact {
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: baseline;
+  }
+}
+
 @media (min-width: 30em) {
   .confirmDelete,
   .confirmCancel {
@@ -840,18 +902,23 @@
     position: sticky;
     top: 0;
     z-index: 2;
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-2);
     border-bottom: var(--hairline);
     background: var(--c-sand);
     font-size: var(--fs-label);
     font-weight: 600;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     line-height: 1.3;
     text-align: start;
     text-transform: uppercase;
     white-space: nowrap;
     color: var(--c-ink);
     vertical-align: middle;
+  }
+
+  /* Deckt Subpixel-Lücken zwischen den (sticky) Kopfzellen ab */
+  .th:not(:last-child) {
+    box-shadow: 1px 0 0 var(--c-sand);
   }
 
   .th:first-child {
@@ -866,6 +933,9 @@
     display: inline-flex;
     align-items: center;
     min-height: 44px;
+    /* „Über-nachtung“ darf am weichen Trennstrich umbrechen */
+    white-space: normal;
+    hyphens: manual;
   }
 
   .sortButton {
@@ -922,19 +992,26 @@
   .td {
     display: table-cell;
     height: 56px;
-    padding: var(--space-3);
+    padding: var(--space-3) var(--space-2);
     border-bottom: var(--hairline);
     vertical-align: middle;
     font-size: 1rem;
     line-height: 1.4;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
   }
 
   .td.numeric {
     text-align: end;
   }
 
-  .cToggle {
+  /* Zahlen rechtsbündig – etwas Luft zur folgenden, linksbündigen Spalte */
+  .td.numeric,
+  .th.numeric {
+    padding-inline-end: var(--space-4);
+  }
+
+  .th.cToggle,
+  .row > .cToggle {
     width: 1%;
     margin: 0;
     padding-inline: var(--space-2) 0;
@@ -942,36 +1019,50 @@
   }
 
   .cName {
-    min-width: 9rem;
+    min-width: 8.5rem;
   }
 
-  .cStatus {
+  .cStatus,
+  .cPersons {
     width: 1%;
     white-space: nowrap;
   }
 
-  .cMenus,
-  .cDate {
+  .table .cPersons[data-empty],
+  .table .cAllergies,
+  .table .cAllergies[data-empty] {
     display: table-cell;
   }
 
-  .cAllergies,
-  .cAllergies[data-empty] {
-    display: table-cell;
-  }
-
-  .cMenus {
+  .td.cMenus {
+    min-width: 6rem;
     font-size: var(--fs-small);
   }
 
   .cDate {
     width: 1%;
-    min-width: 7.5rem;
-    overflow-wrap: normal;
+    color: var(--c-ink);
   }
 
-  .cAllergies {
-    max-width: 12rem;
+  .cDate .date,
+  .cDate .changed {
+    display: block;
+  }
+
+  .cDate .date {
+    color: var(--c-ink);
+  }
+
+  .cDate .changed {
+    color: var(--c-sage-700);
+  }
+
+  .cDate .changed::before {
+    content: none;
+  }
+
+  .td.cAllergies {
+    min-width: 7rem;
   }
 
   .unit {
@@ -1084,17 +1175,29 @@
   }
 }
 
-/* ---------- Ab 64em: mehr Spalten ---------- */
+/* ---------- Spalten je nach Breite (Summe der Mindestbreiten passt jeweils) ----------
+   48em: Name, Status, Personen, Allergien, Datum · 56em: + Menüs
+   64em: + Übernachtung, Shuttle · 75em: + Kinder, Programm · 85em: + Nachricht */
+
+@media (min-width: 56em) {
+  .table .cMenus {
+    display: table-cell;
+  }
+}
 
 @media (min-width: 64em) {
-  .cChildren,
-  .cOvernight,
-  .cShuttle {
+  .table .cOvernight,
+  .table .cShuttle {
     display: table-cell;
   }
 
-  .cOvernight,
-  .cShuttle {
+  .cChildren {
+    width: 1%;
+  }
+
+  .td.cOvernight,
+  .td.cShuttle {
+    min-width: 6rem;
     font-size: var(--fs-small);
   }
 
@@ -1104,30 +1207,33 @@
   }
 }
 
-/* ---------- Ab 75em: alle Spalten ---------- */
-
 @media (min-width: 75em) {
-  .cEvents,
-  .cMessage {
+  .table .cChildren,
+  .table .cEvents {
     display: table-cell;
   }
 
-  .cEvents {
+  .td.cEvents {
+    min-width: 6.5rem;
     font-size: var(--fs-small);
+  }
+
+  /* Nachricht nimmt den Restplatz und wird gekürzt: der Text trägt nichts
+     zur Mindestbreite bei (width:0 + min-width:100 %). */
+  .td.cMessage {
+    width: 16%;
+  }
+
+  .cMessage .message {
+    width: 0;
+    min-width: 100%;
+    max-width: none;
   }
 }
 
-@media (min-width: 80em) {
-  .td {
-    padding-inline: var(--space-4);
-  }
-
-  .cToggle {
-    padding-inline: var(--space-3) 0;
-  }
-
-  .th {
-    padding-inline: var(--space-4);
+@media (min-width: 85em) {
+  .table .cMessage {
+    display: table-cell;
   }
 }
 

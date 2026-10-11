@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { Icon } from '@/components/icons/Icon';
 import { site, type IconName } from '@/content/site';
 import type { RsvpStats } from '@/lib/rsvp/stats';
@@ -8,6 +8,19 @@ import { dateTimeLabel } from './rows';
 
 function plural(count: number, one: string, many: string): string {
   return `${count} ${count === 1 ? one : many}`;
+}
+
+/** Unterzeile aus Teilen („Personen · 2 Haushalte“): umbrochen wird nur zwischen den Teilen. */
+function Parts({ parts }: { parts: string[] }) {
+  return parts.map((part, index) => (
+    <Fragment key={index}>
+      <span className={styles.nowrap}>
+        {part}
+        {index < parts.length - 1 ? ' ·' : ''}
+      </span>
+      {index < parts.length - 1 ? ' ' : ''}
+    </Fragment>
+  ));
 }
 
 function Tile({
@@ -63,7 +76,15 @@ export function StatTiles({ stats }: { stats: RsvpStats }) {
           label="Antworten gesamt"
           icon="envelope"
           value={stats.total}
-          sub={stats.lastUpdatedAt ? `zuletzt ${dateTimeLabel(stats.lastUpdatedAt)}` : 'noch keine'}
+          sub={
+            stats.lastUpdatedAt ? (
+              <>
+                zuletzt <span className={styles.nowrap}>{dateTimeLabel(stats.lastUpdatedAt)}</span>
+              </>
+            ) : (
+              'noch keine'
+            )
+          }
         />
         <Tile
           id="kinder"
@@ -88,7 +109,7 @@ export function StatTiles({ stats }: { stats: RsvpStats }) {
               </span>
             </>
           }
-          sub={`Plätze · ${plural(stats.shuttleHouseholds, 'Haushalt', 'Haushalte')}`}
+          sub={<Parts parts={['Plätze', plural(stats.shuttleHouseholds, 'Haushalt', 'Haushalte')]} />}
         />
         {stats.overnight.map((row) => (
           <Tile
@@ -97,7 +118,7 @@ export function StatTiles({ stats }: { stats: RsvpStats }) {
             label={row.label}
             icon={OVERNIGHT_ICON[row.key] ?? 'bed'}
             value={row.persons}
-            sub={`Personen · ${plural(row.households, 'Haushalt', 'Haushalte')}`}
+            sub={<Parts parts={['Personen', plural(row.households, 'Haushalt', 'Haushalte')]} />}
           />
         ))}
         {stats.events.map((row) => (
@@ -107,7 +128,7 @@ export function StatTiles({ stats }: { stats: RsvpStats }) {
             label={row.label}
             icon={eventIcons.get(row.key) ?? 'calendar'}
             value={row.persons}
-            sub={row.detail ? `Personen · ${row.detail}` : 'Personen'}
+            sub={<Parts parts={row.detail ? ['Personen', ...row.detail.split(' · ')] : ['Personen']} />}
           />
         ))}
         <Tile

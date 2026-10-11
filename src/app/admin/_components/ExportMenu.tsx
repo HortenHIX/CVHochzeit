@@ -7,7 +7,7 @@ import styles from '../admin.module.css';
 
 const EXPORTS = [
   { href: '/admin/export?art=haushalte', title: 'Haushalte', detail: 'eine Zeile pro Antwort' },
-  { href: '/admin/export?art=personen', title: 'Gäste pro Person', detail: '(Catering, Sitzplan)' },
+  { href: '/admin/export?art=personen', title: 'Gäste pro Person (Catering, Sitzplan)', detail: 'eine Zeile pro Gast' },
 ] as const;
 
 /**
@@ -83,7 +83,7 @@ export function ExportMenu() {
         <ul role="list" className={styles.popoverList}>
           {EXPORTS.map((item) => (
             <li key={item.href}>
-              <a href={item.href} download className={styles.popoverItem} onClick={() => setOpen(false)}>
+              <a href={item.href} className={styles.popoverItem} onClick={() => setOpen(false)}>
                 <Icon name="download" size={20} className={styles.popoverIcon} />
                 <span className={styles.popoverText}>
                   <span className={styles.popoverTitle}>{item.title}</span>{' '}

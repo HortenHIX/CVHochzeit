@@ -1,6 +1,15 @@
 'use client';
 
-import { useCallback, useMemo, useState, type MouseEvent, type ReactNode } from 'react';
+import {
+  Fragment,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type MouseEvent,
+  type ReactNode,
+} from 'react';
 import { Icon } from '@/components/icons/Icon';
 import { Badge } from '@/components/ui/Badge';
 import { foldText } from '@/lib/rsvp/stats';
@@ -47,6 +56,8 @@ const SEGMENTS: { value: Segment; label: string }[] = [
   { value: 'absagen', label: 'Absagen' },
 ];
 
+const noopSubscribe = () => () => {};
+
 /** Anzahl Spalten (für die Detailzeile) */
 const COLUMN_COUNT = 12;
 
@@ -76,6 +87,13 @@ export function ResponsesTable({ rows }: { rows: AdminRow[] }) {
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set());
   const [removed, setRemoved] = useState<ReadonlySet<string>>(() => new Set());
   const [announcement, setAnnouncement] = useState('');
+  const searchRef = useRef<HTMLInputElement>(null);
+  // true erst im Browser nach der Hydration (data-ready für Tests)
+  const hydrated = useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
 
   const available = useMemo(() => rows.filter((row) => !removed.has(row.id)), [rows, removed]);
 
@@ -130,7 +148,12 @@ export function ResponsesTable({ rows }: { rows: AdminRow[] }) {
   const resetFilters = () => setFilters({ query: '', segment: 'alle', allergyOnly: false });
 
   return (
-    <section aria-labelledby={RESPONSES_HEADING_ID} className={styles.section} id="antworten">
+    <section
+      aria-labelledby={RESPONSES_HEADING_ID}
+      className={styles.section}
+      id="antworten"
+      data-ready={hydrated || undefined}
+    >
       <div className={styles.head}>
         <h2 id={RESPONSES_HEADING_ID} className={styles.title} tabIndex={-1}>
           Alle Antworten
@@ -173,6 +196,7 @@ export function ResponsesTable({ rows }: { rows: AdminRow[] }) {
               </label>
               <Icon name="search" size={20} className={styles.searchIcon} />
               <input
+                ref={searchRef}
                 id="admin-suche"
                 type="search"
                 inputMode="search"
@@ -184,6 +208,19 @@ export function ResponsesTable({ rows }: { rows: AdminRow[] }) {
                 value={filters.query}
                 onChange={(event) => setFilters({ query: event.target.value })}
               />
+              {filters.query ? (
+                <button
+                  type="button"
+                  className={styles.searchClear}
+                  onClick={() => {
+                    setFilters({ query: '' });
+                    searchRef.current?.focus();
+                  }}
+                >
+                  <Icon name="x" size={20} />
+                  <span className="visually-hidden">Suche leeren</span>
+                </button>
+              ) : null}
             </div>
 
             <fieldset className={styles.segments}>
@@ -275,7 +312,7 @@ export function ResponsesTable({ rows }: { rows: AdminRow[] }) {
                     className={`${styles.cChildren} ${styles.numeric}`}
                   />
                   <PlainHeader className={styles.cEvents}>Programm</PlainHeader>
-                  <PlainHeader className={styles.cOvernight}>Übernachtung</PlainHeader>
+                  <PlainHeader className={styles.cOvernight}>Über{'\u00AD'}nachtung</PlainHeader>
                   <PlainHeader className={styles.cShuttle}>Shuttle</PlainHeader>
                   <PlainHeader className={styles.cAllergies}>Allergien</PlainHeader>
                   <PlainHeader className={styles.cMessage}>Nachricht</PlainHeader>
@@ -373,6 +410,19 @@ function Dash() {
   );
 }
 
+/** Teile, die nicht in sich umbrechen („1× Veg.,“ / „1× Kinder“) – nur zwischen den Teilen. */
+function NoWrapList({ items, separator }: { items: string[]; separator: string }) {
+  return items.map((item, index) => (
+    <Fragment key={index}>
+      <span className={styles.nowrap}>
+        {item}
+        {index < items.length - 1 ? separator : ''}
+      </span>
+      {index < items.length - 1 ? ' ' : ''}
+    </Fragment>
+  ));
+}
+
 function duplicateText(row: AdminRow): string {
   return row.duplicates
     .map((d) => `${d.reason === 'email' ? 'gleiche E-Mail wie' : 'gleicher Name wie'} „${d.name}“`)
@@ -391,6 +441,8 @@ function RowGroup({
   onDeleted: (id: string, name: string) => void;
 }) {
   const detailsId = `details-${row.id}`;
+  // Bei Absagen bleiben die Zusage-Spalten leer (statt einer Reihe von Strichen).
+  const missing = row.attending ? <Dash /> : null;
 
   // Klick auf die Zeile klappt auf (Komfort mit der Maus) – nicht bei Links,
   // Buttons oder markiertem Text. Tastatur: der Chevron-Button.
@@ -429,24 +481,40 @@ function RowGroup({
         <td className={`${styles.td} ${styles.cStatus}`} role="cell">
           <StatusBadge attending={row.attending} />
         </td>
-        <td className={`${styles.td} ${styles.cPersons} ${styles.numeric}`} role="cell">
-          <span className="nums">{row.personsCount}</span>
-          <span className={styles.unit}> {row.personsCount === 1 ? 'Person' : 'Personen'}</span>
+        <td
+          className={`${styles.td} ${styles.cPersons} ${styles.numeric}`}
+          role="cell"
+          data-empty={row.attending ? undefined : true}
+        >
+          {row.attending ? (
+            <>
+              <span className="nums">{row.personsCount}</span>
+              <span className={styles.unit}> {row.personsCount === 1 ? 'Person' : 'Personen'}</span>
+            </>
+          ) : (
+            missing
+          )}
         </td>
         <td className={`${styles.td} ${styles.cMenus}`} role="cell">
-          {row.menuSummary ? <span title={row.menuSummaryLong}>{row.menuSummary}</span> : <Dash />}
+          {row.menuSummary ? (
+            <span title={row.menuSummaryLong}>
+              <NoWrapList items={row.menuSummary.split(', ')} separator="," />
+            </span>
+          ) : (
+            missing
+          )}
         </td>
         <td className={`${styles.td} ${styles.cChildren} ${styles.numeric}`} role="cell">
-          {row.childrenCount > 0 ? <span className="nums">{row.childrenCount}</span> : <Dash />}
+          {row.childrenCount > 0 ? <span className="nums">{row.childrenCount}</span> : missing}
         </td>
         <td className={`${styles.td} ${styles.cEvents}`} role="cell">
-          {row.eventsShort ? <span title={row.eventLabels.join(', ')}>{row.eventsShort}</span> : <Dash />}
+          {row.eventsShort ? <span title={row.eventLabels.join(', ')}>{row.eventsShort}</span> : missing}
         </td>
         <td className={`${styles.td} ${styles.cOvernight}`} role="cell">
-          {row.overnight || <Dash />}
+          {row.overnight || missing}
         </td>
         <td className={`${styles.td} ${styles.cShuttle}`} role="cell">
-          {row.shuttle || <Dash />}
+          {row.shuttle ? <NoWrapList items={row.shuttle.split(' · ')} separator=" ·" /> : missing}
         </td>
         <td className={`${styles.td} ${styles.cAllergies}`} role="cell" data-empty={row.allergyCount === 0 || undefined}>
           {row.allergyCount > 0 ? (
@@ -455,7 +523,7 @@ function RowGroup({
               <span className={styles.allergyText}>{row.allergySummary}</span>
             </span>
           ) : (
-            <Dash />
+            missing
           )}
         </td>
         <td className={`${styles.td} ${styles.cMessage}`} role="cell">

@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState, type FormEvent } from 'react';
 import { Icon } from '@/components/icons/Icon';
 import { Button } from '@/components/ui/Button';
+import { useSearchParam } from '@/lib/use-search-param';
 import { adminLogin, type AdminLoginState } from './actions';
 import styles from './admin-login.module.css';
 
@@ -11,8 +12,12 @@ const INITIAL: AdminLoginState = { status: 'idle', attempt: 0 };
 /**
  * Passwort-Formular der Verwaltung. Fehler werden als role="alert"
  * angesagt; das Feld bekommt aria-invalid und den Fokus zurück.
+ *
+ * Steht im statischen Seitengerüst (nicht hinter <Suspense>), damit vor dem
+ * vollständigen Laden Eingetipptes erhalten bleibt; `?next=` kommt aus der Adresse.
  */
-export function AdminLoginForm({ next = '' }: { next?: string }) {
+export function AdminLoginForm() {
+  const next = useSearchParam('next');
   const [state, formAction, pending] = useActionState(adminLogin, INITIAL);
   const [password, setPassword] = useState('');
   const [visible, setVisible] = useState(false);

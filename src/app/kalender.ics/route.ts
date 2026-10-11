@@ -1,10 +1,16 @@
 import { site } from '@/content/site';
+import { publicSiteUrl } from '@/lib/site-url';
 
 /** Kalendereintrag zum Herunterladen: /kalender.ics */
 export function GET() {
   const { first, second } = site.couple;
   const location = site.locations.items.find((l) => l.id === 'feier') ?? site.locations.items[0];
   const where = location ? `${location.name}, ${location.street}, ${location.zipCity}` : site.wedding.place;
+  // Seiten-Adresse in der Beschreibung (design.md F2), sobald sie bekannt ist (Vercel/NEXT_PUBLIC_SITE_URL).
+  const pageUrl = publicSiteUrl();
+  const description = [site.hero.intro, pageUrl ? `Alle Infos: ${pageUrl.origin}` : '']
+    .filter(Boolean)
+    .join('\n\n');
   const ics = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -18,7 +24,8 @@ export function GET() {
     `DTEND:${toIcsDate(site.wedding.end)}`,
     fold(`SUMMARY:${escapeText(`Hochzeit ${first} & ${second}`)}`),
     fold(`LOCATION:${escapeText(where)}`),
-    fold(`DESCRIPTION:${escapeText(`Wir freuen uns auf euch! ${site.hero.intro}`)}`),
+    fold(`DESCRIPTION:${escapeText(description)}`),
+    pageUrl ? fold(`URL:${pageUrl.origin}`) : '',
     location ? `GEO:${location.lat};${location.lng}` : '',
     'BEGIN:VALARM',
     'TRIGGER:-P1D',
@@ -44,7 +51,7 @@ function toIcsDate(iso: string): string {
 }
 
 function escapeText(value: string): string {
-  return value.replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+  return value.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
 }
 
 /** Zeilen nach RFC 5545 auf 75 Oktette umbrechen. */

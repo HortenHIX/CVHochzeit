@@ -15,7 +15,12 @@ import type { RsvpEntry } from '@/lib/rsvp/types';
 
 const PREFIX = 'cvhochzeit';
 const RSVP_HASH = `${PREFIX}:rsvps`;
-const FILE_PATH = process.env.RSVP_FILE || path.join(process.cwd(), '.data', 'rsvps.json');
+// Nur lokal bzw. in Tests genutzt; turbopackIgnore verhindert, dass der Build wegen
+// des dynamischen Pfads das ganze Projekt in die Server-Dateien aufnimmt.
+const FILE_PATH = path.resolve(
+  /* turbopackIgnore: true */ process.cwd(),
+  process.env.RSVP_FILE || path.join('.data', 'rsvps.json'),
+);
 
 export type StorageKind = 'redis' | 'file' | 'none';
 

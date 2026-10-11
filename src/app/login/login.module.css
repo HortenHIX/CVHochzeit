@@ -152,6 +152,11 @@
   margin-top: var(--space-5);
 }
 
+/* Ohne eingerichteten Code steht statt des Formulars der Hinweis (.config) */
+.cardInner:has(.config) .form {
+  display: none;
+}
+
 .linkHint {
   display: flex;
   align-items: flex-start;

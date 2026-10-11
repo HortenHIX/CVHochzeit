@@ -1,11 +1,4 @@
-import {
-  attendingPersons,
-  eventLabels,
-  menuLabel,
-  menuSummary,
-  overnightLabel,
-  type RsvpLabels,
-} from './stats';
+import { attendingPersons, menuLabel, menuSummary, overnightLabel, type RsvpLabels } from './stats';
 import { allergyText, type RsvpEntry } from './types';
 
 /**

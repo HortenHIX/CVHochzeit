@@ -81,7 +81,7 @@ async function AdminContent() {
     <FilterProvider>
       <PageHead standIso={standIso} standLabel={standLabel} canExport />
       <StatTiles stats={stats} />
-      <div className={styles.pair}>
+      <div className={`${styles.pair} ${styles.pairCatering}`}>
         <MenuBars menus={stats.menus} persons={stats.persons} />
         <AllergyCard items={allergyList(entries, labels)} tags={stats.allergyTags} />
       </div>

@@ -90,6 +90,9 @@ function withNoIndex(response: NextResponse) {
 export const config = {
   matcher: [
     // Alles außer Next.js-Build-Dateien, Bildoptimierung, Icons und Link-Vorschaubild.
-    '/((?!_next/static|_next/image|favicon.ico|icon.svg|icon.png|apple-icon.png|opengraph-image|manifest.webmanifest).*)',
+    // Next liefert Icons und Vorschaubild ohne Endung aus (/apple-icon?<hash>, /opengraph-image?<hash>).
+    // Die Ausnahmen gelten nur für exakt diese Pfade (optional mit Endung), nicht für alles mit
+    // gleichem Anfang.
+    '/((?!_next/static|_next/image|(?:favicon\\.ico|icon\\.svg|apple-icon|opengraph-image)(?:\\.\\w+)?$).*)',
   ],
 };

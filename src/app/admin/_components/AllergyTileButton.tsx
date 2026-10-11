@@ -12,8 +12,8 @@ export function AllergyTileButton() {
   const { showAllergies } = useAdminFilters();
   return (
     <button type="button" className={styles.tileButton} onClick={showAllergies}>
-      <span className="visually-hidden">Antworten mit Unverträglichkeiten </span>
-      <span>in der Liste zeigen</span>
+      <span>Liste zeigen</span>
+      <span className="visually-hidden"> (Antworten mit Unverträglichkeiten filtern)</span>
       <Icon name="arrow-right" size={16} className={styles.tileButtonIcon} />
     </button>
   );

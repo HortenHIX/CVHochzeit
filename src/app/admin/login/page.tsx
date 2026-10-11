@@ -13,14 +13,8 @@ export const metadata: Metadata = {
   title: `Verwaltung – ${site.couple.first} & ${site.couple.second}`,
 };
 
-type SearchParams = Promise<Record<string, string | string[] | undefined>>;
-
-function first(value: string | string[] | undefined): string {
-  return (Array.isArray(value) ? value[0] : value) ?? '';
-}
-
 /** Login der Verwaltung – gleiche Bogenkarte wie /login, Eyebrow „Verwaltung“. */
-export default function AdminLoginPage({ searchParams }: { searchParams: SearchParams }) {
+export default function AdminLoginPage() {
   const { first: firstName, second } = site.couple;
 
   return (
@@ -45,9 +39,11 @@ export default function AdminLoginPage({ searchParams }: { searchParams: SearchP
           <Ornament size={120} className={styles.ornament} />
           <p className={styles.text}>Hier seht ihr alle Zusagen auf einen Blick. Bitte gebt das Admin-Passwort ein.</p>
 
-          <Suspense fallback={<AdminLoginForm />}>
-            <FormSlot searchParams={searchParams} />
+          {/* Hinweis bei fehlender Konfiguration; blendet das Formular per CSS aus */}
+          <Suspense fallback={null}>
+            <SetupNotice />
           </Suspense>
+          <AdminLoginForm />
 
           <p className={styles.links}>
             <Link href="/">Zur Startseite</Link>
@@ -62,25 +58,24 @@ export default function AdminLoginPage({ searchParams }: { searchParams: SearchP
   );
 }
 
-/** Liest Request-Daten (Adresse, Konfiguration zur Laufzeit) – deshalb hinter <Suspense>. */
-async function FormSlot({ searchParams }: { searchParams: SearchParams }) {
+/**
+ * Prüft zur Laufzeit, ob ein Admin-Passwort eingerichtet ist – deshalb hinter
+ * <Suspense>. Fehlt es, erscheint ein Hinweis statt des Formulars
+ * (`.cardInner:has(.config) .form` in admin-login.module.css).
+ */
+async function SetupNotice() {
   await connection();
-  const next = first((await searchParams).next);
-
-  if (getAuthSecrets().adminCode === null) {
-    return (
-      <div className={styles.config} role="status">
-        <Icon name="key" size={24} className={styles.configIcon} />
-        <div>
-          <p className={styles.configTitle}>Die Verwaltung ist noch nicht eingerichtet.</p>
-          <p>
-            Legt in Vercel unter „Settings → Environment Variables“ ein eigenes Passwort als <code>ADMIN_CODE</code> an
-            (anders als der Gästecode) und startet danach ein neues Deployment.
-          </p>
-        </div>
+  if (getAuthSecrets().adminCode !== null) return null;
+  return (
+    <div className={styles.config} role="status">
+      <Icon name="key" size={24} className={styles.configIcon} />
+      <div>
+        <p className={styles.configTitle}>Die Verwaltung ist noch nicht eingerichtet.</p>
+        <p>
+          Legt in Vercel unter „Settings → Environment Variables“ ein eigenes Passwort als <code>ADMIN_CODE</code> an
+          (anders als der Gästecode) und startet danach ein neues Deployment.
+        </p>
       </div>
-    );
-  }
-
-  return <AdminLoginForm next={next} />;
+    </div>
+  );
 }

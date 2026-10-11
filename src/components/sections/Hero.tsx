@@ -45,7 +45,7 @@ export function Hero() {
     text: `Hochzeit ${first} & ${second}`,
     dates: `${toCalendarStamp(start)}/${toCalendarStamp(end)}`,
     location: venue ? `${venue.name}, ${venue.street}, ${venue.zipCity}` : place,
-    details: `Wir freuen uns auf euch! ${site.hero.intro}`,
+    details: site.hero.intro,
   };
 
   const photosAvailable = Boolean(site.photos.albumUrl);

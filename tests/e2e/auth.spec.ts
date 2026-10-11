@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test';
 import { TEST_ENV } from '../../playwright.config';
 
+/** Eigene (Test-)Adresse je Test, damit das Login-Rate-Limit (5 Versuche/Min.) nicht greift. */
+test.beforeEach(async ({ page }) => {
+  const part = () => Math.floor(Math.random() * 250) + 1;
+  await page.setExtraHTTPHeaders({ 'x-forwarded-for': `10.${part()}.${part()}.${part()}` });
+});
+
 test.describe('Zugangsschutz', () => {
   test('ohne Anmeldung wird auf den Login umgeleitet', async ({ page }) => {
     await page.goto('/');
@@ -17,8 +23,11 @@ test.describe('Zugangsschutz', () => {
     await page.goto('/login');
     await page.getByLabel('Gästecode').fill('falsch');
     await page.getByRole('button', { name: /weiter/i }).click();
-    await expect(page.getByRole('alert')).toBeVisible();
+    // (Next.js hat zusätzlich einen leeren Routen-Ansager mit role="alert")
+    await expect(page.getByRole('alert').filter({ hasText: 'Dieser Code passt leider nicht.' })).toBeVisible();
     await expect(page).toHaveURL(/\/login/);
+    await expect(page.getByLabel('Gästecode')).toHaveAttribute('aria-invalid', 'true');
+    await expect(page.getByLabel('Gästecode')).toHaveValue('falsch');
   });
 
   test('richtiger Code (tolerant geschrieben) öffnet die Seite', async ({ page }) => {
@@ -38,6 +47,16 @@ test.describe('Zugangsschutz', () => {
   test('Direkt-Link mit falschem Code führt zum Login mit Hinweis', async ({ page }) => {
     await page.goto('/?code=falsch');
     await expect(page).toHaveURL(/\/login\?fehler=code$/);
+    await expect(page.getByText('Der Code aus eurem Link hat leider nicht gepasst.')).toBeVisible();
+  });
+
+  test('nach dem Login geht es zur gemerkten Unterseite', async ({ page }) => {
+    await page.goto('/fotos/karte');
+    await expect(page).toHaveURL(/\/login\?next=%2Ffotos%2Fkarte$/);
+    // Sofort tippen: Das Formular steht im statischen Gerüst, nichts darf verloren gehen.
+    await page.getByLabel('Gästecode').fill(TEST_ENV.GUEST_CODE);
+    await page.getByRole('button', { name: /weiter/i }).click();
+    await expect(page).toHaveURL(/\/fotos\/karte$/);
   });
 
   test('Gäste kommen nicht in den Admin-Bereich', async ({ page }) => {
