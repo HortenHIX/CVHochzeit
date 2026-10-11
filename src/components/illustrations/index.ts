@@ -1,10 +1,10 @@
 export { ArchFrame } from './ArchFrame';
-export { CornerBouquet } from './CornerBouquet';
-export { EucalyptusBranch } from './Eucalyptus';
+export { CornerBouquet, type BouquetCorner } from './CornerBouquet';
+export { EucalyptusBranch, type BranchVariant } from './Eucalyptus';
 export { HalfSun, Moon } from './HalfSun';
 export { HalfWreath } from './HalfWreath';
 export { MapPlaceholder } from './MapPlaceholder';
-export { Monogram } from './Monogram';
+export { Monogram, type MonogramVariant } from './Monogram';
 export { OliveBranch } from './OliveBranch';
 export { Ornament } from './Ornament';
 export { PampasBundle, PampasGrass } from './Pampas';

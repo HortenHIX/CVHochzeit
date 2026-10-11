@@ -1,0 +1,247 @@
+/* Footer – docs/design.md F13, G („Nach oben“), I */
+
+.footer {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding: var(--space-8) var(--gutter) calc(var(--space-7) + env(safe-area-inset-bottom));
+  background: var(--texture), var(--c-sage-900);
+  background-blend-mode: soft-light;
+  text-align: center;
+}
+
+/* E1-Silhouetten an der Oberkante: sage-700 auf sage-900, rein dekorativ */
+.silhouettes {
+  --illu-leaf: var(--c-sage-700);
+  --illu-stem: var(--c-sage-700);
+  --illu-warm: var(--c-sage-700);
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 0;
+  height: 80px;
+  pointer-events: none;
+}
+
+.leaf {
+  position: absolute;
+  top: -40px;
+  width: 80px;
+  opacity: 1;
+}
+
+.leafA {
+  left: -8px;
+  rotate: -100deg;
+  transform-origin: 50% 50%;
+}
+
+.leafB {
+  left: 92px;
+  top: -52px;
+  rotate: -62deg;
+}
+
+.leafC {
+  right: 92px;
+  top: -52px;
+  rotate: 62deg;
+}
+
+.leafD {
+  right: -8px;
+  rotate: 100deg;
+}
+
+.inner {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, var(--w-text));
+  margin-inline: auto;
+}
+
+.monogram {
+  color: var(--c-sand);
+}
+
+.date {
+  margin-top: var(--space-5);
+  font-family: var(--ff-display);
+  font-size: 1.25rem;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.35;
+  font-variant-numeric: lining-nums;
+  color: var(--c-sand);
+  text-wrap: balance;
+}
+
+.place {
+  white-space: nowrap;
+}
+
+.text {
+  margin-top: var(--space-2);
+  color: var(--c-sand);
+}
+
+.links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, auto));
+  justify-content: center;
+  column-gap: var(--space-6);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.form {
+  display: contents;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-1);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--c-sand);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+@media (hover: hover) {
+  .link:hover {
+    color: var(--c-linen);
+    text-decoration-thickness: 2px;
+  }
+}
+
+@media (min-width: 30em) {
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--space-2);
+  }
+
+  .links > li + li::before {
+    content: '·';
+    margin-inline-end: var(--space-2);
+    color: var(--c-sage-100);
+  }
+
+  .links > li {
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media (max-width: 29.99em) {
+  .leafB,
+  .leafC {
+    display: none;
+  }
+}
+
+@media (min-width: 45em) {
+  .leafB {
+    left: 18%;
+  }
+
+  .leafC {
+    right: 18%;
+  }
+}
+
+/* ---------- „Nach oben“ (schwebend) ---------- */
+
+.toTop {
+  position: fixed;
+  right: calc(var(--space-4) + env(safe-area-inset-right));
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  z-index: calc(var(--z-header) - 1);
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid var(--c-line);
+  border-radius: 50%;
+  background: var(--c-sand);
+  color: var(--c-ink);
+  box-shadow: var(--shadow-sm);
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 8px;
+  touch-action: manipulation;
+  transition:
+    opacity var(--dur-base) var(--ease),
+    translate var(--dur-base) var(--ease),
+    visibility 0s linear var(--dur-base),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.toTop[data-visible] {
+  opacity: 1;
+  visibility: visible;
+  translate: 0 0;
+  transition:
+    opacity var(--dur-base) var(--ease),
+    translate var(--dur-base) var(--ease),
+    visibility 0s,
+    background-color var(--dur-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .toTop:hover {
+    background: var(--c-paper);
+  }
+}
+
+.toTopIcon {
+  rotate: 180deg;
+  color: var(--c-sage-700);
+}
+
+/* ---------- Kontrast-Modi und Druck ---------- */
+
+@media (forced-colors: active) {
+  .silhouettes {
+    display: none;
+  }
+
+  .toTop {
+    border-color: ButtonText;
+  }
+}
+
+@media print {
+  .footer {
+    padding-block: 1.5rem;
+    background: none;
+    color: #000;
+  }
+
+  .footer .monogram,
+  .footer .date,
+  .footer .text {
+    color: #000;
+  }
+
+  .silhouettes,
+  .links,
+  .toTop {
+    display: none;
+  }
+}

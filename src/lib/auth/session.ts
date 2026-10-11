@@ -1,5 +1,6 @@
 import 'server-only';
 import { cookies } from 'next/headers';
+import { connection } from 'next/server';
 import { redirect } from 'next/navigation';
 import { getAuthSecrets } from './config';
 import {
@@ -20,6 +21,8 @@ import {
  */
 
 export async function getRole(): Promise<Role | null> {
+  // Die Prüfung vergleicht mit der aktuellen Uhrzeit → nur zur Request-Zeit ausführen.
+  await connection();
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   return verifySessionToken(token, getAuthSecrets());
 }

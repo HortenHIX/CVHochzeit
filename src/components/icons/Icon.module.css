@@ -1,0 +1,5 @@
+/* E16 Icons – Größe kommt aus width/height, Farbe erbt (currentColor) */
+.icon {
+  flex-shrink: 0;
+  overflow: visible;
+}

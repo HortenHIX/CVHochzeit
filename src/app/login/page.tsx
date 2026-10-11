@@ -1,0 +1,94 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Suspense } from 'react';
+import { Icon } from '@/components/icons/Icon';
+import { ArchFrame, CornerBouquet, HalfSun, Monogram, Ornament, PampasBundle } from '@/components/illustrations';
+import { site } from '@/content/site';
+import { getAuthSecrets } from '@/lib/auth/config';
+import { formatLongDate, telHref } from '@/lib/format';
+import { LoginForm } from './LoginForm';
+import styles from './login.module.css';
+
+export const metadata: Metadata = {
+  title: `Willkommen – ${site.couple.first} & ${site.couple.second}`,
+};
+
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+function first(value: string | string[] | undefined): string {
+  return (Array.isArray(value) ? value[0] : value) ?? '';
+}
+
+/** Login mit dem Gästecode (design.md F „Login“). Kein Header. */
+export default function LoginPage({ searchParams }: { searchParams: SearchParams }) {
+  const { first: firstName, second } = site.couple;
+  const { helpName, helpPhone } = site.login;
+
+  return (
+    <main className={styles.page}>
+      <div className={styles.decor} aria-hidden="true">
+        <CornerBouquet animated corner="top-left" className={styles.bouquetTop} />
+        <CornerBouquet animated corner="bottom-right" className={styles.bouquetBottom} />
+        <PampasBundle animated className={styles.pampas} />
+      </div>
+
+      <div className={styles.cardWrap}>
+        <HalfSun className={styles.sun} />
+        <ArchFrame variant="card" className={styles.card} innerClassName={styles.cardInner}>
+          <Monogram variant="large" size={72} className={styles.monogram} />
+          <p className={styles.eyebrow}>{site.login.eyebrow}</p>
+          <h1 className={styles.names}>
+            <span className={styles.name}>{firstName}</span>{' '}
+            <span className={styles.amp} aria-hidden="true">
+              &amp;
+            </span>{' '}
+            <span className="visually-hidden">und</span> <span className={styles.name}>{second}</span>
+          </h1>
+          <p className={styles.date}>{formatLongDate(site.wedding.start)}</p>
+          <Ornament size={120} className={styles.ornament} />
+          <p className={styles.text}>{site.login.text}</p>
+
+          <Suspense fallback={<LoginForm />}>
+            <LoginSlot searchParams={searchParams} />
+          </Suspense>
+
+          <p className={styles.help}>
+            Code nicht zur Hand? Ruft {helpName} an:{' '}
+            <a href={telHref(helpPhone)} className={styles.helpLink}>
+              <Icon name="phone" size={16} className={styles.helpIcon} />
+              <span className="nums">{helpPhone}</span>
+            </a>
+          </p>
+          <p className={styles.privacy}>
+            <Link href="/datenschutz">Datenschutz</Link>
+          </p>
+        </ArchFrame>
+      </div>
+    </main>
+  );
+}
+
+/** Liest die Adress-Parameter (Request-Daten) – deshalb hinter <Suspense>. */
+async function LoginSlot({ searchParams }: { searchParams: SearchParams }) {
+  const params = await searchParams;
+  const next = first(params.next);
+  const linkCodeInvalid = first(params.fehler) === 'code';
+
+  // In Produktion ohne GUEST_CODE: freundlicher Hinweis statt Formular.
+  if (getAuthSecrets().guestCode === null) {
+    return (
+      <div className={styles.config} role="status">
+        <Icon name="key" size={24} className={styles.configIcon} />
+        <div>
+          <p className={styles.configTitle}>Die Seite ist noch nicht ganz fertig eingerichtet.</p>
+          <p>
+            Der Gästecode fehlt noch in den Einstellungen (Umgebungsvariable <code>GUEST_CODE</code>). Bitte schaut
+            später noch einmal vorbei.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return <LoginForm next={next} linkCodeInvalid={linkCodeInvalid} />;
+}

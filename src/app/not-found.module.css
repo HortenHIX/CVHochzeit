@@ -1,0 +1,97 @@
+/* 404 – „Hier wächst noch nichts“ */
+
+.page {
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding: calc(var(--space-7) + env(safe-area-inset-top)) var(--gutter)
+    calc(var(--space-7) + env(safe-area-inset-bottom));
+  background: var(--texture), var(--c-linen);
+  overflow-x: clip;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 30rem);
+  text-align: center;
+}
+
+.scene {
+  position: relative;
+  width: 220px;
+  height: 150px;
+  margin-bottom: var(--space-5);
+}
+
+.sun {
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 200px;
+  translate: -50% 0;
+  opacity: 0.7;
+}
+
+.grass {
+  position: absolute;
+  bottom: 0;
+  width: 46px;
+}
+
+.grassLeft {
+  left: 28px;
+  rotate: -8deg;
+  transform-origin: 50% 100%;
+}
+
+.grassRight {
+  right: 28px;
+  rotate: 8deg;
+  transform-origin: 50% 100%;
+}
+
+.ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  border-block: 1px solid var(--double-line-color);
+}
+
+.eyebrow {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--tr-eyebrow);
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--c-sage-700);
+}
+
+.title {
+  margin-top: var(--space-3);
+  font-size: var(--fs-h2);
+  line-height: 1.1;
+}
+
+.ornament {
+  margin-top: var(--space-4);
+}
+
+.text {
+  max-width: 26rem;
+  margin-top: var(--space-5);
+  color: var(--c-ink);
+}
+
+.button {
+  margin-top: var(--space-6);
+}
+
+.monogram {
+  margin-top: var(--space-7);
+  color: var(--c-ink);
+  opacity: 0.8;
+}

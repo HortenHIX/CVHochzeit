@@ -1,0 +1,88 @@
+/* E5 Doppelbogen-Rahmen (docs/design.md, Abschnitt J) */
+
+.wrap {
+  container-type: inline-size;
+}
+
+/* Breite ohne Spezifität – eine Klasse des Aufrufers gewinnt immer */
+:where(.wrap) {
+  width: 100%;
+}
+
+.arch {
+  position: relative;
+  isolation: isolate;
+  /* Fallback ohne Container-Query-Einheiten */
+  border-radius: 999px 999px var(--radius-lg) var(--radius-lg);
+}
+
+.arch::before,
+.arch::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ---------- Rahmen: Linie außen (.55) + Linie 8 px innen (.35) ---------- */
+.frame {
+  border: 1px solid rgb(72 96 76 / 0.55);
+}
+
+.frame::before {
+  inset: 8px;
+  border: 1px solid rgb(72 96 76 / 0.35);
+  border-radius: 999px 999px 10px 10px;
+}
+
+.paper {
+  background: var(--c-paper);
+}
+
+/* ---------- Karte: line-Rahmen, Schatten, Doppelbogen eingerückt ---------- */
+.card {
+  background: var(--c-paper);
+  border: 1px solid var(--c-line);
+  box-shadow: var(--shadow-md);
+}
+
+.card::before {
+  inset: 10px;
+  border: 1px solid rgb(72 96 76 / 0.55);
+  border-radius: 999px 999px 8px 8px;
+}
+
+.card::after {
+  inset: 18px;
+  border: 1px solid rgb(72 96 76 / 0.35);
+  border-radius: 999px 999px 4px 4px;
+}
+
+@supports (width: 1cqi) {
+  .arch {
+    border-radius: 50cqi 50cqi var(--radius-lg) var(--radius-lg);
+  }
+  .frame::before {
+    border-radius: calc(50cqi - 9px) calc(50cqi - 9px) 10px 10px;
+  }
+  .card::before {
+    border-radius: calc(50cqi - 11px) calc(50cqi - 11px) 8px 8px;
+  }
+  .card::after {
+    border-radius: calc(50cqi - 19px) calc(50cqi - 19px) 4px 4px;
+  }
+}
+
+@media (forced-colors: active) {
+  .arch,
+  .arch::before,
+  .arch::after {
+    border-color: CanvasText;
+  }
+}
+
+@media print {
+  .card {
+    box-shadow: none;
+  }
+}

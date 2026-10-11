@@ -1,0 +1,485 @@
+/* Hero (#start) – docs/design.md F2, E (Platzierung), H, I */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - var(--header-h) - env(safe-area-inset-top));
+  background: var(--texture), var(--c-linen);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-7);
+  padding: var(--space-6) var(--gutter) var(--space-7);
+  text-align: center;
+}
+
+/* ---------- Bühne mit Doppelbogen und Illustrationen ---------- */
+
+.stage {
+  position: relative;
+  width: min(100%, 22rem);
+  container-type: inline-size;
+}
+
+.archWrap {
+  position: relative;
+  z-index: 1;
+}
+
+/* Bogenfläche: leicht durchscheinendes Papier, damit die Sonne dahinter zart bleibt */
+.arch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28cqi var(--space-5) var(--space-6);
+  background: color-mix(in srgb, var(--c-paper) 78%, transparent);
+}
+
+.eyebrow {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--tr-eyebrow);
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--c-sage-700);
+}
+
+.names {
+  margin-top: var(--space-3);
+  font-family: var(--ff-script);
+  /* Nie größer als der Bogen: höchstens 19 % seiner Breite */
+  font-size: min(var(--fs-names), 19cqi);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0;
+  color: var(--c-ink);
+}
+
+.name {
+  display: block;
+}
+
+.amp {
+  display: block;
+  margin-block: 0.02em 0.08em;
+  font-family: var(--ff-display);
+  font-size: 0.6em;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--c-terra-700);
+}
+
+.ornament {
+  margin-top: var(--space-4);
+}
+
+.date {
+  margin-top: var(--space-4);
+  font-family: var(--ff-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.25;
+  font-variant-numeric: lining-nums;
+  color: var(--c-ink);
+}
+
+.place {
+  margin-top: var(--space-1);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--c-ink);
+}
+
+/* Illustrationen (dekorativ, nie hinter Fließtext) */
+
+.sun {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: -11cqi;
+  width: 84cqi;
+  translate: -50% 0;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.sun,
+.branch,
+.bouquet,
+.pampas {
+  overflow: visible;
+}
+
+.branch {
+  position: absolute;
+  z-index: 2;
+  top: -1.5rem;
+  right: calc(-1 * var(--gutter) - 1.25rem);
+  width: 96px;
+  rotate: 14deg;
+  pointer-events: none;
+}
+
+.bouquet {
+  position: absolute;
+  z-index: 2;
+  left: calc(-1 * var(--gutter) - 1.5rem);
+  bottom: -3.25rem;
+  width: 140px;
+  pointer-events: none;
+}
+
+.pampas {
+  display: none;
+}
+
+/* ---------- Countdown & Aktionen ---------- */
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  width: 100%;
+}
+
+.countdown {
+  display: flex;
+  justify-content: center;
+}
+
+.cells {
+  display: flex;
+  justify-content: center;
+}
+
+.cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 84px;
+  padding-inline: var(--space-4);
+}
+
+.cell + .cell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1px;
+  height: 48px;
+  translate: 0 -50%;
+  background: var(--c-line);
+}
+
+.cellValue {
+  min-width: 2ch;
+  font-family: var(--ff-display);
+  font-size: var(--fs-count);
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--c-ink);
+}
+
+.cellValue[data-pending] {
+  color: var(--c-line);
+}
+
+.cellLabel {
+  margin-top: var(--space-2);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--tr-eyebrow);
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--c-ink-soft);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 22rem;
+}
+
+.actions .actionButton {
+  width: 100%;
+  padding-inline: var(--space-5);
+}
+
+/* Sehr schmale Displays: Pfeil weglassen, damit das Label einzeilig bleibt */
+@media (max-width: 22.4375em) {
+  .chevron {
+    display: none;
+  }
+}
+
+.deadline {
+  max-width: 22rem;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--c-ink-soft);
+}
+
+.deadline time {
+  font-weight: 600;
+  color: var(--c-ink);
+  white-space: nowrap;
+}
+
+/* Am Tag / danach */
+.moment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.momentText {
+  font-family: var(--ff-display);
+  font-size: var(--fs-h3);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--c-ink);
+  text-wrap: balance;
+}
+
+/* ---------- Kalender-Popover ---------- */
+
+.calendar {
+  position: relative;
+  width: 100%;
+}
+
+.chevron {
+  transition: rotate var(--dur-base) var(--ease);
+}
+
+[aria-expanded='true'] > .chevron {
+  rotate: 180deg;
+}
+
+.popover {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  right: 0;
+  padding: var(--space-2);
+  border: var(--hairline);
+  border-radius: var(--radius-card-inner);
+  background: var(--c-paper);
+  box-shadow: var(--shadow-lg);
+  text-align: start;
+  animation: popoverIn var(--dur-fast) var(--ease) both;
+}
+
+.popover[hidden] {
+  display: none;
+}
+
+@keyframes popoverIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.popoverList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.popoverItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-ui);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--c-ink);
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.popoverItem:focus-visible {
+  outline-offset: -3px;
+}
+
+@media (hover: hover) {
+  .popoverItem:hover {
+    background: var(--c-sand);
+    color: var(--c-ink);
+  }
+}
+
+.popoverIcon {
+  flex: none;
+  color: var(--c-sage-700);
+}
+
+/* ---------- Abschluss: Doppel-Haarlinie mit Monogramm-Siegel ---------- */
+
+.seal {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100% - 2 * var(--gutter), var(--w-content));
+  margin-inline: auto;
+}
+
+.seal::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 5px;
+  translate: 0 -50%;
+  border-block: 1px solid var(--double-line-color);
+}
+
+.sealBadge {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--c-paper);
+  color: var(--c-ink);
+}
+
+/* ---------- Breakpoints ---------- */
+
+@media (min-width: 30em) {
+  .bouquet {
+    left: -5.5rem;
+  }
+}
+
+@media (min-width: 45em) {
+  .branch {
+    right: -4.5rem;
+    width: 130px;
+  }
+
+  .bouquet {
+    left: -7rem;
+    width: 190px;
+  }
+}
+
+@media (min-width: 64em) {
+  .content {
+    gap: 2.5rem;
+    padding-block: 2.5rem var(--space-8);
+  }
+
+  .timeline {
+    gap: 1.25rem;
+  }
+
+  .stage {
+    width: 30rem;
+  }
+
+  .branch {
+    top: -2.5rem;
+    right: -8.5rem;
+    width: 180px;
+  }
+
+  /* Zeichnung reicht etwa 24 px in den Bogen hinein (design.md E) */
+  .bouquet {
+    left: -8rem;
+    bottom: -3.5rem;
+    width: 260px;
+  }
+
+  .pampas {
+    display: block;
+    position: absolute;
+    z-index: 0;
+    right: -7rem;
+    bottom: -1.5rem;
+    width: 150px;
+    pointer-events: none;
+  }
+
+  .actions {
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--space-4);
+    max-width: none;
+  }
+
+  .actions .actionButton {
+    width: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .calendar {
+    width: auto;
+  }
+
+  .popover {
+    right: auto;
+    min-width: 100%;
+  }
+
+  .deadline {
+    max-width: none;
+  }
+}
+
+/* ---------- Kontrast-Modi und Druck ---------- */
+
+@media (forced-colors: active) {
+  .arch {
+    background: Canvas;
+  }
+
+  .seal::before {
+    border-color: CanvasText;
+  }
+
+  .sealBadge {
+    display: none;
+  }
+
+  .seal {
+    min-height: 72px;
+  }
+}
+
+@media print {
+  .hero {
+    min-height: 0;
+    background: none;
+  }
+
+  .countdown,
+  .actions,
+  .seal {
+    display: none;
+  }
+}

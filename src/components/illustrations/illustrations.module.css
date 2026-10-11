@@ -1,0 +1,185 @@
+/* ==========================================================================
+   Illustrationen – Grundstil und Bewegung (docs/design.md, Abschnitte E, H, J)
+   Alle Animationen laufen nur mit prefers-reduced-motion: no-preference.
+   Ohne Bewegung (oder ohne Unterstützung) steht sofort der Endzustand.
+   ========================================================================== */
+
+:where(.root) {
+  height: auto;
+  flex-shrink: 0;
+}
+
+/* Druckbare Variante (QR-Karte): nur unter forced-colors ausblenden */
+@media (forced-colors: active) {
+  .printable {
+    display: none !important;
+  }
+}
+
+/* Außerhalb des Viewports pausieren (data-paused setzt AnimatedSvg) */
+.root[data-paused] *,
+.root[data-paused] {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ---------- Stiel zeichnet sich (E1, E2) ---------- */
+  .draw {
+    animation: draw var(--dur-draw, 1400ms) var(--ease) 200ms both;
+  }
+
+  /* ---------- Blätter wachsen gestaffelt ---------- */
+  .grow {
+    transform-box: view-box;
+    animation: grow var(--dur-slow, 600ms) var(--ease) both;
+    animation-delay: calc(400ms + var(--i, 0) * 70ms);
+  }
+
+  .bud {
+    animation: fade var(--dur-slow, 600ms) var(--ease) 1300ms both;
+  }
+
+  /* ---------- Wiegen ±1° in 9 s, Ursprung am Zweigfuß ---------- */
+  .sway {
+    transform-box: view-box;
+    animation: sway 9s ease-in-out infinite;
+    animation-delay: var(--sway-delay, 0s);
+  }
+
+  /* ---------- Pampas ±1.5° in 6 s ---------- */
+  .swayPampas {
+    transform-box: view-box;
+    animation: swayPampas 6s ease-in-out infinite;
+    animation-delay: var(--sway-delay, 0s);
+  }
+
+  .fadeIn {
+    animation: fade 1200ms var(--ease) 300ms both;
+  }
+
+  /* ---------- Halbkranz (Erfolg): Kranz 900 ms, danach Häkchen 400 ms ---------- */
+  .wreathDraw {
+    animation: draw 900ms var(--ease) both;
+  }
+
+  .wreathLeaf {
+    transform-box: view-box;
+    animation: grow 420ms var(--ease) both;
+    animation-delay: calc(120ms + var(--i, 0) * 85ms);
+  }
+
+  .wreathDot {
+    animation: fade 300ms var(--ease) 600ms both;
+  }
+
+  .checkDraw {
+    animation: draw 400ms var(--ease) 900ms both;
+  }
+}
+
+/*
+ * Zeichnen per Strichmuster: mit pathLength="1" sichtbar ist der Anteil a.
+ * Endzustand "1 0" ist auch dann eine durchgehende Linie, falls ein Browser
+ * pathLength bei nicht skalierenden Konturen ignorieren sollte.
+ */
+@keyframes draw {
+  from {
+    stroke-dasharray: 0 1;
+  }
+  to {
+    stroke-dasharray: 1 0;
+  }
+}
+
+@keyframes grow {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    rotate: -1deg;
+  }
+  50% {
+    rotate: 1deg;
+  }
+}
+
+@keyframes swayPampas {
+  0%,
+  100% {
+    rotate: -1.5deg;
+  }
+  50% {
+    rotate: 1.5deg;
+  }
+}
+
+/* ---------- Sonnenlauf: Uhrzeiten erst ab 45em ---------- */
+.sunLabelsAuto {
+  display: none;
+}
+
+@media (min-width: 45em) {
+  .sunLabelsAuto {
+    display: inline;
+  }
+}
+
+.sunLabel {
+  font-family: var(--ff-sans);
+  font-weight: 600;
+  font-variant-numeric: lining-nums tabular-nums;
+  fill: var(--c-ink);
+  /* Schein in Hintergrundfarbe, damit Uhrzeiten über Sonne/Bogen lesbar bleiben */
+  paint-order: stroke;
+  stroke: var(--sunpath-bg, var(--c-sand));
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+
+/* Punkte: mobil größer (die Grafik ist dort nur ~330 px breit), ab 45em laut Spezifikation */
+.sunDot {
+  r: 7px;
+}
+
+.sunDotActive {
+  r: 9px;
+}
+
+.sunHalo {
+  r: 15px;
+}
+
+@media (min-width: 45em) {
+  .sunDot {
+    r: 4px;
+  }
+  .sunDotActive {
+    r: 6px;
+  }
+  .sunHalo {
+    r: 11px;
+  }
+}
+
+/* Ringe: Linienfarbe sage-700, per Klasse/Style überschreibbar (color) */
+:where(.rings) {
+  color: var(--c-sage-700);
+}

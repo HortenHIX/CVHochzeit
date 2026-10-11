@@ -1,0 +1,348 @@
+/* Dev-Galerie – nur in der Entwicklung erreichbar */
+
+.page {
+  width: min(100% - 2 * var(--gutter), var(--w-wide));
+  margin-inline: auto;
+  padding-block: var(--space-7) var(--space-9);
+}
+
+.header {
+  margin-bottom: var(--space-7);
+}
+
+.eyebrow {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--tr-eyebrow);
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.title {
+  font-size: var(--fs-h2);
+  margin-block: var(--space-2) var(--space-3);
+}
+
+.note {
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  max-width: var(--w-text);
+}
+
+.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-4);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.toc a {
+  padding-block: 0.6rem;
+}
+
+.motif {
+  padding-block: var(--space-7);
+  border-top: var(--hairline);
+  scroll-margin-top: 1rem;
+}
+
+.motifTitle {
+  font-size: var(--fs-h3);
+  margin-bottom: var(--space-2);
+}
+
+.motif > .note {
+  margin-bottom: var(--space-5);
+}
+
+.grounds {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.stack {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.tile,
+.zoom,
+.wideTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border-radius: var(--radius-card-inner);
+  border: 1px solid rgb(43 53 48 / 0.08);
+  min-height: 9rem;
+  max-width: 100%;
+}
+
+.tall {
+  min-height: 15rem;
+}
+
+.wideTile {
+  width: 100%;
+}
+
+.stage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-5);
+  flex: 1;
+  max-width: 100%;
+}
+
+.caption {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.linen {
+  background: var(--c-linen);
+}
+
+.sand {
+  background: var(--c-sand);
+}
+
+.sage {
+  background: var(--c-sage-100);
+}
+
+.dark {
+  background: var(--c-sage-900);
+}
+
+.replay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.replayStage {
+  display: flex;
+  justify-content: center;
+}
+
+.replayButton {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--c-stone);
+  background: var(--c-paper);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+/* E5 – Wrapper hat container-type, braucht daher eine Breite von außen */
+.archFigure {
+  width: min(100%, 20rem);
+}
+
+.archFigureWide {
+  width: min(100%, 30rem);
+}
+
+.archDemo {
+  width: min(100%, 16rem);
+}
+
+.archDemoWide {
+  width: min(100%, 26rem);
+}
+
+.archInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 28cqi var(--space-5) var(--space-7);
+  min-height: 20rem;
+  justify-content: flex-end;
+}
+
+.archText {
+  font-family: var(--ff-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+}
+
+/* E7 Medaillon 56 px */
+.medallion {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--c-paper);
+  border: var(--hairline);
+}
+
+/* E11 Kartenkopf */
+.venueCard {
+  width: min(100%, 22rem);
+  background: var(--c-paper);
+  border: var(--hairline);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.venueHead {
+  height: 160px;
+  border-radius: 999px 999px 0 0;
+  background: var(--c-sand);
+  display: grid;
+  place-items: end center;
+  padding: var(--space-5) var(--space-5) 0;
+  overflow: hidden;
+}
+
+.venueSvg {
+  height: 120px;
+  width: auto !important;
+}
+
+/* E12 Bogen 4:5 */
+.storyFigure {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: center;
+  width: min(100%, 13rem);
+}
+
+.storyArch {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 50% 50% 16px 16px / 40% 40% 16px 16px;
+  background: var(--c-sage-100);
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.storyArch::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid var(--c-line);
+  border-radius: inherit;
+}
+
+/* E13 */
+.vineDemo {
+  position: relative;
+  width: 48px;
+  height: 360px;
+  background-position: center top;
+  background-size: 48px 160px;
+  background-repeat: repeat-y;
+}
+
+.vineNode {
+  position: absolute;
+  left: 4px;
+}
+
+/* E14 */
+.sunPath {
+  max-width: 640px;
+}
+
+/* E15 */
+.mapTile {
+  width: min(100%, 30rem);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.mapTile > svg {
+  aspect-ratio: 16 / 10;
+}
+
+.mapTall {
+  width: min(100%, 12rem);
+}
+
+.mapTall > svg {
+  aspect-ratio: 3 / 4;
+}
+
+.mapSvg {
+  border-radius: var(--radius-lg);
+  height: auto;
+}
+
+/* E16 */
+.icons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.iconCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-2);
+  background: var(--c-paper);
+  border: var(--hairline);
+  border-radius: var(--radius-md);
+  color: var(--c-sage-700);
+}
+
+.iconSizes {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.iconName {
+  font-size: 0.8125rem;
+  color: var(--c-ink);
+}
+
+.iconStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border-radius: var(--radius-card-inner);
+  color: var(--c-sand);
+}
+
+/* Bild-Routen */
+.appleIcon {
+  border-radius: 22%;
+  box-shadow: var(--shadow-md);
+}
+
+.ogImage {
+  width: 100%;
+  max-width: 1200px;
+  height: auto;
+  border: var(--hairline);
+}

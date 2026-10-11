@@ -1,0 +1,223 @@
+/* Datenschutz – docs/design.md F „Datenschutz und Impressum“, C, D */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  padding-top: env(safe-area-inset-top);
+  background: rgb(250 247 242 / 0.92);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: var(--hairline);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: min(100% - 2 * var(--gutter), var(--w-content));
+  height: var(--header-h);
+  margin-inline: auto;
+}
+
+.brand {
+  display: inline-flex;
+  flex: none;
+  padding: 4px;
+  margin-inline-start: -4px;
+  border-radius: 50%;
+  color: var(--c-ink);
+}
+
+.brand:focus-visible {
+  outline-offset: 1px;
+}
+
+.header .back {
+  gap: var(--space-2);
+  padding-inline: var(--space-2);
+  text-align: start;
+}
+
+.backIcon {
+  rotate: 180deg;
+}
+
+.main {
+  padding-block: var(--space-8) var(--space-section);
+  background: var(--texture), var(--c-linen);
+}
+
+.article {
+  width: min(100% - 2 * var(--gutter), var(--w-text));
+  margin-inline: auto;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--space-stack);
+  text-align: center;
+}
+
+.eyebrow {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--tr-eyebrow);
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--c-sage-700);
+}
+
+.title {
+  margin-top: var(--space-3);
+  font-size: var(--fs-h1);
+}
+
+.ornament {
+  margin-top: var(--space-4);
+}
+
+.lead {
+  max-width: 34rem;
+  margin-top: var(--space-5);
+  font-size: var(--fs-lead);
+  line-height: 1.55;
+}
+
+.block {
+  margin-top: var(--space-7);
+}
+
+.block h2 {
+  margin-bottom: var(--space-4);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.block > * + * {
+  margin-top: var(--space-4);
+}
+
+.block > h2 + * {
+  margin-top: 0;
+}
+
+.address {
+  padding: var(--space-4) var(--space-5);
+  border: var(--hairline);
+  border-radius: var(--radius-card-inner);
+  background: var(--c-paper);
+  line-height: 1.6;
+}
+
+.address a {
+  display: inline-block;
+  padding-block: 0.15em;
+}
+
+.list {
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list li {
+  position: relative;
+  padding-inline-start: 1.5rem;
+}
+
+.list li + li {
+  margin-top: var(--space-2);
+}
+
+.list li::before {
+  content: '';
+  position: absolute;
+  left: 0.35rem;
+  top: 0.68em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-sage-400);
+}
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-card-inner);
+  background: var(--c-sage-100);
+  font-size: var(--fs-small);
+  line-height: 1.55;
+}
+
+.noteIcon {
+  flex: none;
+  color: var(--c-sage-700);
+}
+
+.cookies {
+  margin: var(--space-4) 0 0;
+  border-bottom: var(--hairline);
+}
+
+.cookie {
+  padding-block: var(--space-4);
+  border-top: var(--hairline);
+}
+
+.cookie dt {
+  font-weight: 600;
+}
+
+.cookie dd {
+  margin: var(--space-1) 0 0;
+}
+
+.cookie code {
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  background: var(--c-sand);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+@media (forced-colors: active) {
+  /* Monogramm dient als Link zur Startseite und bleibt sichtbar */
+  .brand :global(.illustration) {
+    display: block !important;
+  }
+}
+
+@media print {
+  .header {
+    position: static;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .back,
+  .actions {
+    display: none;
+  }
+
+  .main {
+    background: none;
+    padding-block: 1rem;
+  }
+}
