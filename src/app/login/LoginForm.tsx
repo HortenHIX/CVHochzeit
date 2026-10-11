@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useEffect, useRef, useState, type FormEvent } from 'react';
+import { useActionState, useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from 'react';
 import { Icon } from '@/components/icons/Icon';
 import { Button } from '@/components/ui/Button';
 import { useSearchParam } from '@/lib/use-search-param';
@@ -9,18 +9,33 @@ import styles from './login.module.css';
 
 const INITIAL: LoginState = { status: 'idle', attempt: 0 };
 
+const noSubscribe = () => () => {};
+
+/** Anker der aktuellen Adresse (z. B. „#zusage“) – beim Server-Rendern ''. */
+function useLocationHash(): string {
+  return useSyncExternalStore(
+    noSubscribe,
+    () => window.location.hash,
+    () => '',
+  );
+}
+
 /**
  * Gästecode-Formular. Fehler werden als role="alert" angesagt, das Feld
  * bekommt aria-invalid und der Fokus bleibt bzw. kommt zurück ins Feld.
  *
  * Steht bewusst im statischen Seitengerüst (nicht hinter <Suspense>), damit
  * nichts verloren geht, was vor dem vollständigen Laden eingetippt wurde.
- * `?next=` und `?fehler=code|rate` liest es deshalb selbst aus der Adresse.
+ * `?next=` und `?fehler=code|rate|sitzung` liest es deshalb selbst aus der Adresse.
+ * Den Anker (z. B. von „/#zusage“ – der Server sieht ihn nie) hängt es an `next` an.
  */
 export function LoginForm() {
-  const next = useSearchParam('next');
+  const nextParam = useSearchParam('next');
+  const hash = useLocationHash();
+  const next = hash && !nextParam.includes('#') ? `${nextParam || '/'}${hash}` : nextParam;
   const linkError = useSearchParam('fehler');
   const linkCodeInvalid = linkError === 'code' || linkError === 'rate';
+  const sessionExpired = linkError === 'sitzung';
   const [state, formAction, pending] = useActionState(login, INITIAL);
   const [code, setCode] = useState('');
   const [remember, setRemember] = useState(true);
@@ -43,7 +58,10 @@ export function LoginForm() {
     if (pending) event.preventDefault();
   };
 
-  const describedBy = [linkCodeInvalid && !hasError ? 'code-link-hint' : '', hasError ? 'code-error' : '']
+  const describedBy = [
+    (linkCodeInvalid || sessionExpired) && !hasError ? 'code-link-hint' : '',
+    hasError ? 'code-error' : '',
+  ]
     .filter(Boolean)
     .join(' ');
 
@@ -59,6 +77,13 @@ export function LoginForm() {
               ? 'Zu viele Versuche in kurzer Zeit. Bitte wartet eine Minute und gebt den Code dann hier ein.'
               : 'Der Code aus eurem Link hat leider nicht gepasst. Gebt ihn hier einfach von Hand ein.'}
           </span>
+        </p>
+      ) : null}
+
+      {sessionExpired && !hasError ? (
+        <p id="code-link-hint" className={styles.linkHint}>
+          <Icon name="info" size={20} className={styles.linkHintIcon} />
+          <span>Eure Anmeldung ist abgelaufen. Bitte gebt den Gästecode noch einmal ein.</span>
         </p>
       ) : null}
 

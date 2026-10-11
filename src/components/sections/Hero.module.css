@@ -183,13 +183,19 @@
 }
 
 .cellValue {
+  /* Feste Breite je Stellenzahl: kein Zucken, wenn „–“ zur Zahl wird */
   min-width: 2ch;
+  text-align: center;
   font-family: var(--ff-display);
   font-size: var(--fs-count);
   font-weight: 500;
   line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
   color: var(--c-ink);
+}
+
+.cell:first-child .cellValue {
+  min-width: 3ch;
 }
 
 .cellValue[data-pending] {
@@ -481,5 +487,69 @@
   .actions,
   .seal {
     display: none;
+  }
+}
+
+/* Infoblatt: Hero als kompakter Textkopf ohne Deko (Schrift ≥ 11 pt) */
+@media print {
+  :global(body.print-infosheet) .hero {
+    overflow: visible;
+  }
+
+  :global(body.print-infosheet) .content {
+    gap: 0.5rem;
+    padding: 0 0 0.5rem;
+  }
+
+  :global(body.print-infosheet) .stage {
+    width: 100%;
+    container-type: normal;
+  }
+
+  :global(body.print-infosheet) .sun,
+  :global(body.print-infosheet) .branch,
+  :global(body.print-infosheet) .bouquet,
+  :global(body.print-infosheet) .pampas,
+  :global(body.print-infosheet) .ornament,
+  :global(body.print-infosheet) .arch::before,
+  :global(body.print-infosheet) .arch::after {
+    display: none;
+  }
+
+  :global(body.print-infosheet) .arch {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  :global(body.print-infosheet) .eyebrow {
+    font-size: 11pt;
+  }
+
+  :global(body.print-infosheet) .names {
+    margin-top: 2pt;
+    font-size: 22pt;
+    line-height: 1.2;
+  }
+
+  :global(body.print-infosheet) .name,
+  :global(body.print-infosheet) .amp {
+    display: inline;
+  }
+
+  :global(body.print-infosheet) .amp {
+    font-size: 0.8em;
+  }
+
+  :global(body.print-infosheet) .date {
+    margin-top: 4pt;
+    font-size: 14pt;
+  }
+
+  :global(body.print-infosheet) .place,
+  :global(body.print-infosheet) .deadline {
+    font-size: 11pt;
+    color: var(--c-ink);
   }
 }

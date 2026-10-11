@@ -40,10 +40,14 @@ export function CalendarMenu({ icsHref, google }: { icsHref: string; google: Goo
     () => '',
   );
 
-  // Beim Öffnen den ersten Eintrag fokussieren; Klick außerhalb schließt.
+  // Beim Öffnen den ersten Eintrag fokussieren und das Menü (mobil oft unter
+  // dem Falz) vollständig ins Bild holen; Klick außerhalb schließt.
   useEffect(() => {
     if (!open) return;
-    panelRef.current?.querySelector<HTMLElement>('a')?.focus();
+    const panel = panelRef.current;
+    panel?.querySelector<HTMLElement>('a')?.focus({ preventScroll: true });
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    panel?.scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' });
     const onPointerDown = (event: PointerEvent) => {
       if (wrapRef.current && !wrapRef.current.contains(event.target as Node)) setOpen(false);
     };

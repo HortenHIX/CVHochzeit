@@ -523,23 +523,20 @@
     break-inside: avoid;
   }
 
-  /* Sektionsköpfe kompakt (Einleitungstexte entfallen im Infoblatt) */
+  /* Sektionsköpfe kompakt (Einleitungstexte entfallen im Infoblatt) und nie
+     allein am Seitenende */
   :global(body.print-infosheet main > section > div > header) {
     margin-bottom: 1rem !important;
+    break-inside: avoid;
+    break-after: avoid;
   }
 
   :global(body.print-infosheet main > section > div > header > svg ~ p) {
     display: none !important;
   }
 
-  /* Hero-Daten kompakt, damit Ablauf noch auf die erste Seite passt */
+  /* Hero als kompakter Textkopf: Regeln in Hero.module.css */
   :global(body.print-infosheet #start) {
     padding-block: 0 0.25rem !important;
-    zoom: 0.5;
-  }
-
-  :global(body.print-infosheet #anfahrt) {
-    break-before: page;
-    border-top: 0 !important;
   }
 }

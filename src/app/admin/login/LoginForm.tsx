@@ -5,6 +5,7 @@ import { Icon } from '@/components/icons/Icon';
 import { Button } from '@/components/ui/Button';
 import { useSearchParam } from '@/lib/use-search-param';
 import { adminLogin, type AdminLoginState } from './actions';
+import loginStyles from '../../login/login.module.css';
 import styles from './admin-login.module.css';
 
 const INITIAL: AdminLoginState = { status: 'idle', attempt: 0 };
@@ -18,6 +19,7 @@ const INITIAL: AdminLoginState = { status: 'idle', attempt: 0 };
  */
 export function AdminLoginForm() {
   const next = useSearchParam('next');
+  const sessionExpired = useSearchParam('fehler') === 'sitzung';
   const [state, formAction, pending] = useActionState(adminLogin, INITIAL);
   const [password, setPassword] = useState('');
   const [visible, setVisible] = useState(false);
@@ -45,6 +47,13 @@ export function AdminLoginForm() {
       {/* Hilft Passwort-Managern, das Passwort der Verwaltung zuzuordnen */}
       <input type="text" name="username" autoComplete="username" value="verwaltung" readOnly hidden />
 
+      {sessionExpired && !hasError ? (
+        <p className={loginStyles.linkHint}>
+          <Icon name="info" size={20} className={loginStyles.linkHintIcon} />
+          <span>Eure Anmeldung ist abgelaufen. Bitte meldet euch noch einmal an.</span>
+        </p>
+      ) : null}
+
       <div className={styles.field}>
         <label htmlFor="admin-passwort" className={styles.label}>
           Admin-Passwort
@@ -70,7 +79,6 @@ export function AdminLoginForm() {
           <button
             type="button"
             className={styles.reveal}
-            aria-pressed={visible}
             aria-controls="admin-passwort"
             onClick={() => setVisible((value) => !value)}
           >

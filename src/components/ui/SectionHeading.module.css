@@ -53,3 +53,11 @@
     width: 200px;
   }
 }
+
+/* Druck: Sektionskopf nie vom folgenden Inhalt abreißen */
+@media print {
+  .heading {
+    break-inside: avoid;
+    break-after: avoid;
+  }
+}

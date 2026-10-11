@@ -30,6 +30,7 @@ export function getRsvpConfig(): RsvpConfig {
     timeZone: wedding.timeZone,
     deadlineIso,
     deadlineText: formatDate(deadlineIso),
+    weddingEndIso: wedding.end,
     shuttleEnabled: rsvp.askShuttle && stay.shuttle.enabled,
     shuttleHotels: stay.hotels.filter((h) => h.shuttleStop).map((h) => h.name),
     shuttleTimes: {

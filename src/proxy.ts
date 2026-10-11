@@ -77,15 +77,30 @@ export async function proxy(request: NextRequest) {
   return withNoIndex(redirectToLogin(request, '/login'));
 }
 
-function redirectToLogin(request: NextRequest, loginPath: string, error?: 'code' | 'rate') {
+function redirectToLogin(request: NextRequest, loginPath: string, error?: 'code' | 'rate' | 'sitzung') {
   const url = new URL(loginPath, request.url);
   const target = request.nextUrl.clone();
   target.searchParams.delete('code');
   const next = target.pathname + target.search;
   if (next !== '/' && next !== loginPath) url.searchParams.set('next', next);
-  if (error) url.searchParams.set('fehler', error);
-  // Server Actions / Fetches nicht umleiten, sondern sauber ablehnen.
-  if (request.method !== 'GET' && request.method !== 'HEAD') {
+  const isWrite = request.method !== 'GET' && request.method !== 'HEAD';
+  // Server Action ohne (gültige) Sitzung, z. B. abgelaufenes Cookie: Der Next-Client versteht
+  // nur einen Action-Redirect – ein 401 endet sonst auf der englischen Absturzseite.
+  // So navigiert der Browser hart zur Anmeldung, ohne dass Seiteninhalt ausgeliefert wird.
+  const isServerAction = isWrite && request.headers.has('next-action');
+  const reason = error ?? (isServerAction ? 'sitzung' : undefined);
+  if (reason) url.searchParams.set('fehler', reason);
+  if (isServerAction) {
+    return new NextResponse(null, {
+      status: 200,
+      headers: {
+        'x-action-redirect': `${url.pathname}${url.search};replace`,
+        'content-type': 'text/plain',
+      },
+    });
+  }
+  // Sonstige Fetches nicht umleiten, sondern sauber ablehnen.
+  if (isWrite) {
     return new NextResponse('Nicht angemeldet', { status: 401 });
   }
   return NextResponse.redirect(url);

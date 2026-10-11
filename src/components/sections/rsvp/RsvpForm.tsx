@@ -14,6 +14,7 @@ import {
   type Ref,
 } from 'react';
 import { flushSync } from 'react-dom';
+import { unstable_rethrow } from 'next/navigation';
 import { Icon } from '@/components/icons/Icon';
 import { OliveBranch, Rings } from '@/components/illustrations';
 import { useMinuteClock } from '@/components/layout/clock';
@@ -22,6 +23,7 @@ import { Button } from '@/components/ui/Button';
 import { Notice } from '@/components/ui/Notice';
 import type { IconName, RsvpOption } from '@/content/site';
 import { startNewRsvp, submitRsvp } from '@/lib/rsvp/actions';
+import { rsvpClosedAt } from '@/lib/rsvp/config';
 import {
   DRAFT_KEY,
   DRAFT_VERSION,
@@ -35,12 +37,13 @@ import {
   MESSAGE_ANNOUNCE_FROM,
   type PersonFormValues,
   type RsvpFieldErrors,
+  type RsvpFormState,
   type RsvpFormValues,
   type RsvpInitial,
   type RsvpIntent,
 } from '@/lib/rsvp/form-state';
 import { RSVP_LIMITS } from '@/lib/rsvp/types';
-import { cleanValues, parseRsvpForm, validateValues } from '@/lib/rsvp/validate';
+import { cleanValues, parseRsvpForm, readFormValues, validateValues } from '@/lib/rsvp/validate';
 import { DeadlineBadge } from './DeadlineBadge';
 import { PersonCard } from './PersonCard';
 import { CheckboxRow, ChoiceCard, FieldError, Group, SelectField, Stepper, SubGroup, TextAreaField, TextField } from './RsvpFields';
@@ -49,6 +52,26 @@ import { useRsvpConfig } from './RsvpConfigContext';
 import styles from './RsvpForm.module.css';
 
 const NO_ERRORS: RsvpFieldErrors = {};
+
+/**
+ * Server Action mit Netz: Bricht die Verbindung ab (Funkloch, Server weg),
+ * bleibt das Formular samt Eingaben stehen und zeigt einen Hinweis – statt
+ * der Absturzseite. Weiterleitungen (z. B. zur Anmeldung) gehen durch.
+ */
+async function submitSafely(previous: RsvpFormState, formData: FormData): Promise<RsvpFormState> {
+  try {
+    return await submitRsvp(previous, formData);
+  } catch (error) {
+    unstable_rethrow(error);
+    return {
+      status: 'error',
+      kind: 'storage',
+      attempt: previous.attempt + 1,
+      errors: { form: 'Die Verbindung hat nicht geklappt. Bitte prüft euer Internet und sendet noch einmal.' },
+      values: readFormValues(formData),
+    };
+  }
+}
 const OVERNIGHT_ICONS: Record<string, IconName> = { hotel: 'bed', self: 'key', home: 'car' };
 
 /* ---------------------------------------------------------------------------
@@ -211,7 +234,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
   const { rsvp, shuttleEnabled, shuttleHotels, shuttleTimes, deadlineText } = config;
   const deadlineMs = new Date(config.deadlineIso).getTime();
   const showStay = rsvp.askOvernight || shuttleEnabled;
-  const [state, formAction, pending] = useActionState(submitRsvp, INITIAL_FORM_STATE);
+  const [state, formAction, pending] = useActionState(submitSafely, INITIAL_FORM_STATE);
   const hydrated = useSyncExternalStore(noopSubscribe, getHydrated, getServerHydrated);
   const now = useMinuteClock();
 
@@ -244,7 +267,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
   /* ---------- Abgeleiteter Zustand ---------- */
 
   const deadlinePassed = now !== null && now > deadlineMs;
-  const closed = rsvp.closeAfterDeadline && deadlinePassed;
+  const closed = now !== null && rsvpClosedAt(config, now);
   const fresh = state.attempt > ack;
   const success = fresh && state.status === 'success' ? state : null;
   const serverErrors = fresh && state.status === 'error' ? state.errors : NO_ERRORS;
@@ -267,8 +290,10 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
   }
   const errorEntries = Object.entries(shown);
 
-  const deadlineHint = deadlinePassed
-    ? 'Eure Antwort könnt ihr auch jetzt noch ändern.'
+  const deadlineHint = !rsvp.closeAfterDeadline
+    ? deadlinePassed
+      ? 'Eure Antwort könnt ihr auch jetzt noch ändern.'
+      : 'Eure Antwort könnt ihr jederzeit ändern.'
     : `Ihr könnt eure Antwort bis ${deadlineText} jederzeit ändern.`;
 
   const numbers = (() => {
@@ -489,7 +514,12 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
     formHeadingRef.current?.focus();
     // Verknüpfung dieses Geräts mit der bisherigen Antwort lösen.
     startTransition(async () => {
-      await startNewRsvp();
+      try {
+        await startNewRsvp();
+      } catch (error) {
+        // Ohne Verbindung bleibt die alte Verknüpfung bestehen; „Neu“ legt trotzdem eine neue Antwort an.
+        unstable_rethrow(error);
+      }
     });
   };
 
@@ -923,6 +953,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
             {rsvp.privacyNote}{' '}
             <a href="/datenschutz" target="_blank" rel="noopener noreferrer" className={styles.inlineLink}>
               Datenschutz
+              <Icon name="external" size={16} className={styles.inlineLinkIcon} />
               <span className="visually-hidden"> (öffnet in neuem Tab)</span>
             </a>
           </p>

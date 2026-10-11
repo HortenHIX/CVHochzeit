@@ -12,6 +12,7 @@ import {
   type RsvpFormValues,
   type RsvpSummary,
 } from './form-state';
+import { rsvpClosedAt } from './config';
 import { getRsvpConfig } from './config-server';
 import { forgetOwnRsvp, getOwnRsvpId, rememberOwnRsvp } from './own';
 import type { RsvpEntry } from './types';
@@ -77,13 +78,17 @@ export async function submitRsvp(previous: RsvpFormState, formData: FormData): P
     return { status: 'error', attempt, kind: 'validation', errors: parsed.errors, values: parsed.values };
   }
 
-  if (config.rsvp.closeAfterDeadline && Date.now() > new Date(config.deadlineIso).getTime()) {
+  const nowMs = Date.now();
+  if (rsvpClosedAt(config, nowMs)) {
+    const weddingOver = nowMs > Date.parse(config.weddingEndIso);
     return {
       status: 'error',
       attempt,
       kind: 'closed',
       errors: {
-        form: `Die Rückmeldefrist ist leider vorbei. Für Änderungen meldet euch bitte direkt bei ${config.rsvp.changeContactName}.`,
+        form: weddingOver
+          ? 'Die Hochzeit ist vorbei – Antworten sind nicht mehr möglich.'
+          : `Die Rückmeldefrist ist leider vorbei. Für Änderungen meldet euch bitte direkt bei ${config.rsvp.changeContactName}.`,
       },
       values: parsed.values,
     };

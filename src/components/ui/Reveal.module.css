@@ -22,3 +22,13 @@
     transition: none;
   }
 }
+
+/* Druck: noch nicht eingeblendete Inhalte müssen auf Papier erscheinen */
+@media print {
+  .reveal,
+  .reveal[data-state] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

@@ -200,12 +200,14 @@ export function errorId(key: string): string {
 /**
  * Anrede für „Danke, …!“: Vorname(n) aus dem Namen.
  * „Anna Müller“ → „Anna“, „Anna & Ben Müller“ → „Anna & Ben“,
- * „Familie Müller“ bleibt vollständig.
+ * „Familie Müller“ und Namen mit Anrede („Herr und Frau Müller“) bleiben vollständig.
  */
 export function greetingName(name: string): string {
   const clean = name.trim().replace(/\s+/g, ' ');
   if (!clean) return '';
   if (/^(familie|fam\.?)\s/i.test(clean)) return clean;
+  // Mit Anrede gibt es meist keinen Vornamen („Herr Schmidt“) – dann den ganzen Namen nehmen.
+  if (/(^|\s)(herr|frau)\.?(\s|$)/i.test(clean)) return clean;
   const joiners = clean.match(/\s(?:&|\+|und)\s/gi) ?? [];
   const parts = clean.split(/\s(?:&|\+|und)\s/i);
   const firsts = parts.map((part) => {
