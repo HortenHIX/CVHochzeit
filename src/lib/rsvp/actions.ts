@@ -1,9 +1,9 @@
 'use server';
 
-import { site } from '@/content/site';
 import { hasRole } from '@/lib/auth/session';
-import { rsvpDeadlineIso } from '@/lib/format';
-import { getRsvp, saveRsvp, StorageNotConfiguredError } from '@/lib/storage';
+import { headers } from 'next/headers';
+import { clientIpFrom, hitRateLimit, LIMITS } from '@/lib/rate-limit';
+import { getRsvp, RsvpLimitError, saveRsvp, StorageNotConfiguredError } from '@/lib/storage';
 import {
   HONEYPOT_FIELD,
   INTENT_FIELD,
@@ -12,6 +12,7 @@ import {
   type RsvpFormValues,
   type RsvpSummary,
 } from './form-state';
+import { getRsvpConfig } from './config-server';
 import { forgetOwnRsvp, getOwnRsvpId, rememberOwnRsvp } from './own';
 import type { RsvpEntry } from './types';
 import { parseRsvpForm, readFormValues } from './validate';
@@ -63,7 +64,8 @@ export async function submitRsvp(previous: RsvpFormState, formData: FormData): P
     };
   }
 
-  const parsed = parseRsvpForm(formData);
+  const config = getRsvpConfig();
+  const parsed = parseRsvpForm(formData, config);
 
   // Spam-Bot: so tun, als hätte alles geklappt – aber nichts speichern.
   const honeypot = formData.get(HONEYPOT_FIELD);
@@ -75,14 +77,26 @@ export async function submitRsvp(previous: RsvpFormState, formData: FormData): P
     return { status: 'error', attempt, kind: 'validation', errors: parsed.errors, values: parsed.values };
   }
 
-  if (site.rsvp.closeAfterDeadline && Date.now() > new Date(rsvpDeadlineIso()).getTime()) {
+  if (config.rsvp.closeAfterDeadline && Date.now() > new Date(config.deadlineIso).getTime()) {
     return {
       status: 'error',
       attempt,
       kind: 'closed',
       errors: {
-        form: `Die Rückmeldefrist ist leider vorbei. Für Änderungen meldet euch bitte direkt bei ${site.rsvp.changeContactName}.`,
+        form: `Die Rückmeldefrist ist leider vorbei. Für Änderungen meldet euch bitte direkt bei ${config.rsvp.changeContactName}.`,
       },
+      values: parsed.values,
+    };
+  }
+
+  // Schutz vor massenhaftem Absenden (z. B. per Skript).
+  const { key, limit, window } = LIMITS.rsvp;
+  if (!(await hitRateLimit(key(clientIpFrom(await headers())), limit, window))) {
+    return {
+      status: 'error',
+      attempt,
+      kind: 'storage',
+      errors: { form: 'Das waren gerade sehr viele Antworten auf einmal. Bitte versucht es in ein paar Minuten noch einmal.' },
       values: parsed.values,
     };
   }
@@ -106,7 +120,9 @@ export async function submitRsvp(previous: RsvpFormState, formData: FormData): P
     await rememberOwnRsvp(entry.id);
     return { status: 'success', attempt, summary: toSummary(entry), values: parsed.values };
   } catch (error) {
-    if (error instanceof StorageNotConfiguredError) {
+    if (error instanceof RsvpLimitError) {
+      console.error('[rsvp] Obergrenze erreicht – Antwort abgelehnt.', error);
+    } else if (error instanceof StorageNotConfiguredError) {
       console.error('[rsvp] Kein Speicher konfiguriert – Antwort wurde nicht gespeichert.', error);
     } else {
       console.error('[rsvp] Antwort konnte nicht gespeichert werden.', error);

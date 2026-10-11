@@ -124,8 +124,9 @@ export default function PrivacyPage() {
               DSGVO). Diese Server-Logfiles werden nach kurzer Zeit automatisch gelöscht.
             </p>
             <p>
-              Damit niemand den Gästecode durch Ausprobieren errät, zählen wir Anmeldeversuche pro IP-Adresse – diese
-              Zähler verfallen nach einer Minute.
+              Damit niemand den Gästecode durch Ausprobieren errät und das Formular nicht massenhaft abgeschickt
+              wird, zählen wir Anmeldeversuche und Zusagen pro IP-Adresse. Diese Zähler verfallen automatisch nach
+              einer Minute (Gäste-Anmeldung), fünf Minuten (Verwaltung) bzw. zehn Minuten (Zusagen).
             </p>
           </section>
 
@@ -156,6 +157,21 @@ export default function PrivacyPage() {
                 </dd>
               </div>
             </dl>
+            <p>
+              Außerdem speichert euer Browser zwei Dinge lokal auf eurem Gerät (localStorage), die nie an uns
+              übertragen werden:
+            </p>
+            <ul className={styles.list}>
+              <li>
+                <strong>Entwurf des Zusageformulars</strong> (inkl. Namen und Unverträglichkeiten), damit nichts
+                verloren geht, wenn ihr die Seite zwischendurch schließt. Er wird nach dem Absenden automatisch
+                gelöscht.
+              </li>
+              <li>
+                <strong>„Karten künftig immer laden“</strong> – nur wenn ihr das ankreuzt. Dann lädt die Karte bei
+                späteren Besuchen sofort; ihr könnt die Einstellung jederzeit wieder abwählen.
+              </li>
+            </ul>
           </section>
 
           <section aria-labelledby="ds-karte" className={styles.block}>

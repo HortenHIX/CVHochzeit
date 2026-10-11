@@ -1,12 +1,12 @@
 import { Badge } from '@/components/ui/Badge';
-import { site } from '@/content/site';
+import { useRsvpConfig } from './RsvpConfigContext';
 
 const DAY = 24 * 60 * 60 * 1000;
 
 /** Kalendertag in der Zeitzone der Hochzeit als UTC-Mitternacht (für Tagesdifferenzen). */
-function dayStart(ms: number): number {
+function dayStart(ms: number, timeZone: string): number {
   const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: site.wedding.timeZone,
+    timeZone,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -15,8 +15,8 @@ function dayStart(ms: number): number {
 }
 
 /** Ganze Kalendertage bis zur Frist (0 = heute ist der letzte Tag, negativ = vorbei). */
-export function daysUntilDeadline(now: number): number {
-  return Math.round((Date.parse(`${site.rsvp.deadline}T00:00:00Z`) - dayStart(now)) / DAY);
+export function daysUntilDeadline(now: number, deadline: string, timeZone: string): number {
+  return Math.round((Date.parse(`${deadline}T00:00:00Z`) - dayStart(now, timeZone)) / DAY);
 }
 
 /**
@@ -25,8 +25,9 @@ export function daysUntilDeadline(now: number): number {
  * wird nichts gezeigt – keine Hydration-Unterschiede.
  */
 export function DeadlineBadge({ now }: { now: number | null }) {
+  const { rsvp, timeZone } = useRsvpConfig();
   if (now === null) return null;
-  const days = daysUntilDeadline(now);
+  const days = daysUntilDeadline(now, rsvp.deadline, timeZone);
   if (days > 14) return null;
   if (days < 0) return <Badge variant="neutral">Frist abgelaufen</Badge>;
   if (days === 0) return <Badge variant="now">Heute ist der letzte Tag</Badge>;

@@ -97,4 +97,15 @@ test.describe('Weiterleitungsziele', () => {
     expect(safeRedirectPath('javascript:alert(1)')).toBe('/');
     expect(safeRedirectPath(null)).toBe('/');
   });
+
+  test('Steuerzeichen und Backslashes werden abgelehnt (Open Redirect)', () => {
+    expect(safeRedirectPath('/\t/evil.example')).toBe('/');
+    expect(safeRedirectPath('/\t\t/evil.example/x')).toBe('/');
+    expect(safeRedirectPath('/\n/evil.example')).toBe('/');
+    expect(safeRedirectPath('/\u0000//evil.example')).toBe('/');
+    expect(safeRedirectPath('/foo\\bar')).toBe('/');
+    expect(safeRedirectPath(decodeURIComponent('/%09/evil.example'))).toBe('/');
+    // Normale Pfade bleiben erhalten (inkl. Umlaute, kodiert)
+    expect(safeRedirectPath('/fotos/karte?format=a5')).toBe('/fotos/karte?format=a5');
+  });
 });

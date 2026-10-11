@@ -77,10 +77,7 @@ export function paragraphs(text: string): string[] {
     .filter(Boolean);
 }
 
-/** Telefonnummer für tel:-Links (nur Ziffern und führendes +). */
-export function telHref(phone: string): string {
-  return `tel:${phone.replace(/[^\d+]/g, '')}`;
-}
+export { telHref } from './format-pure';
 
 /** Navigations-Links für eine Location. */
 export function mapLinks(lat: number, lng: number, label: string) {

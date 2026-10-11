@@ -1,10 +1,7 @@
-import { site } from '@/content/site';
+import type { RsvpConfig } from './config';
 import {
-  ALL_EVENT_IDS,
   emptyPerson,
   emptyValues,
-  SHUTTLE_ENABLED,
-  SHUTTLE_HOTELS,
   type PersonFormValues,
   type RsvpFieldErrors,
   type RsvpFormValues,
@@ -164,9 +161,9 @@ function tooLong(value: string, limit: number): boolean {
   return value.length > limit;
 }
 
-export function validateValues(values: RsvpFormValues): RsvpParseResult {
+export function validateValues(values: RsvpFormValues, config: RsvpConfig): RsvpParseResult {
   const errors: RsvpFieldErrors = {};
-  const { rsvp } = site;
+  const { rsvp } = config;
   const attending = values.attendance === 'yes';
 
   // 1. Kommt ihr?
@@ -231,8 +228,8 @@ export function validateValues(values: RsvpFormValues): RsvpParseResult {
   }
 
   // 3. Programm
-  const events = attending ? ALL_EVENT_IDS.filter((id) => values.events.includes(id)) : [];
-  if (attending && ALL_EVENT_IDS.length > 0 && events.length === 0) {
+  const events = attending ? config.allEventIds.filter((id) => values.events.includes(id)) : [];
+  if (attending && config.allEventIds.length > 0 && events.length === 0) {
     errors.events = 'Bitte wählt mindestens einen Programmpunkt aus.';
   }
 
@@ -244,12 +241,12 @@ export function validateValues(values: RsvpFormValues): RsvpParseResult {
   }
 
   let shuttle: RsvpShuttle | null = null;
-  if (attending && SHUTTLE_ENABLED) {
+  if (attending && config.shuttleEnabled) {
     const wanted = values.shuttleThere || values.shuttleBack;
     shuttle = { there: values.shuttleThere, back: values.shuttleBack, from: '', seats: 0 };
     if (wanted) {
-      if (SHUTTLE_HOTELS.length > 0) {
-        if (SHUTTLE_HOTELS.includes(values.shuttleFrom)) shuttle.from = values.shuttleFrom;
+      if (config.shuttleHotels.length > 0) {
+        if (config.shuttleHotels.includes(values.shuttleFrom)) shuttle.from = values.shuttleFrom;
         else errors.shuttleFrom = 'Bitte wählt das Hotel für den Shuttle.';
       }
       const max = Math.max(1, persons.length);
@@ -295,6 +292,6 @@ export function validateValues(values: RsvpFormValues): RsvpParseResult {
 }
 
 /** FormData lesen, bereinigen und prüfen. */
-export function parseRsvpForm(formData: FormData): RsvpParseResult {
-  return validateValues(readFormValues(formData));
+export function parseRsvpForm(formData: FormData, config: RsvpConfig): RsvpParseResult {
+  return validateValues(readFormValues(formData), config);
 }

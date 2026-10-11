@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { getAuthSecrets } from '@/lib/auth/config';
 import { startSession } from '@/lib/auth/session';
 import { roleForCode, safeRedirectPath } from '@/lib/auth/token';
-import { hitRateLimit } from '@/lib/storage';
+import { clientIpFrom, hitRateLimit, LIMITS, refundRateLimit } from '@/lib/rate-limit';
 
 export interface LoginState {
   status: 'idle' | 'error';
@@ -19,13 +19,12 @@ export interface LoginState {
 const CODE_ERROR = 'Dieser Code passt leider nicht. Schaut noch einmal auf eure Karte, oder meldet euch bei uns.';
 
 async function clientIp(): Promise<string> {
-  const h = await headers();
-  const forwarded = h.get('x-forwarded-for')?.split(',')[0]?.trim();
-  return forwarded || h.get('x-real-ip')?.trim() || 'unbekannt';
+  return clientIpFrom(await headers());
 }
 
 /**
- * Anmeldung mit dem Gästecode (oder dem Admin-Passwort).
+ * Anmeldung mit dem Gästecode. Das Admin-Passwort gilt nur unter /admin/login
+ * (eigenes, strengeres Limit) – hier wird es wie ein falscher Code behandelt.
  * Erfolg → Session-Cookie setzen und weiterleiten; sonst Fehlermeldung.
  */
 export async function login(previous: LoginState, formData: FormData): Promise<LoginState> {
@@ -38,17 +37,20 @@ export async function login(previous: LoginState, formData: FormData): Promise<L
     return { status: 'error', kind: 'empty', message: 'Bitte gebt den Gästecode von eurer Karte ein.', attempt };
   }
 
-  const allowed = await hitRateLimit(`login:${await clientIp()}`, 5, 60);
+  const { key, limit, window } = LIMITS.guestLogin;
+  const limitKey = key(await clientIp());
+  const allowed = await hitRateLimit(limitKey, limit, window);
   if (!allowed) {
     return { status: 'error', kind: 'rate', message: 'Bitte in einer Minute erneut versuchen.', attempt };
   }
 
   const secrets = getAuthSecrets();
   const role = roleForCode(code, secrets);
-  if (!role) {
+  if (role !== 'guest') {
     return { status: 'error', kind: 'code', message: CODE_ERROR, attempt };
   }
 
+  await refundRateLimit(limitKey); // Erfolg zählt nicht gegen das Kontingent
   const started = await startSession(role, persistent);
   if (!started) {
     return {
@@ -59,6 +61,5 @@ export async function login(previous: LoginState, formData: FormData): Promise<L
     };
   }
 
-  const target = role === 'admin' && !next ? '/admin' : safeRedirectPath(next);
-  redirect(target);
+  redirect(safeRedirectPath(next));
 }

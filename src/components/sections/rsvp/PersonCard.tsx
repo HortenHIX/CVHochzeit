@@ -1,11 +1,10 @@
 import { Icon } from '@/components/icons/Icon';
-import { site, type RsvpOption } from '@/content/site';
+import type { RsvpOption } from '@/content/site';
 import { errorId, fieldId, type PersonFormValues, type RsvpFieldErrors } from '@/lib/rsvp/form-state';
 import { RSVP_LIMITS } from '@/lib/rsvp/types';
 import { CheckboxRow, Chip, FieldError, SelectField, SubGroup, TextField } from './RsvpFields';
+import { useRsvpConfig } from './RsvpConfigContext';
 import styles from './RsvpForm.module.css';
-
-const { rsvp } = site;
 
 function ids(...values: (string | false | null | undefined)[]): string | undefined {
   const joined = values.filter(Boolean).join(' ');
@@ -34,6 +33,7 @@ export function PersonCard({
   onRemove?: () => void;
   onAllergyOther: (checked: boolean) => void;
 }) {
+  const { rsvp } = useRsvpConfig();
   const n = index + 1;
   const key = (field: string) => `p${index}.${field}`;
   const menuKey = key('menu');

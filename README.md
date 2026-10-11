@@ -98,9 +98,13 @@ meldet Gäste direkt an – sie müssen nichts eintippen.
 2. Unter **Settings → Environment Variables** `GUEST_CODE`, `ADMIN_CODE` und
    `SESSION_SECRET` eintragen.
 3. Speicher für die Zusagen anlegen: **Storage → Marketplace → Upstash (Redis)**
-   auswählen, kostenlosen Tarif wählen und mit dem Projekt verbinden. Die
-   nötigen Variablen (`KV_REST_API_URL`, `KV_REST_API_TOKEN`) setzt Vercel
-   automatisch.
+   auswählen, kostenlosen Tarif wählen und mit dem Projekt verbinden.
+   - **Primary Region: Frankfurt (eu-central-1)** wählen – die
+     Datenschutzhinweise gehen von einem Rechenzentrum in der EU aus.
+   - Beim Verbinden das vorgeschlagene Variablen-Präfix **nicht ändern**: Es
+     müssen `KV_REST_API_URL` und `KV_REST_API_TOKEN` entstehen (Vercel setzt
+     sie automatisch).
+   - Kontrolle: Fehlt der Speicher, zeigt `/admin` einen Einrichtungs-Hinweis.
 4. Einmal neu deployen (**Deployments → Redeploy**), damit die Variablen greifen.
 5. Optional: Unter **Settings → Domains** eine eigene Domain verbinden.
 

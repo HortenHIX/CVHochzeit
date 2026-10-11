@@ -137,8 +137,17 @@ export function roleForCode(input: string, secrets: AuthSecrets): Role | null {
 
 /** Nur relative Pfade innerhalb der Seite als Weiterleitungsziel erlauben. */
 export function safeRedirectPath(next: string | null | undefined, fallback = '/'): string {
-  if (!next || typeof next !== 'string') return fallback;
-  if (!next.startsWith('/') || next.startsWith('//') || next.startsWith('/\\')) return fallback;
-  if (/[\r\n]/.test(next)) return fallback;
-  return next;
+  if (!next || typeof next !== 'string' || next.length > 2000) return fallback;
+  if (!next.startsWith('/') || next.startsWith('//')) return fallback;
+  // Steuerzeichen (Tab, Zeilenumbruch …) und Backslashes entfernen Browser bzw.
+  // deuten sie als „/“ – damit ließe sich „//fremde-domain“ einschmuggeln.
+  if (/[\u0000-\u001f\u007f\\]/.test(next)) return fallback;
+  try {
+    const base = 'http://intern.invalid';
+    const url = new URL(next, base);
+    if (url.origin !== base) return fallback;
+    return url.pathname + url.search + url.hash;
+  } catch {
+    return fallback;
+  }
 }

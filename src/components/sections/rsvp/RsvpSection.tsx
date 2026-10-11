@@ -3,8 +3,10 @@ import { Monogram } from '@/components/illustrations';
 import { Section } from '@/components/ui/Section';
 import { site } from '@/content/site';
 import { SECTION_IDS } from '@/lib/navigation';
+import { getRsvpConfig } from '@/lib/rsvp/config-server';
 import { entryToValues, toSummary, type RsvpInitial } from '@/lib/rsvp/form-state';
 import { getOwnRsvp } from '@/lib/rsvp/own';
+import { RsvpConfigProvider } from './RsvpConfigContext';
 import { RsvpForm } from './RsvpForm';
 import styles from './RsvpSection.module.css';
 
@@ -21,9 +23,12 @@ export function RsvpSection() {
         <div className={styles.seal}>
           <Monogram size={56} />
         </div>
-        <Suspense fallback={<RsvpForm initial={null} />}>
-          <OwnRsvpForm />
-        </Suspense>
+        {/* Nur die Zusage-Einstellungen gehen an den Browser, nicht die ganze Inhaltsdatei. */}
+        <RsvpConfigProvider value={getRsvpConfig()}>
+          <Suspense fallback={<RsvpForm initial={null} />}>
+            <OwnRsvpForm />
+          </Suspense>
+        </RsvpConfigProvider>
       </div>
     </Section>
   );

@@ -93,14 +93,29 @@ function parseEntry(raw: unknown): RsvpEntry | null {
  * Öffentliche API
  * ------------------------------------------------------------------------- */
 
+/** Obergrenze für die Anzahl gespeicherter Antworten (Schutz vor Fluten). */
+export const MAX_RSVP_ENTRIES = 1000;
+
+export class RsvpLimitError extends Error {
+  constructor() {
+    super(`Maximal ${MAX_RSVP_ENTRIES} Antworten – weitere werden abgelehnt.`);
+    this.name = 'RsvpLimitError';
+  }
+}
+
 export async function saveRsvp(entry: RsvpEntry): Promise<void> {
   const kind = storageKind();
   if (kind === 'redis') {
-    await redis().hset(RSVP_HASH, { [entry.id]: JSON.stringify(entry) });
+    const r = redis();
+    if (!(await r.hexists(RSVP_HASH, entry.id)) && (await r.hlen(RSVP_HASH)) >= MAX_RSVP_ENTRIES) {
+      throw new RsvpLimitError();
+    }
+    await r.hset(RSVP_HASH, { [entry.id]: JSON.stringify(entry) });
     return;
   }
   if (kind === 'file') {
     await withFileStore((store) => {
+      if (!(entry.id in store) && Object.keys(store).length >= MAX_RSVP_ENTRIES) throw new RsvpLimitError();
       store[entry.id] = entry;
     });
     return;
@@ -148,32 +163,7 @@ export async function deleteRsvp(id: string): Promise<void> {
 }
 
 /* ---------------------------------------------------------------------------
- * Einfache Begrenzung von Anfragen (z. B. Login-Versuche)
+ * Begrenzung von Anfragen – liegt in src/lib/rate-limit.ts (auch im Proxy nutzbar)
  * ------------------------------------------------------------------------- */
 
-const memoryHits = new Map<string, { count: number; resetAt: number }>();
-
-/**
- * Zählt einen Versuch für `key`. Gibt `false` zurück, wenn im Zeitfenster
- * mehr als `limit` Versuche stattgefunden haben.
- */
-export async function hitRateLimit(key: string, limit: number, windowSeconds: number): Promise<boolean> {
-  const fullKey = `${PREFIX}:rl:${key}`;
-  if (storageKind() === 'redis') {
-    try {
-      const count = await redis().incr(fullKey);
-      if (count === 1) await redis().expire(fullKey, windowSeconds);
-      return count <= limit;
-    } catch (error) {
-      console.error('[rate-limit] Redis nicht erreichbar, nutze Speicher im Prozess', error);
-    }
-  }
-  const now = Date.now();
-  const current = memoryHits.get(fullKey);
-  if (!current || current.resetAt < now) {
-    memoryHits.set(fullKey, { count: 1, resetAt: now + windowSeconds * 1000 });
-    return true;
-  }
-  current.count += 1;
-  return current.count <= limit;
-}
+export { hitRateLimit } from './rate-limit';

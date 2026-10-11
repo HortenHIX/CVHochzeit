@@ -20,8 +20,7 @@ import { useMinuteClock } from '@/components/layout/clock';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Notice } from '@/components/ui/Notice';
-import { site, type IconName, type RsvpOption } from '@/content/site';
-import { formatDate, rsvpDeadlineIso } from '@/lib/format';
+import type { IconName, RsvpOption } from '@/content/site';
 import { startNewRsvp, submitRsvp } from '@/lib/rsvp/actions';
 import {
   DRAFT_KEY,
@@ -34,9 +33,6 @@ import {
   INITIAL_FORM_STATE,
   INTENT_FIELD,
   MESSAGE_ANNOUNCE_FROM,
-  SHUTTLE_ENABLED,
-  SHUTTLE_HOTELS,
-  SHUTTLE_TIMES,
   type PersonFormValues,
   type RsvpFieldErrors,
   type RsvpFormValues,
@@ -49,14 +45,9 @@ import { DeadlineBadge } from './DeadlineBadge';
 import { PersonCard } from './PersonCard';
 import { CheckboxRow, ChoiceCard, FieldError, Group, SelectField, Stepper, SubGroup, TextAreaField, TextField } from './RsvpFields';
 import { RsvpResult } from './RsvpResult';
+import { useRsvpConfig } from './RsvpConfigContext';
 import styles from './RsvpForm.module.css';
 
-const { rsvp } = site;
-
-const DEADLINE_ISO = rsvpDeadlineIso();
-const DEADLINE_MS = new Date(DEADLINE_ISO).getTime();
-const DEADLINE_TEXT = formatDate(DEADLINE_ISO);
-const SHOW_STAY = rsvp.askOvernight || SHUTTLE_ENABLED;
 const NO_ERRORS: RsvpFieldErrors = {};
 const OVERNIGHT_ICONS: Record<string, IconName> = { hotel: 'bed', self: 'key', home: 'car' };
 
@@ -117,17 +108,17 @@ function toPlain(v: ClientValues): RsvpFormValues {
  * Entwurf (localStorage, nur Komfort – darf jederzeit fehlen)
  * ------------------------------------------------------------------------- */
 
-function sanitizeDraft(raw: unknown): RsvpFormValues | null {
+function sanitizeDraft(raw: unknown, maxPersons: number, allEventIds: readonly string[]): RsvpFormValues | null {
   if (!raw || typeof raw !== 'object') return null;
   const stored = raw as { v?: unknown; values?: unknown };
   if (stored.v !== DRAFT_VERSION || !stored.values || typeof stored.values !== 'object') return null;
   const r = stored.values as Record<string, unknown>;
-  const base = emptyValues();
+  const base = emptyValues(allEventIds);
   const s = (v: unknown) => (typeof v === 'string' ? v : '');
   const b = (v: unknown) => v === true;
   const list = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
   const persons = Array.isArray(r.persons)
-    ? r.persons.slice(0, rsvp.maxPersons).map((raw): PersonFormValues => {
+    ? r.persons.slice(0, maxPersons).map((raw): PersonFormValues => {
         const p = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
         return {
           name: s(p.name),
@@ -159,10 +150,10 @@ function sanitizeDraft(raw: unknown): RsvpFormValues | null {
   };
 }
 
-function readDraft(): RsvpFormValues | null {
+function readDraft(maxPersons: number, allEventIds: readonly string[]): RsvpFormValues | null {
   try {
     const raw = window.localStorage.getItem(DRAFT_KEY);
-    return raw ? sanitizeDraft(JSON.parse(raw)) : null;
+    return raw ? sanitizeDraft(JSON.parse(raw), maxPersons, allEventIds) : null;
   } catch {
     return null;
   }
@@ -187,7 +178,8 @@ function clearDraft(): void {
 
 // Einmal pro Seitenaufruf lesen; danach stabil (useSyncExternalStore braucht stabile Werte).
 let draftSnapshot: { value: RsvpFormValues | null } | null = null;
-const getDraftSnapshot = () => (draftSnapshot ??= { value: readDraft() });
+const getDraftSnapshot = (maxPersons: number, allEventIds: readonly string[]) =>
+  (draftSnapshot ??= { value: readDraft(maxPersons, allEventIds) });
 const getServerDraftSnapshot = () => null;
 const noopSubscribe = () => () => {};
 const getHydrated = () => true;
@@ -202,7 +194,12 @@ const getServerHydrated = () => false;
  * Laden im Browser gelesen; ist einer da, startet das Formular damit neu.
  */
 export function RsvpForm({ initial }: { initial: RsvpInitial | null }) {
-  const draft = useSyncExternalStore(noopSubscribe, getDraftSnapshot, getServerDraftSnapshot);
+  const { rsvp, allEventIds } = useRsvpConfig();
+  const draft = useSyncExternalStore(
+    noopSubscribe,
+    () => getDraftSnapshot(rsvp.maxPersons, allEventIds),
+    getServerDraftSnapshot,
+  );
   const draftValues = draft?.value ?? null;
   return <RsvpFormInner key={draftValues ? 'entwurf' : 'neu'} initial={initial} draft={draftValues} />;
 }
@@ -210,6 +207,10 @@ export function RsvpForm({ initial }: { initial: RsvpInitial | null }) {
 type View = 'form' | 'summary';
 
 function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft: RsvpFormValues | null }) {
+  const config = useRsvpConfig();
+  const { rsvp, shuttleEnabled, shuttleHotels, shuttleTimes, deadlineText } = config;
+  const deadlineMs = new Date(config.deadlineIso).getTime();
+  const showStay = rsvp.askOvernight || shuttleEnabled;
   const [state, formAction, pending] = useActionState(submitRsvp, INITIAL_FORM_STATE);
   const hydrated = useSyncExternalStore(noopSubscribe, getHydrated, getServerHydrated);
   const now = useMinuteClock();
@@ -218,7 +219,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
     if (state.status !== 'idle') return toClient(state.values);
     if (initial) return toClient(initial.values);
     if (draft) return toClient(draft);
-    return toClient(emptyValues());
+    return toClient(emptyValues(config.allEventIds));
   });
   const [view, setView] = useState<View>(() => (initial && state.status === 'idle' ? 'summary' : 'form'));
   const [intent, setIntent] = useState<RsvpIntent>('new');
@@ -242,7 +243,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
 
   /* ---------- Abgeleiteter Zustand ---------- */
 
-  const deadlinePassed = now !== null && now > DEADLINE_MS;
+  const deadlinePassed = now !== null && now > deadlineMs;
   const closed = rsvp.closeAfterDeadline && deadlinePassed;
   const fresh = state.attempt > ack;
   const success = fresh && state.status === 'success' ? state : null;
@@ -257,7 +258,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
   const submittedOnce = errorFocus > 0 || state.attempt > 0;
 
   const plain = toPlain(values);
-  const live = validateValues(cleanValues(plain));
+  const live = validateValues(cleanValues(plain), config);
   const liveErrors = live.ok ? NO_ERRORS : live.errors;
   const shown: RsvpFieldErrors = {};
   if (serverErrors.form) shown.form = serverErrors.form;
@@ -268,13 +269,13 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
 
   const deadlineHint = deadlinePassed
     ? 'Eure Antwort könnt ihr auch jetzt noch ändern.'
-    : `Ihr könnt eure Antwort bis ${DEADLINE_TEXT} jederzeit ändern.`;
+    : `Ihr könnt eure Antwort bis ${deadlineText} jederzeit ändern.`;
 
   const numbers = (() => {
     let n = 2;
     const persons = n++;
     const events = rsvp.events.length > 0 ? n++ : 0;
-    const stay = SHOW_STAY ? n++ : 0;
+    const stay = showStay ? n++ : 0;
     return { persons, events, stay, more: attending ? n : 2 };
   })();
 
@@ -418,7 +419,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
     event.preventDefault();
     if (pending) return;
     const formData = new FormData(event.currentTarget);
-    const result = parseRsvpForm(formData);
+    const result = parseRsvpForm(formData, config);
     if (!result.ok) {
       setRevealed((current) => new Set([...current, ...Object.keys(result.errors)]));
       setAck(state.attempt);
@@ -470,7 +471,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
 
   const resetForm = () => {
     clearDraft();
-    setValues(toClient(emptyValues()));
+    setValues(toClient(emptyValues(config.allEventIds)));
     setRevealed(new Set());
     setDirty(false);
     setDraftSaved(false);
@@ -554,7 +555,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
         <p className={styles.deadline}>
           <Badge variant="terra" icon="calendar">
             <span>
-              Bitte bis <time dateTime={rsvp.deadline}>{DEADLINE_TEXT}</time>
+              Bitte bis <time dateTime={rsvp.deadline}>{deadlineText}</time>
             </span>
           </Badge>
           <DeadlineBadge now={now} />
@@ -761,7 +762,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
             </Group>
           ) : null}
 
-          {SHOW_STAY ? (
+          {showStay ? (
             <Group number={numbers.stay} title="Übernachtung & Shuttle">
               {rsvp.askOvernight ? (
                 <SubGroup legend="Wo übernachtet ihr?" optional id={fieldId('overnight')}>
@@ -787,7 +788,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
                 </SubGroup>
               ) : null}
 
-              {SHUTTLE_ENABLED ? (
+              {shuttleEnabled ? (
                 <SubGroup
                   legend="Shuttle"
                   optional
@@ -810,7 +811,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
                       checked={values.shuttleThere}
                       onChange={(checked) => setShuttle('shuttleThere', checked)}
                       title="Shuttle Hinfahrt"
-                      subtitle={SHUTTLE_TIMES.there ?? undefined}
+                      subtitle={shuttleTimes.there ?? undefined}
                       icon={<Icon name="bus" size={24} />}
                     />
                     <ChoiceCard
@@ -820,20 +821,20 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
                       checked={values.shuttleBack}
                       onChange={(checked) => setShuttle('shuttleBack', checked)}
                       title="Shuttle Rückfahrt"
-                      subtitle={SHUTTLE_TIMES.back ?? undefined}
+                      subtitle={shuttleTimes.back ?? undefined}
                       icon={<Icon name="bus" size={24} />}
                     />
                   </div>
                   {anyShuttle ? (
                     <div className={styles.shuttleDetails}>
-                      {SHUTTLE_HOTELS.length > 0 ? (
+                      {shuttleHotels.length > 0 ? (
                         <SelectField
                           id={fieldId('shuttleFrom')}
                           name="shuttleFrom"
                           label={values.shuttleThere ? 'Ab welchem Hotel?' : 'Zu welchem Hotel?'}
                           value={values.shuttleFrom}
                           onChange={(hotel) => set('shuttleFrom', hotel)}
-                          options={SHUTTLE_HOTELS.map((hotel) => ({ value: hotel, label: hotel }))}
+                          options={shuttleHotels.map((hotel) => ({ value: hotel, label: hotel }))}
                           placeholder="Bitte wählen"
                           errorKey="shuttleFrom"
                           error={shown.shuttleFrom}

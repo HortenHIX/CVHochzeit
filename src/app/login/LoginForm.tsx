@@ -15,11 +15,12 @@ const INITIAL: LoginState = { status: 'idle', attempt: 0 };
  *
  * Steht bewusst im statischen Seitengerüst (nicht hinter <Suspense>), damit
  * nichts verloren geht, was vor dem vollständigen Laden eingetippt wurde.
- * `?next=` und `?fehler=code` liest es deshalb selbst aus der Adresse.
+ * `?next=` und `?fehler=code|rate` liest es deshalb selbst aus der Adresse.
  */
 export function LoginForm() {
   const next = useSearchParam('next');
-  const linkCodeInvalid = useSearchParam('fehler') === 'code';
+  const linkError = useSearchParam('fehler');
+  const linkCodeInvalid = linkError === 'code' || linkError === 'rate';
   const [state, formAction, pending] = useActionState(login, INITIAL);
   const [code, setCode] = useState('');
   const [remember, setRemember] = useState(true);
@@ -53,7 +54,11 @@ export function LoginForm() {
       {linkCodeInvalid && !hasError ? (
         <p id="code-link-hint" className={styles.linkHint}>
           <Icon name="info" size={20} className={styles.linkHintIcon} />
-          <span>Der Code aus eurem Link hat leider nicht gepasst. Gebt ihn hier einfach von Hand ein.</span>
+          <span>
+            {linkError === 'rate'
+              ? 'Zu viele Versuche in kurzer Zeit. Bitte wartet eine Minute und gebt den Code dann hier ein.'
+              : 'Der Code aus eurem Link hat leider nicht gepasst. Gebt ihn hier einfach von Hand ein.'}
+          </span>
         </p>
       ) : null}
 

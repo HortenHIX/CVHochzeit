@@ -1,4 +1,3 @@
-import { site } from '@/content/site';
 import type { Attendance, RsvpEntry, RsvpPerson, RsvpShuttle } from './types';
 
 /**
@@ -94,10 +93,6 @@ export const DRAFT_VERSION = 1;
 /** Ab dieser Länge meldet der Zeichenzähler der Nachricht sich bei Screenreadern. */
 export const MESSAGE_ANNOUNCE_FROM = 450;
 
-export const SHUTTLE_ENABLED = site.rsvp.askShuttle && site.stay.shuttle.enabled;
-/** Hotels, an denen der Shuttle hält (Auswahl „Ab welchem Hotel?“) */
-export const SHUTTLE_HOTELS: string[] = site.stay.hotels.filter((h) => h.shuttleStop).map((h) => h.name);
-export const ALL_EVENT_IDS: string[] = site.rsvp.events.map((e) => e.id);
 
 /* ---------------------------------------------------------------------------
  * Startwerte & Umwandlungen
@@ -116,14 +111,14 @@ export function emptyPerson(name = ''): PersonFormValues {
   };
 }
 
-export function emptyValues(): RsvpFormValues {
+/** Leeres Formular. Programmpunkte (`allEventIds`) sind standardmäßig alle angehakt. */
+export function emptyValues(allEventIds: readonly string[] = []): RsvpFormValues {
   return {
     attendance: '',
     name: '',
     email: '',
     persons: [emptyPerson()],
-    // Programmpunkte sind standardmäßig alle angehakt.
-    events: [...ALL_EVENT_IDS],
+    events: [...allEventIds],
     overnight: '',
     shuttleThere: false,
     shuttleBack: false,
@@ -224,47 +219,4 @@ export function personCountText(count: number): string {
   return count === 1 ? '1 Person' : `${count} Personen`;
 }
 
-export function menuLabel(value: string): string {
-  if (value === site.rsvp.childMenu.value) return site.rsvp.childMenu.label;
-  return site.rsvp.menuOptions.find((o) => o.value === value)?.label ?? value;
-}
 
-export function eventLabel(id: string): string {
-  return site.rsvp.events.find((e) => e.id === id)?.label ?? id;
-}
-
-export function overnightLabel(value: string): string {
-  return site.rsvp.overnightOptions.find((o) => o.value === value)?.label ?? value;
-}
-
-/* ---------------------------------------------------------------------------
- * Shuttle-Zeiten aus site.stay.shuttle.rides
- * ------------------------------------------------------------------------- */
-
-/** „02:30“ → „2:30 Uhr“ */
-export function clockText(time: string): string {
-  const [h = '0', m = '00'] = time.split(':');
-  return `${Number(h)}:${m} Uhr`;
-}
-
-/** Minuten seit Tagesbeginn; Zeiten vor 6 Uhr gehören zur Nacht danach. */
-function minutesOfNight(time: string): number {
-  const [h = '0', m = '0'] = time.split(':');
-  const minutes = Number(h) * 60 + Number(m);
-  return Number(h) < 6 ? minutes + 24 * 60 : minutes;
-}
-
-function ridesText(direction: 'hin' | 'zurueck'): string | null {
-  const times = [...new Set(site.stay.shuttle.rides.filter((r) => r.direction === direction).map((r) => r.time))].sort(
-    (a, b) => minutesOfNight(a) - minutesOfNight(b),
-  );
-  if (times.length === 0) return null;
-  if (times.length === 1) return clockText(times[0]);
-  if (direction === 'zurueck') return `ab ${clockText(times[0])}, letzte Fahrt ${clockText(times[times.length - 1])}`;
-  return `ab ${clockText(times[0])}`;
-}
-
-export const SHUTTLE_TIMES = {
-  there: ridesText('hin'),
-  back: ridesText('zurueck'),
-};

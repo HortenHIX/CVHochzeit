@@ -3,28 +3,19 @@ import { Icon } from '@/components/icons/Icon';
 import { HalfWreath, OliveBranch, Rings } from '@/components/illustrations';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { Notice } from '@/components/ui/Notice';
-import { site } from '@/content/site';
-import { formatDate, telHref } from '@/lib/format';
-import {
-  eventLabel,
-  greetingName,
-  menuLabel,
-  overnightLabel,
-  personCountText,
-  SHUTTLE_ENABLED,
-  type RsvpSummary,
-} from '@/lib/rsvp/form-state';
+import { formatDateIn, telHref } from '@/lib/format-pure';
+import { eventLabel, menuLabel, overnightLabel, type RsvpConfig } from '@/lib/rsvp/config';
+import { greetingName, personCountText, type RsvpSummary } from '@/lib/rsvp/form-state';
 import { allergyText, type RsvpPerson, type RsvpShuttle } from '@/lib/rsvp/types';
+import { useRsvpConfig } from './RsvpConfigContext';
 import styles from './RsvpResult.module.css';
-
-const { rsvp } = site;
 
 export type ResultVariant = 'success' | 'existing' | 'closed';
 
-function personDetails(person: RsvpPerson): string {
+function personDetails(config: RsvpConfig, person: RsvpPerson): string {
   const allergies = allergyText(person);
   return [
-    person.menu ? menuLabel(person.menu) : null,
+    person.menu ? menuLabel(config, person.menu) : null,
     person.child ? `Kind${person.childAge ? ` (${person.childAge})` : ''}` : null,
     person.highChair ? 'Hochstuhl' : null,
     allergies ? `Unverträglichkeiten: ${allergies}` : null,
@@ -42,6 +33,8 @@ function shuttleText(shuttle: RsvpShuttle | null): string {
 
 /** Zusammenfassung einer Antwort als <dl> (ab 30em zweispaltig). */
 export function RsvpSummaryList({ summary }: { summary: RsvpSummary }) {
+  const config = useRsvpConfig();
+  const { rsvp } = config;
   const yes = summary.attendance === 'yes';
   return (
     <dl className={styles.summary}>
@@ -70,7 +63,7 @@ export function RsvpSummaryList({ summary }: { summary: RsvpSummary }) {
               {summary.persons.map((person, i) => (
                 <li key={`${i}-${person.name}`}>
                   <span className={styles.personName}>{person.name}</span>
-                  {personDetails(person) ? <span className={styles.personMeta}>{personDetails(person)}</span> : null}
+                  {personDetails(config, person) ? <span className={styles.personMeta}>{personDetails(config, person)}</span> : null}
                 </li>
               ))}
             </ul>
@@ -80,16 +73,16 @@ export function RsvpSummaryList({ summary }: { summary: RsvpSummary }) {
       {yes && rsvp.events.length > 0 ? (
         <div className={styles.row}>
           <dt>Programm</dt>
-          <dd>{summary.events.length ? summary.events.map(eventLabel).join(', ') : '–'}</dd>
+          <dd>{summary.events.length ? summary.events.map((id) => eventLabel(config, id)).join(', ') : '–'}</dd>
         </div>
       ) : null}
       {yes && rsvp.askOvernight ? (
         <div className={styles.row}>
           <dt>Übernachtung</dt>
-          <dd>{summary.overnight ? overnightLabel(summary.overnight) : 'Keine Angabe'}</dd>
+          <dd>{summary.overnight ? overnightLabel(config, summary.overnight) : 'Keine Angabe'}</dd>
         </div>
       ) : null}
-      {yes && SHUTTLE_ENABLED ? (
+      {yes && config.shuttleEnabled ? (
         <div className={styles.row}>
           <dt>Shuttle</dt>
           <dd>{shuttleText(summary.shuttle)}</dd>
@@ -133,6 +126,7 @@ export function RsvpResult({
   onEdit?: () => void;
   onNew?: () => void;
 }) {
+  const { rsvp, timeZone } = useRsvpConfig();
   const yes = summary?.attendance === 'yes';
   const count = summary?.persons.length ?? 0;
   const greeting = summary ? greetingName(summary.name) : '';
@@ -172,7 +166,7 @@ export function RsvpResult({
       <p className={styles.text}>{text}</p>
       {variant === 'existing' && summary ? (
         <p className={styles.meta}>
-          Zuletzt gespeichert am <time dateTime={summary.updatedAt}>{formatDate(summary.updatedAt)}</time>
+          Zuletzt gespeichert am <time dateTime={summary.updatedAt}>{formatDateIn(summary.updatedAt, timeZone)}</time>
         </p>
       ) : null}
 

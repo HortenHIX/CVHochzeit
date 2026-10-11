@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getAuthSecrets } from '@/lib/auth/config';
+import { clientIpFrom, hitRateLimit, LIMITS, refundRateLimit } from '@/lib/rate-limit';
 import {
   createSessionToken,
   roleForCode,
@@ -41,10 +42,18 @@ export async function proxy(request: NextRequest) {
   if (codeParam !== null && !isAdminArea) {
     const cleanUrl = request.nextUrl.clone();
     cleanUrl.searchParams.delete('code');
-    const response = NextResponse.redirect(cleanUrl);
-    if (!role && roleForCode(codeParam, secrets) === 'guest') {
+    if (role) return withNoIndex(NextResponse.redirect(cleanUrl));
+    // Gleiches Kontingent wie das Login-Formular – sonst ließe sich der Code hier durchprobieren.
+    const { key, limit, window } = LIMITS.guestLogin;
+    const limitKey = key(clientIpFrom(request.headers));
+    if (!(await hitRateLimit(limitKey, limit, window))) {
+      return withNoIndex(redirectToLogin(request, '/login', 'rate'));
+    }
+    if (roleForCode(codeParam, secrets) === 'guest') {
       const token = await createSessionToken('guest', secrets);
       if (token) {
+        await refundRateLimit(limitKey); // Erfolg zählt nicht gegen das Kontingent
+        const response = NextResponse.redirect(cleanUrl);
         response.cookies.set(SESSION_COOKIE, token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
@@ -55,8 +64,8 @@ export async function proxy(request: NextRequest) {
         return withNoIndex(response);
       }
     }
-    if (role) return withNoIndex(response);
     // Falscher Code: weiter zum Login, Code nicht in der Adresse behalten.
+    return withNoIndex(redirectToLogin(request, '/login', 'code'));
   }
 
   if (isAdminArea) {
@@ -65,16 +74,16 @@ export async function proxy(request: NextRequest) {
   }
 
   if (role) return withNoIndex(NextResponse.next());
-  return withNoIndex(redirectToLogin(request, '/login', codeParam !== null));
+  return withNoIndex(redirectToLogin(request, '/login'));
 }
 
-function redirectToLogin(request: NextRequest, loginPath: string, invalidCode = false) {
+function redirectToLogin(request: NextRequest, loginPath: string, error?: 'code' | 'rate') {
   const url = new URL(loginPath, request.url);
   const target = request.nextUrl.clone();
   target.searchParams.delete('code');
   const next = target.pathname + target.search;
   if (next !== '/' && next !== loginPath) url.searchParams.set('next', next);
-  if (invalidCode) url.searchParams.set('fehler', 'code');
+  if (error) url.searchParams.set('fehler', error);
   // Server Actions / Fetches nicht umleiten, sondern sauber ablehnen.
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     return new NextResponse('Nicht angemeldet', { status: 401 });
