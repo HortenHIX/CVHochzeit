@@ -378,8 +378,8 @@ export const site = {
         street: 'Kandel 1',
         zipCity: '79183 Waldkirch (Südschwarzwald)',
         description: 'Ein alter Gutshof mit großem Garten, Scheune und viel Platz zum Feiern. PLATZHALTER',
-        lat: 48.15,
-        lng: 11.6,
+        lat: 48.064782,
+        lng: 8.015747,
         vignette: 'barn',
       },
     ] satisfies Location[],
@@ -575,8 +575,8 @@ export const site = {
     privacyNote:
       'Wir nutzen eure Angaben (inkl. Unverträglichkeiten) ausschließlich für die Planung unserer Hochzeit und löschen sie spätestens drei Monate danach.',
     /** Ansprechpartner für Änderungen nach der Frist. PLATZHALTER */
-    changeContactName: 'Anna',
-    changeContactPhone: '+49 170 0000001',
+    changeContactName: 'Christoph',
+    changeContactPhone: '+49 771 8965614',
   },
 
   /* ------------------------------------------------------------------------
