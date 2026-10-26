@@ -5,7 +5,7 @@ import { publicSiteUrl } from '@/lib/site-url';
 export function GET() {
   const { first, second } = site.couple;
   const location = site.locations.items.find((l) => l.id === 'feier') ?? site.locations.items[0];
-  const where = location ? `${location.name}, ${location.street}, ${location.zipCity}` : site.wedding.place;
+  const where = location ? [location.name, location.street, location.zipCity].filter(Boolean).join(', ') : site.wedding.place;
   // Seiten-Adresse in der Beschreibung (design.md F2), sobald sie bekannt ist (Vercel/NEXT_PUBLIC_SITE_URL).
   const pageUrl = publicSiteUrl();
   const description = [site.hero.intro, pageUrl ? `Alle Infos: ${pageUrl.origin}` : '']

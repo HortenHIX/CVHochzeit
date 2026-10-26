@@ -16,6 +16,7 @@ export interface RsvpConfig {
     maxPersons: number;
     allowChildren: boolean;
     menuOptions: RsvpOption[];
+    offerChildMenu: boolean;
     childMenu: RsvpOption;
     childAgeOptions: string[];
     allergyOptions: string[];
@@ -51,7 +52,8 @@ export function menuLabel(config: RsvpConfig, value: string): string {
 }
 
 export function eventLabel(config: RsvpConfig, id: string): string {
-  return config.rsvp.events.find((e) => e.id === id)?.label ?? id;
+  const event = config.rsvp.events.find((e) => e.id === id);
+  return event?.short ?? event?.label ?? id;
 }
 
 export function overnightLabel(config: RsvpConfig, value: string): string {

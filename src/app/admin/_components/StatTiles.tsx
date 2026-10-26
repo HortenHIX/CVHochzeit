@@ -94,24 +94,26 @@ export function StatTiles({ stats }: { stats: RsvpStats }) {
           value={stats.children}
           sub={stats.highChairs > 0 ? `davon ${stats.highChairs} mit Hochstuhl` : 'ohne Hochstuhl'}
         />
-        <Tile
-          id="shuttle"
-          label="Shuttle hin / zurück"
-          icon="bus"
-          value={
-            <>
-              <span aria-hidden="true">
-                {stats.shuttleThere}
-                <span className={styles.tileSlash}> / </span>
-                {stats.shuttleBack}
-              </span>
-              <span className="visually-hidden">
-                {stats.shuttleThere} hin, {stats.shuttleBack} zurück
-              </span>
-            </>
-          }
-          sub={<Parts parts={['Plätze', plural(stats.shuttleHouseholds, 'Haushalt', 'Haushalte')]} />}
-        />
+        {site.rsvp.askShuttle || stats.shuttleHouseholds > 0 ? (
+          <Tile
+            id="shuttle"
+            label="Shuttle hin / zurück"
+            icon="bus"
+            value={
+              <>
+                <span aria-hidden="true">
+                  {stats.shuttleThere}
+                  <span className={styles.tileSlash}> / </span>
+                  {stats.shuttleBack}
+                </span>
+                <span className="visually-hidden">
+                  {stats.shuttleThere} hin, {stats.shuttleBack} zurück
+                </span>
+              </>
+            }
+            sub={<Parts parts={['Plätze', plural(stats.shuttleHouseholds, 'Haushalt', 'Haushalte')]} />}
+          />
+        ) : null}
         {stats.overnight.map((row) => (
           <Tile
             key={row.key}

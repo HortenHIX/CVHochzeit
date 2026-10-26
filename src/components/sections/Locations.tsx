@@ -59,8 +59,12 @@ function VenueCard({ place }: { place: Location }) {
         </h3>
         <address className={styles.address}>
           {place.street}
-          <br />
-          {place.zipCity}
+          {place.zipCity ? (
+            <>
+              <br />
+              {place.zipCity}
+            </>
+          ) : null}
         </address>
         {place.description ? <p className={styles.cardText}>{place.description}</p> : null}
 
@@ -75,7 +79,7 @@ function VenueCard({ place }: { place: Location }) {
           </div>
           <CopyButton
             variant="ghost"
-            value={`${place.name}, ${place.street}, ${place.zipCity}`}
+            value={[place.name, place.street, place.zipCity].filter(Boolean).join(', ')}
             label="Adresse kopieren"
             toast="Adresse kopiert"
             className={styles.copy}

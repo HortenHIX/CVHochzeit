@@ -72,7 +72,7 @@ async function submitSafely(previous: RsvpFormState, formData: FormData): Promis
     };
   }
 }
-const OVERNIGHT_ICONS: Record<string, IconName> = { hotel: 'bed', self: 'key', home: 'car' };
+const OVERNIGHT_ICONS: Record<string, IconName> = { bergwelt: 'bed', stellplatz: 'car', self: 'key', home: 'car' };
 
 /* ---------------------------------------------------------------------------
  * Browser-Zustand
@@ -85,19 +85,17 @@ interface ClientPerson extends PersonFormValues {
 
 interface ClientValues extends Omit<RsvpFormValues, 'persons'> {
   persons: ClientPerson[];
-  /** Person 1 übernimmt „Euer Name“, bis sie selbst geändert wird. */
-  p0Linked: boolean;
 }
 
 let uidCounter = 0;
 const nextUid = () => `neu-${++uidCounter}`;
 
 function toClient(values: RsvpFormValues): ClientValues {
-  const persons = (values.persons.length ? values.persons : [emptyPerson(values.name)]).map((p, i) => ({
+  const persons = (values.persons.length ? values.persons : [emptyPerson()]).map((p, i) => ({
     ...p,
     uid: `p-${i}`,
   }));
-  return { ...values, persons, p0Linked: !persons[0].name || persons[0].name === values.name };
+  return { ...values, persons };
 }
 
 function toPlain(v: ClientValues): RsvpFormValues {
@@ -131,12 +129,12 @@ function toPlain(v: ClientValues): RsvpFormValues {
  * Entwurf (localStorage, nur Komfort – darf jederzeit fehlen)
  * ------------------------------------------------------------------------- */
 
-function sanitizeDraft(raw: unknown, maxPersons: number, allEventIds: readonly string[]): RsvpFormValues | null {
+function sanitizeDraft(raw: unknown, maxPersons: number): RsvpFormValues | null {
   if (!raw || typeof raw !== 'object') return null;
   const stored = raw as { v?: unknown; values?: unknown };
   if (stored.v !== DRAFT_VERSION || !stored.values || typeof stored.values !== 'object') return null;
   const r = stored.values as Record<string, unknown>;
-  const base = emptyValues(allEventIds);
+  const base = emptyValues();
   const s = (v: unknown) => (typeof v === 'string' ? v : '');
   const b = (v: unknown) => v === true;
   const list = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
@@ -173,10 +171,10 @@ function sanitizeDraft(raw: unknown, maxPersons: number, allEventIds: readonly s
   };
 }
 
-function readDraft(maxPersons: number, allEventIds: readonly string[]): RsvpFormValues | null {
+function readDraft(maxPersons: number): RsvpFormValues | null {
   try {
     const raw = window.localStorage.getItem(DRAFT_KEY);
-    return raw ? sanitizeDraft(JSON.parse(raw), maxPersons, allEventIds) : null;
+    return raw ? sanitizeDraft(JSON.parse(raw), maxPersons) : null;
   } catch {
     return null;
   }
@@ -201,8 +199,7 @@ function clearDraft(): void {
 
 // Einmal pro Seitenaufruf lesen; danach stabil (useSyncExternalStore braucht stabile Werte).
 let draftSnapshot: { value: RsvpFormValues | null } | null = null;
-const getDraftSnapshot = (maxPersons: number, allEventIds: readonly string[]) =>
-  (draftSnapshot ??= { value: readDraft(maxPersons, allEventIds) });
+const getDraftSnapshot = (maxPersons: number) => (draftSnapshot ??= { value: readDraft(maxPersons) });
 const getServerDraftSnapshot = () => null;
 const noopSubscribe = () => () => {};
 const getHydrated = () => true;
@@ -217,12 +214,8 @@ const getServerHydrated = () => false;
  * Laden im Browser gelesen; ist einer da, startet das Formular damit neu.
  */
 export function RsvpForm({ initial }: { initial: RsvpInitial | null }) {
-  const { rsvp, allEventIds } = useRsvpConfig();
-  const draft = useSyncExternalStore(
-    noopSubscribe,
-    () => getDraftSnapshot(rsvp.maxPersons, allEventIds),
-    getServerDraftSnapshot,
-  );
+  const { rsvp } = useRsvpConfig();
+  const draft = useSyncExternalStore(noopSubscribe, () => getDraftSnapshot(rsvp.maxPersons), getServerDraftSnapshot);
   const draftValues = draft?.value ?? null;
   return <RsvpFormInner key={draftValues ? 'entwurf' : 'neu'} initial={initial} draft={draftValues} />;
 }
@@ -242,7 +235,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
     if (state.status !== 'idle') return toClient(state.values);
     if (initial) return toClient(initial.values);
     if (draft) return toClient(draft);
-    return toClient(emptyValues(config.allEventIds));
+    return toClient(emptyValues());
   });
   const [view, setView] = useState<View>(() => (initial && state.status === 'idle' ? 'summary' : 'form'));
   const [intent, setIntent] = useState<RsvpIntent>('new');
@@ -299,8 +292,8 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
   const numbers = (() => {
     let n = 2;
     const persons = n++;
-    const events = rsvp.events.length > 0 ? n++ : 0;
     const stay = showStay ? n++ : 0;
+    const events = rsvp.events.length > 0 ? n++ : 0;
     return { persons, events, stay, more: attending ? n : 2 };
   })();
 
@@ -359,20 +352,11 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
   const set = <K extends keyof ClientValues>(key: K, value: ClientValues[K]) =>
     edit((current) => ({ ...current, [key]: value }));
 
-  const setName = (name: string) =>
+  const updatePerson = (index: number, patch: Partial<PersonFormValues>) =>
     edit((current) => ({
       ...current,
-      name,
-      persons: current.p0Linked ? current.persons.map((p, i) => (i === 0 ? { ...p, name } : p)) : current.persons,
+      persons: current.persons.map((p, i) => (i === index ? { ...p, ...patch } : p)),
     }));
-
-  const updatePerson = (index: number, patch: Partial<PersonFormValues>) =>
-    edit((current) => {
-      const persons = current.persons.map((p, i) => (i === index ? { ...p, ...patch } : p));
-      const p0Linked =
-        index === 0 && patch.name !== undefined ? patch.name === '' || patch.name === current.name : current.p0Linked;
-      return { ...current, persons, p0Linked };
-    });
 
   const setAllergyOther = (index: number, checked: boolean) => {
     flushSync(() => updatePerson(index, { allergyOther: checked }));
@@ -496,7 +480,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
 
   const resetForm = () => {
     clearDraft();
-    setValues(toClient(emptyValues(config.allEventIds)));
+    setValues(toClient(emptyValues()));
     setRevealed(new Set());
     setDirty(false);
     setDraftSaved(false);
@@ -680,7 +664,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
           label="Euer Name"
           hint="Vor- und Nachname, z. B. „Anna & Ben Müller“"
           value={values.name}
-          onChange={setName}
+          onChange={(name) => set('name', name)}
           autoComplete="name"
           inputMode="text"
           autoCapitalize="words"
@@ -723,7 +707,6 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
                   <PersonCard
                     index={index}
                     person={person}
-                    linkedName={index === 0 && values.p0Linked}
                     errors={shown}
                     onChange={(patch) => updatePerson(index, patch)}
                     onRemove={index > 0 ? () => removePerson(index) : undefined}
@@ -765,35 +748,8 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
             </div>
           </Group>
 
-          {rsvp.events.length > 0 ? (
-            <Group number={numbers.events} title="Programm" id={fieldId('events')}>
-              <p id="rsvp-programm-hinweis" className={styles.groupIntro}>
-                Wobei seid ihr dabei? Nehmt einfach den Haken heraus, wo ihr nicht könnt.
-              </p>
-              <div className={styles.stack}>
-                {rsvp.events.map((event) => (
-                  <ChoiceCard
-                    key={event.id}
-                    type="checkbox"
-                    name="events"
-                    value={event.id}
-                    checked={values.events.includes(event.id)}
-                    onChange={(checked) => toggleEvent(event.id, checked)}
-                    title={event.label}
-                    subtitle={event.detail}
-                    icon={<Icon name={event.icon} size={24} />}
-                    invalid={Boolean(shown.events)}
-                    describedBy={['rsvp-programm-hinweis', shown.events ? errorId('events') : ''].filter(Boolean).join(' ')}
-                    errorKey="events"
-                  />
-                ))}
-              </div>
-              <FieldError errorKey="events" message={shown.events} />
-            </Group>
-          ) : null}
-
           {showStay ? (
-            <Group number={numbers.stay} title="Übernachtung & Shuttle">
+            <Group number={numbers.stay} title={shuttleEnabled ? 'Übernachtung & Shuttle' : 'Übernachtung'}>
               {rsvp.askOvernight ? (
                 <SubGroup legend="Wo übernachtet ihr?" optional id={fieldId('overnight')}>
                   <div className={styles.overnight}>
@@ -890,12 +846,39 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
               ) : null}
             </Group>
           ) : null}
+
+          {rsvp.events.length > 0 ? (
+            <Group number={numbers.events} title="Katerfrühstück" id={fieldId('events')}>
+              <p id="rsvp-programm-hinweis" className={styles.groupIntro}>
+                Optional – setzt nur einen Haken, wenn ihr am Sonntag dazukommt.
+              </p>
+              <div className={styles.stack}>
+                {rsvp.events.map((event) => (
+                  <ChoiceCard
+                    key={event.id}
+                    type="checkbox"
+                    name="events"
+                    value={event.id}
+                    checked={values.events.includes(event.id)}
+                    onChange={(checked) => toggleEvent(event.id, checked)}
+                    title={event.label}
+                    subtitle={event.detail}
+                    icon={<Icon name={event.icon} size={24} />}
+                    invalid={Boolean(shown.events)}
+                    describedBy={['rsvp-programm-hinweis', shown.events ? errorId('events') : ''].filter(Boolean).join(' ')}
+                    errorKey="events"
+                  />
+                ))}
+              </div>
+              <FieldError errorKey="events" message={shown.events} />
+            </Group>
+          ) : null}
         </div>
       </div>
 
       {/* 5. Noch etwas? */}
       <Group number={numbers.more} title="Noch etwas?">
-        {rsvp.askSongWish ? (
+        {rsvp.askSongWish && attending ? (
           <TextField
             id={fieldId('songWish')}
             name="songWish"

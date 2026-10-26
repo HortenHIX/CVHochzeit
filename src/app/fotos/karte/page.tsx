@@ -39,7 +39,7 @@ function TableCard({ albumUrl, hidden }: { albumUrl: string; hidden: boolean }) 
         className={`${styles.bouquet} ${styles.bouquetBottom}`}
       />
       <div className={styles.content}>
-        <Monogram printable className={styles.monogram} />
+        <Monogram variant="large" className={styles.monogram} />
         <p className={styles.names}>
           {site.couple.first} <span className={styles.amp}>&amp;</span> {site.couple.second}
         </p>

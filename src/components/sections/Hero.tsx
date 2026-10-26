@@ -44,7 +44,7 @@ export function Hero() {
   const google: GoogleCalendarEvent = {
     text: `Hochzeit ${first} & ${second}`,
     dates: `${toCalendarStamp(start)}/${toCalendarStamp(end)}`,
-    location: venue ? `${venue.name}, ${venue.street}, ${venue.zipCity}` : place,
+    location: venue ? [venue.name, venue.street, venue.zipCity].filter(Boolean).join(', ') : place,
     details: site.hero.intro,
   };
 
@@ -125,7 +125,7 @@ export function Hero() {
 
       <div className={styles.seal}>
         <span className={styles.sealBadge}>
-          <Monogram size={56} />
+          <Monogram variant="small" size={52} />
         </span>
       </div>
     </section>

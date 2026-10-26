@@ -39,7 +39,7 @@ export function Header({ minimal = false }: { minimal?: boolean }) {
       <HeaderShell>
         <div className={styles.bar}>
           <a href="#start" className={styles.brand}>
-            <Monogram variant="small" size={40} label="Christoph und Vera – zum Seitenanfang" />
+            <Monogram variant="small" size={44} label="Christoph und Vera – zum Seitenanfang" />
           </a>
           {minimal ? null : <DesktopNav items={DESKTOP_ITEMS} spyIds={SPY_IDS} />}
           <div className={styles.actions}>
@@ -71,7 +71,7 @@ function HeaderActions({ state, minimal }: { state: RsvpState; minimal: boolean 
         rsvpId={RSVP_NAV.id}
         rsvpLabel={state === 'yes' ? 'Eure Zusage ansehen' : state === 'no' ? 'Eure Antwort ansehen' : 'Jetzt zusagen'}
         rsvpHideAfter={state === 'none' ? CTA_HIDE_AFTER : undefined}
-        brand={<Monogram variant="small" size={40} />}
+        brand={<Monogram variant="small" size={44} />}
         decoration={<CornerBouquet corner="bottom-right" size={160} className={styles.menuBouquet} />}
       />
       )}

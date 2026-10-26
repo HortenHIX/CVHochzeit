@@ -30,7 +30,9 @@ export function Footer({ topHref = '#start', logout: showLogout = true }: { topH
         </div>
 
         <div className={styles.inner}>
-          <Monogram variant="large" onDark size={72} className={styles.monogram} />
+          <span className={styles.logoPlate}>
+            <Monogram variant="large" size={132} />
+          </span>
           <p className={styles.date}>
             <time dateTime={site.wedding.start.slice(0, 10)}>{formatDate(site.wedding.start)}</time>
             <span className="visually-hidden">,</span>{' '}

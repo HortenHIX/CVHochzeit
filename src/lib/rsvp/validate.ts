@@ -229,9 +229,6 @@ export function validateValues(values: RsvpFormValues, config: RsvpConfig): Rsvp
 
   // 3. Programm
   const events = attending ? config.allEventIds.filter((id) => values.events.includes(id)) : [];
-  if (attending && config.allEventIds.length > 0 && events.length === 0) {
-    errors.events = 'Bitte wählt mindestens einen Programmpunkt aus.';
-  }
 
   // 4. Übernachtung & Shuttle
   let overnight: string | null = null;
@@ -262,7 +259,7 @@ export function validateValues(values: RsvpFormValues, config: RsvpConfig): Rsvp
   }
 
   // 5. Noch etwas?
-  if (rsvp.askSongWish && tooLong(values.songWish, RSVP_LIMITS.songWish)) {
+  if (rsvp.askSongWish && attending && tooLong(values.songWish, RSVP_LIMITS.songWish)) {
     errors.songWish = `Bitte kürzt den Musikwunsch auf höchstens ${RSVP_LIMITS.songWish} Zeichen.`;
   }
   if (tooLong(values.message, RSVP_LIMITS.message)) {
@@ -285,7 +282,7 @@ export function validateValues(values: RsvpFormValues, config: RsvpConfig): Rsvp
       events,
       overnight,
       shuttle,
-      songWish: rsvp.askSongWish ? values.songWish : '',
+      songWish: rsvp.askSongWish && attending ? values.songWish : '',
       message: values.message,
     },
   };

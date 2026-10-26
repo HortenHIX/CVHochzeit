@@ -62,8 +62,13 @@
   margin-inline: auto;
 }
 
-.monogram {
-  color: var(--c-sand);
+/* Das Logo ist für helle Flächen gezeichnet – auf dem dunklen Fuß sitzt es auf einer Leinen-Tafel. */
+.logoPlate {
+  display: grid;
+  place-items: center;
+  padding: var(--space-3) var(--space-5);
+  border-radius: 16px;
+  background: var(--c-linen);
 }
 
 .date {
@@ -237,7 +242,6 @@
     color: #000;
   }
 
-  .footer .monogram,
   .footer .date,
   .footer .text {
     color: #000;

@@ -98,7 +98,7 @@ test.describe('Zugangsschutz', () => {
     expect(response.headers()['content-type']).toContain('text/calendar');
     const body = await response.text();
     expect(body).toContain('BEGIN:VEVENT');
-    expect(body).toContain('DTSTART:20270619T120000Z');
+    expect(body).toContain('DTSTART:20270522T120000Z');
   });
 
   test('robots.txt und Datenschutz sind öffentlich, alles ist noindex', async ({ request }) => {

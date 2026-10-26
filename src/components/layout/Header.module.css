@@ -41,7 +41,7 @@
   flex: none;
   padding: 4px;
   margin-inline-start: -4px;
-  border-radius: 50%;
+  border-radius: 8px;
   color: var(--c-ink);
   text-decoration: none;
 }

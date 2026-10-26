@@ -49,8 +49,8 @@ async function fillTwoPersonYes(section: Locator, household: string, first: stri
 
   const p1 = person(section, 1);
   await expect(p1).toBeVisible();
-  // Person 1 übernimmt den Namen aus Gruppe 1 als Vorschlag.
-  await expect(p1.getByLabel('Name', { exact: true })).toHaveValue(household);
+  // Person 1 wird nicht automatisch aus „Euer Name“ übernommen.
+  await expect(p1.getByLabel('Name', { exact: true })).toHaveValue('');
   await p1.getByLabel('Name', { exact: true }).fill(first);
   await p1.getByRole('radio', { name: 'Vegetarisch' }).check();
   await p1.getByRole('checkbox', { name: 'Laktose' }).check();
@@ -59,9 +59,9 @@ async function fillTwoPersonYes(section: Locator, household: string, first: stri
   const p2 = person(section, 2);
   await expect(p2.getByLabel('Name', { exact: true })).toBeFocused();
   await p2.getByLabel('Name', { exact: true }).fill(second);
-  await p2.getByRole('radio', { name: 'Fisch' }).check();
+  await p2.getByRole('radio', { name: 'Fleisch' }).check();
   await p2.getByRole('checkbox', { name: 'Nüsse' }).check();
-  await expect(section.getByText('2 von max. 6 Personen')).toBeVisible();
+  await expect(section.getByText('2 von max. 4 Personen')).toBeVisible();
 
   await section.getByRole('checkbox', { name: /Ich bin einverstanden/ }).check();
 }
@@ -83,10 +83,50 @@ test.describe('Zusage', () => {
     await expect(summary).toContainText(`Ben ${id}`);
     await expect(summary).toContainText('Vegetarisch');
     await expect(summary).toContainText('Unverträglichkeiten: Laktose');
-    await expect(summary).toContainText('Fisch');
+    await expect(summary).toContainText('Fleisch');
     await expect(summary).toContainText('Unverträglichkeiten: Nüsse');
     await expect(section.getByRole('button', { name: 'Antwort ändern' })).toBeVisible();
     await expect(section.getByRole('link', { name: 'Zum Kalender hinzufügen' })).toHaveAttribute('href', '/kalender.ics');
+  });
+
+  test('Formular nach Vorgabe: zwei Menüs, vier Personen, Übernachtung, optionales Katerfrühstück, Musikwunsch nur bei Zusage', async ({ page }) => {
+    const section = await openRsvp(page);
+    await readyForm(section);
+
+    await expect(section.getByText('Musikwunsch')).toHaveCount(0);
+    await section.getByRole('radio', { name: /Ja, wir kommen gern/ }).check();
+    await expect(section.getByLabel('Musikwunsch')).toBeVisible();
+
+    // Nur Fleisch oder Vegetarisch
+    const p1 = person(section, 1);
+    await expect(p1.getByRole('radio', { name: 'Fleisch' })).toBeVisible();
+    await expect(p1.getByRole('radio', { name: 'Vegetarisch' })).toBeVisible();
+    await expect(p1.getByRole('radio')).toHaveCount(2);
+
+    // Höchstens vier Personen
+    const add = section.getByRole('button', { name: 'Weitere Person hinzufügen' });
+    for (let i = 0; i < 3; i++) await add.click();
+    await expect(section.getByText('4 von max. 4 Personen')).toBeVisible();
+
+    // Übernachtung, ohne Shuttle und ohne Programmabfrage
+    for (const label of [
+      'In der Bergwelt (Vermittlung über uns)',
+      'Auf dem Stellplatz bei der Bergwelt (Strom, kein Wasser)',
+      'Wir kümmern uns selbst',
+      'Wir fahren nach Hause',
+    ]) {
+      await expect(section.getByRole('radio', { name: label })).toBeVisible();
+    }
+    await expect(section.getByText('Shuttle')).toHaveCount(0);
+    await expect(section.getByText('Freie Trauung')).toHaveCount(0);
+
+    // Katerfrühstück: optional, nicht vorausgewählt
+    const brunch = section.getByRole('checkbox', { name: /Katerfrühstück dazustoßen/ });
+    await expect(brunch).not.toBeChecked();
+
+    // Bei Absage entfällt der Musikwunsch
+    await section.getByRole('radio', { name: /Leider nicht/ }).check();
+    await expect(section.getByLabel('Musikwunsch')).toBeHidden();
   });
 
   test('nach dem Neuladen erscheint die Zusammenfassung, „Antwort ändern“ füllt vor und Absage wird bestätigt', async ({
@@ -151,6 +191,7 @@ test.describe('Zusage', () => {
     // Zusage ohne Menü: der eingegebene Name bleibt erhalten
     await section.getByRole('radio', { name: /Ja, wir kommen gern/ }).check();
     await section.getByLabel('Euer Name').fill('Erika Fehlerfall');
+    await person(section, 1).getByLabel('Name', { exact: true }).fill('Erika Fehlerfall');
     await section.getByRole('checkbox', { name: /Ich bin einverstanden/ }).check();
     await submit(section);
     await expect(alert).toBeFocused();

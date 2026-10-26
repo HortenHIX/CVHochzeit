@@ -189,6 +189,8 @@ export interface RsvpOption {
 export interface RsvpEvent {
   id: string;
   label: string;
+  /** Kurzname für die Übersicht der Antwort und die Verwaltung (sonst `label`) */
+  short?: string;
   /** z. B. "Samstag, 14:00 Uhr" */
   detail?: string;
   icon: IconName;
@@ -224,7 +226,7 @@ export const site = {
     end: '2027-05-23T03:00:00+02:00',
     timeZone: 'Europe/Berlin',
     /** Kurzer Ort für Hero, Footer und Kalender. PLATZHALTER */
-    place: 'Bergwelt Kandel · Auf dem Kandel',
+    place: 'Bergwelt Kandel · Kandel 1',
   },
 
   /** Titel im Browser-Tab und Beschreibung für Link-Vorschauen */
@@ -372,9 +374,10 @@ export const site = {
         id: 'feier',
         label: 'Freie Trauung & Feier',
         time: '14:00\u00A0Uhr',
-        name: 'Hofgut Lindenhof',
-        street: 'Am Lindenhof 1',
-        zipCity: '12345 Musterstadt',
+        name: 'Bergwelt Kandel',
+        street: 'Kandel 1',
+        /** PLZ und Ort fehlen noch – bitte ergänzen (erscheint z. B. im Kalendereintrag). */
+        zipCity: '',
         description: 'Ein alter Gutshof mit großem Garten, Scheune und viel Platz zum Feiern. PLATZHALTER',
         lat: 48.15,
         lng: 11.6,
@@ -526,40 +529,47 @@ export const site = {
     title: 'Zusage',
     intro: 'Bitte gebt uns bis zum Stichtag Bescheid, ob ihr dabei seid. Eure Antwort könnt ihr jederzeit über dieses Formular ändern.',
     /** Rückmeldefrist (JJJJ-MM-TT). PLATZHALTER */
-    deadline: '2027-04-30',
+    deadline: '2027-03-20',
     /** Nach der Frist keine Antworten mehr annehmen? */
     closeAfterDeadline: false,
     /** Maximale Anzahl Personen pro Antwort */
-    maxPersons: 6,
+    maxPersons: 4,
     /** Sind Kinder eingeladen? (zeigt „Kind (unter 12 Jahren)“ pro Person) */
     allowChildren: true,
     menuOptions: [
-      { value: 'fleisch', label: 'Fleisch', description: 'Rinderbraten mit Kartoffelgratin' },
-      { value: 'fisch', label: 'Fisch', description: 'Saibling mit Kräuterkruste' },
-      { value: 'vegetarisch', label: 'Vegetarisch', description: 'Gefüllte Pasta mit Salbeibutter' },
-      { value: 'vegan', label: 'Vegan', description: 'Gemüse-Curry mit Kokos' },
+      { value: 'fleisch', label: 'Fleisch' },
+      { value: 'vegetarisch', label: 'Vegetarisch' },
     ] satisfies RsvpOption[],
-    /** Zusätzliche Menüoption für Kinder */
+    /** Kindermenü bei Kindern als dritte Menüoption anbieten? */
+    offerChildMenu: false,
+    /** Zusätzliche Menüoption für Kinder (nur mit offerChildMenu) */
     childMenu: { value: 'kinder', label: 'Kindermenü' } satisfies RsvpOption,
     childAgeOptions: ['0–2 Jahre', '3–6 Jahre', '7–11 Jahre'],
     /** Schnellauswahl für Unverträglichkeiten (zusätzlich gibt es ein Freitextfeld) */
     allergyOptions: ['Gluten', 'Laktose', 'Nüsse'],
-    /** Programmpunkte, für die Gäste einzeln zusagen können (leer = ausblenden) */
+    /**
+     * Optionale Programmpunkte zum Ankreuzen (leer = ausblenden). Standardmäßig nicht
+     * angehakt, keine Pflichtauswahl.
+     */
     events: [
-      { id: 'trauung', label: 'Freie Trauung', detail: 'Samstag · 14:00\u00A0Uhr', icon: 'rings' },
-      { id: 'feier', label: 'Feier', detail: 'Samstag · ab 16:30\u00A0Uhr', icon: 'glasses' },
-      { id: 'brunch', label: 'Katerfrühstück', detail: 'Sonntag · 10:30\u00A0Uhr', icon: 'coffee' },
+      {
+        id: 'brunch',
+        label: 'Wir möchten am Sonntag zum Katerfrühstück dazustoßen.',
+        short: 'Katerfrühstück',
+        icon: 'coffee',
+      },
     ] satisfies RsvpEvent[],
     /** Frage nach der Übernachtung anzeigen? */
     askOvernight: true,
     overnightOptions: [
-      { value: 'hotel', label: 'Im Hotel-Kontingent' },
-      { value: 'self', label: 'Wir organisieren selbst' },
-      { value: 'home', label: 'Wir fahren heim' },
+      { value: 'bergwelt', label: 'In der Bergwelt (Vermittlung über uns)' },
+      { value: 'stellplatz', label: 'Auf dem Stellplatz bei der Bergwelt (Strom, kein Wasser)' },
+      { value: 'self', label: 'Wir kümmern uns selbst' },
+      { value: 'home', label: 'Wir fahren nach Hause' },
     ] satisfies RsvpOption[],
     /** Frage nach dem Shuttle anzeigen? (nur wenn stay.shuttle.enabled) */
-    askShuttle: true,
-    /** Feld für einen Musikwunsch anzeigen? */
+    askShuttle: false,
+    /** Feld für einen Musikwunsch anzeigen? (nur bei „Ja, wir kommen gern“) */
     askSongWish: true,
     successYes: 'Wir freuen uns riesig auf euch!',
     successNo: 'Schade, dass ihr nicht dabei sein könnt. Danke für eure Rückmeldung!',
@@ -580,7 +590,7 @@ export const site = {
     items: [
       {
         question: 'Bis wann sollen wir zusagen?',
-        answer: 'Bitte bis spätestens 30. April 2027 über das Formular auf dieser Seite. Ändern könnt ihr eure Antwort jederzeit. PLATZHALTER',
+        answer: 'Bitte bis spätestens 20. März 2027 über das Formular auf dieser Seite. Ändern könnt ihr eure Antwort jederzeit. PLATZHALTER',
         link: { href: '#zusage', label: 'Zur Zusage' },
       },
       {

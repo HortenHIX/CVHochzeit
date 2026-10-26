@@ -111,14 +111,14 @@ export function emptyPerson(name = ''): PersonFormValues {
   };
 }
 
-/** Leeres Formular. Programmpunkte (`allEventIds`) sind standardmäßig alle angehakt. */
-export function emptyValues(allEventIds: readonly string[] = []): RsvpFormValues {
+/** Leeres Formular. Optionale Programmpunkte sind standardmäßig nicht angehakt. */
+export function emptyValues(): RsvpFormValues {
   return {
     attendance: '',
     name: '',
     email: '',
     persons: [emptyPerson()],
-    events: [...allEventIds],
+    events: [],
     overnight: '',
     shuttleThere: false,
     shuttleBack: false,

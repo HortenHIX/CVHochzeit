@@ -59,11 +59,11 @@ const TEST_ENTRIES: RsvpEntry[] = [
     attendance: 'yes',
     persons: [
       person('Tina Testmann', 'vegetarisch', { allergyTags: ['Laktose'] }),
-      person('Tom Testmann', 'fisch'),
+      person('Tom Testmann', 'fleisch'),
       person('Toni Testmann', 'kinder', { child: true, childAge: '3–6 Jahre', highChair: true }),
     ],
-    events: ['trauung', 'feier'],
-    overnight: 'hotel',
+    events: ['brunch'],
+    overnight: 'bergwelt',
     shuttle: { there: true, back: true, from: 'Landhotel Zur Post', seats: 3 },
     songWish: 'Dancing Queen – ABBA',
     message: 'Wir freuen uns sehr!',
@@ -81,7 +81,7 @@ const TEST_ENTRIES: RsvpEntry[] = [
     name: 'Ingo Injektion',
     attendance: 'yes',
     persons: [person('Ingo Injektion', 'fleisch')],
-    events: ['feier'],
+    events: ['brunch'],
     overnight: 'home',
     shuttle: { there: false, back: false, from: '', seats: 0 },
     songWish: '-2+3',
@@ -231,9 +231,8 @@ test.describe('Verwaltung', () => {
       await expect(tileValue(page, 'antworten')).toHaveText('4');
       await expect(tileValue(page, 'kinder')).toHaveText('1');
       await expect(tile(page, 'shuttle')).toContainText('3 hin, 3 zurück');
-      await expect(tileValue(page, 'uebernachtung-hotel')).toHaveText('3');
-      await expect(tileValue(page, 'programm-feier')).toHaveText('4');
-      await expect(tileValue(page, 'programm-brunch')).toHaveText('0');
+      await expect(tileValue(page, 'uebernachtung-bergwelt')).toHaveText('3');
+      await expect(tileValue(page, 'programm-brunch')).toHaveText('4');
       await expect(tileValue(page, 'allergien')).toHaveText('1');
     }
 
@@ -315,7 +314,7 @@ test.describe('Verwaltung', () => {
     const lines = csv.split('\r\n');
     expect(lines[0]).toContain('Haushalt;E-Mail;Antwort;Personen');
     expect(csv).toContain('Familie Testmann;testmann@example.com;Zusage;3;2;1;');
-    expect(csv).toContain('1× Fisch, 1× Vegetarisch, 1× Kindermenü');
+    expect(csv).toContain('1× Fleisch, 1× Vegetarisch, 1× Kindermenü');
     expect(csv).toContain('Erika Absagewitz');
     // CSV-Injection: Formel-Zellen beginnen mit einem Apostroph (und sind korrekt gequotet).
     expect(csv).toContain(`"'=HYPERLINK(""http://example.com"";""Klick"")"`);

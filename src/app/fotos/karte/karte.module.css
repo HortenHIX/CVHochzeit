@@ -280,8 +280,8 @@
 }
 
 .monogram {
-  width: calc(18 * var(--u));
-  height: auto;
+  width: auto;
+  height: calc(30 * var(--u)) !important;
 }
 
 /* Pinyon 20 pt */

@@ -21,7 +21,7 @@ export function RsvpSection() {
     <Section id={SECTION_IDS.rsvp} title={title} eyebrow={eyebrow} intro={intro} tone="alt" width="narrow">
       <div className={styles.card}>
         <div className={styles.seal}>
-          <Monogram size={56} />
+          <Monogram variant="small" size={52} />
         </div>
         {/* Nur die Zusage-Einstellungen gehen an den Browser, nicht die ganze Inhaltsdatei. */}
         <RsvpConfigProvider value={getRsvpConfig()}>

@@ -27,7 +27,7 @@ export default function AdminLoginPage() {
       <div className={styles.cardWrap}>
         <HalfSun className={styles.sun} />
         <ArchFrame variant="card" className={styles.card} innerClassName={styles.cardInner}>
-          <Monogram variant="large" size={72} className={styles.monogram} />
+          <Monogram variant="large" size={120} className={styles.monogram} />
           <p className={styles.eyebrow}>Verwaltung</p>
           <h1 className={styles.names}>
             <span className={styles.name}>{firstName}</span>{' '}

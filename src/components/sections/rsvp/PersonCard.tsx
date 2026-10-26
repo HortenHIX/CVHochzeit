@@ -18,7 +18,6 @@ function ids(...values: (string | false | null | undefined)[]): string | undefin
 export function PersonCard({
   index,
   person,
-  linkedName,
   errors,
   onChange,
   onRemove,
@@ -26,8 +25,6 @@ export function PersonCard({
 }: {
   index: number;
   person: PersonFormValues;
-  /** Person 1 übernimmt „Euer Name“, solange sie nicht selbst geändert wurde. */
-  linkedName: boolean;
   errors: RsvpFieldErrors;
   onChange: (patch: Partial<PersonFormValues>) => void;
   onRemove?: () => void;
@@ -38,7 +35,7 @@ export function PersonCard({
   const key = (field: string) => `p${index}.${field}`;
   const menuKey = key('menu');
   const menuError = errors[menuKey];
-  const menuOptions: RsvpOption[] = person.child ? [...rsvp.menuOptions, rsvp.childMenu] : rsvp.menuOptions;
+  const menuOptions: RsvpOption[] = person.child && rsvp.offerChildMenu ? [...rsvp.menuOptions, rsvp.childMenu] : rsvp.menuOptions;
   const selectedMenu = menuOptions.find((o) => o.value === person.menu);
   const descId = (value: string) => `${fieldId(menuKey)}-${value}-beschreibung`;
 
@@ -74,7 +71,6 @@ export function PersonCard({
           id={fieldId(key('name'))}
           name={key('name')}
           label="Name"
-          hint={index === 0 && linkedName && person.name ? 'Aus „Euer Name“ übernommen – gern anpassen.' : undefined}
           value={person.name}
           onChange={(name) => onChange({ name })}
           autoComplete={index === 0 ? 'name' : 'off'}

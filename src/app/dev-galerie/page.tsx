@@ -261,7 +261,7 @@ export default function DevGalleryPage() {
         </div>
       </Motif>
 
-      <Motif id="e10" title="E10 Monogramm" note="small 40 · default 56 · large 72 · auf Dunkel">
+      <Motif id="e10" title="E10 Monogramm" note="small 44 · default 56 · large 120">
         <Grounds>
           <Monogram variant="small" />
           <Monogram />
@@ -279,9 +279,9 @@ export default function DevGalleryPage() {
           </Zoom>
           <figure className={`${styles.zoom} ${styles.dark} on-dark`}>
             <div className={styles.stage}>
-              <Monogram size={160} onDark variant="large" />
-              <Monogram size={64} onDark />
-              <Monogram size={40} onDark variant="small" />
+              <Monogram size={160} variant="large" />
+              <Monogram size={64} />
+              <Monogram size={40} variant="small" />
             </div>
             <figcaption className={styles.caption}>onDark</figcaption>
           </figure>

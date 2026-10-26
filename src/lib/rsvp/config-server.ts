@@ -15,6 +15,7 @@ export function getRsvpConfig(): RsvpConfig {
       maxPersons: rsvp.maxPersons,
       allowChildren: rsvp.allowChildren,
       menuOptions: rsvp.menuOptions,
+      offerChildMenu: rsvp.offerChildMenu,
       childMenu: rsvp.childMenu,
       childAgeOptions: rsvp.childAgeOptions,
       allergyOptions: rsvp.allergyOptions,
