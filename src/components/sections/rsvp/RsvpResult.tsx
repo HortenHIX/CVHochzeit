@@ -82,6 +82,18 @@ export function RsvpSummaryList({ summary }: { summary: RsvpSummary }) {
           <dd>{summary.overnight ? overnightLabel(config, summary.overnight) : 'Keine Angabe'}</dd>
         </div>
       ) : null}
+      {yes && summary.rooms ? (
+        <div className={styles.row}>
+          <dt>Zimmer</dt>
+          <dd>{summary.rooms === 1 ? '1 Zimmer' : `${summary.rooms} Zimmer`}</dd>
+        </div>
+      ) : null}
+      {yes && summary.stayNote ? (
+        <div className={styles.row}>
+          <dt>Übernachtungswünsche</dt>
+          <dd className={styles.message}>{summary.stayNote}</dd>
+        </div>
+      ) : null}
       {yes && config.shuttleEnabled ? (
         <div className={styles.row}>
           <dt>Shuttle</dt>

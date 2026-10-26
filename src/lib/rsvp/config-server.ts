@@ -22,6 +22,7 @@ export function getRsvpConfig(): RsvpConfig {
       events: rsvp.events,
       askOvernight: rsvp.askOvernight,
       overnightOptions: rsvp.overnightOptions,
+      roomBooking: rsvp.roomBooking,
       askSongWish: rsvp.askSongWish,
       successYes: rsvp.successYes,
       successNo: rsvp.successNo,

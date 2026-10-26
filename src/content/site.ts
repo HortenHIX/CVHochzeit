@@ -196,6 +196,24 @@ export interface RsvpEvent {
   icon: IconName;
 }
 
+/** Zimmer-Abfrage mit Preisinfo bei einer Übernachtungsoption (z. B. Bergwelt). */
+export interface RoomBooking {
+  /** `value` der Übernachtungsoption, bei der Zimmer abgefragt werden */
+  overnightValue: string;
+  /** Übernachtungsoptionen, bei denen das Wunschfeld erscheint */
+  noteFor: string[];
+  /** Zimmer, die wir insgesamt reserviert haben (für die Verwaltung) */
+  totalRooms: number;
+  infoTitle: string;
+  infoIntro: string;
+  prices: string[];
+  infoNote: string;
+  roomsLabel: string;
+  roomsHint: string;
+  noteLabel: string;
+  noteHint: string;
+}
+
 export interface FaqItem {
   question: string;
   answer: string;
@@ -561,11 +579,37 @@ export const site = {
     /** Frage nach der Übernachtung anzeigen? */
     askOvernight: true,
     overnightOptions: [
-      { value: 'bergwelt', label: 'In der Bergwelt (Vermittlung über uns)' },
+      {
+        value: 'bergwelt',
+        label: 'In der Bergwelt (Vermittlung über uns)',
+        description: 'Von uns vorreserviert – die Kosten tragt ihr selbst.',
+      },
       { value: 'stellplatz', label: 'Auf dem Stellplatz bei der Bergwelt (Strom, kein Wasser)' },
       { value: 'self', label: 'Wir kümmern uns selbst' },
       { value: 'home', label: 'Wir fahren nach Hause' },
     ] satisfies RsvpOption[],
+    /** Zimmer-Abfrage und Preise bei „In der Bergwelt“ */
+    roomBooking: {
+      overnightValue: 'bergwelt',
+      noteFor: ['bergwelt', 'stellplatz'],
+      totalRooms: 6,
+      infoTitle: 'Zimmer in der Bergwelt',
+      infoIntro:
+        'Wir haben Zimmer für euch reserviert und vermitteln sie. Die Übernachtung bezahlt ihr selbst, direkt vor Ort in der Bergwelt. Die Preise gelten für die Nacht von Samstag auf Sonntag.',
+      prices: [
+        'Doppelzimmer: 190 € pro Zimmer und Nacht für 2 Personen, inklusive Frühstück. Platz für bis zu 5 Personen.',
+        'St.-Peter-Zimmer: 165 € pro Zimmer und Nacht für 2 Personen, inklusive Frühstück. Platz für bis zu 4 Personen.',
+        'Jede weitere Person im Zimmer: 80 € pro Nacht, inklusive Frühstück.',
+        'Kinder von 4 bis 12 Jahren: 45 € pro Kind und Nacht.',
+        'Dazu kommt bei allen 2,80 € Kurtaxe pro Person und Nacht.',
+      ],
+      infoNote:
+        'Die Preise gelten pro Zimmer, nicht pro Person – wer sich ein Zimmer teilt, teilt sich auch die Kosten. Welches Zimmer ihr bekommt, teilen wir euch zu.',
+      roomsLabel: 'Wie viele Zimmer braucht ihr?',
+      roomsHint: 'In ein Zimmer passen bis zu 5 Personen.',
+      noteLabel: 'Wünsche zur Übernachtung',
+      noteHint: 'z. B. Anreise schon am Freitag, oder wer sich ein Zimmer teilt',
+    } satisfies RoomBooking,
     /** Frage nach dem Shuttle anzeigen? (nur wenn stay.shuttle.enabled) */
     askShuttle: false,
     /** Feld für einen Musikwunsch anzeigen? (nur bei „Ja, wir kommen gern“) */

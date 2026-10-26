@@ -41,6 +41,8 @@ function summaryFromValues(values: RsvpFormValues): RsvpSummary {
     events: attending ? values.events : [],
     overnight: null,
     shuttle: null,
+    rooms: null,
+    stayNote: '',
     songWish: values.songWish,
     message: values.message,
     updatedAt: new Date().toISOString(),

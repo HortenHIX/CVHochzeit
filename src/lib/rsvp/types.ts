@@ -44,6 +44,10 @@ export interface RsvpEntry {
   /** null = nicht gefragt / nicht beantwortet */
   overnight: Overnight | null;
   shuttle: RsvpShuttle | null;
+  /** Benötigte Zimmer (nur bei der Zimmer-Option; ältere Einträge ohne Angabe) */
+  rooms?: number | null;
+  /** Wünsche zur Übernachtung, z. B. Anreise am Freitag (ältere Einträge ohne Angabe) */
+  stayNote?: string;
   songWish: string;
   message: string;
 }
@@ -53,6 +57,7 @@ export const RSVP_LIMITS = {
   name: 120,
   email: 200,
   allergyNote: 300,
+  stayNote: 300,
   songWish: 200,
   message: 500,
 } as const;

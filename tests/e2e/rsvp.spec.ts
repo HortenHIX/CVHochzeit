@@ -129,6 +129,33 @@ test.describe('Zusage', () => {
     await expect(section.getByLabel('Musikwunsch')).toBeHidden();
   });
 
+  test('Bergwelt: Preise und Zimmerzahl werden angezeigt, abgefragt und in der Zusammenfassung gezeigt', async ({ page }, testInfo) => {
+    const id = uniqueSuffix(testInfo);
+    const section = await openRsvp(page);
+    await fillTwoPersonYes(section, `Zora & Zack ${id}`, `Zora ${id}`, `Zack ${id}`);
+
+    // Ohne Zimmer-Option keine Zimmerabfrage
+    await expect(section.getByText('Wie viele Zimmer braucht ihr?')).toHaveCount(0);
+    await section.getByRole('radio', { name: 'In der Bergwelt (Vermittlung über uns)' }).check();
+
+    await expect(section.getByText('Doppelzimmer: 190 € pro Zimmer und Nacht für 2 Personen')).toBeVisible();
+    await expect(section.getByText('St.-Peter-Zimmer: 165 €')).toBeVisible();
+    await expect(section.getByText('Kinder von 4 bis 12 Jahren: 45 € pro Kind und Nacht.')).toBeVisible();
+    await expect(section.getByText('2,80 € Kurtaxe pro Person und Nacht')).toBeVisible();
+    await expect(section.getByText('Wie viele Zimmer braucht ihr?')).toBeVisible();
+
+    // 2 Personen: höchstens 2 Zimmer
+    const more = section.getByRole('button', { name: 'Zimmer hinzufügen' });
+    await more.click();
+    await expect(section.locator('output').filter({ hasText: '2' }).first()).toBeVisible();
+    await section.getByLabel('Wünsche zur Übernachtung').fill('Anreise schon am Freitag');
+
+    await submit(section);
+    const summary = section.locator('dl');
+    await expect(summary).toContainText('2 Zimmer', SERVER);
+    await expect(summary).toContainText('Anreise schon am Freitag');
+  });
+
   test('nach dem Neuladen erscheint die Zusammenfassung, „Antwort ändern“ füllt vor und Absage wird bestätigt', async ({
     page,
   }, testInfo) => {

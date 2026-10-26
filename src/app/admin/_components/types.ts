@@ -16,6 +16,9 @@ export interface AdminRow {
   eventsShort: string;
   eventLabels: string[];
   overnight: string;
+  /** Benötigte Zimmer (nur bei Zusage mit Zimmer-Option) */
+  rooms: number | null;
+  stayNote: string;
   /** z. B. „hin & zurück · 2 Plätze“ */
   shuttle: string;
   shuttleFrom: string;

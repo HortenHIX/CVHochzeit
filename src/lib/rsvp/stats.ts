@@ -55,6 +55,8 @@ export interface RsvpStats {
   shuttleBack: number;
   /** Haushalte, die den Shuttle nutzen */
   shuttleHouseholds: number;
+  /** Insgesamt angefragte Zimmer (Zimmer-Option) */
+  roomsRequested: number;
   overnight: CountRow[];
   events: CountRow[];
   menus: MenuCount[];
@@ -119,6 +121,8 @@ export function computeStats(entries: readonly RsvpEntry[], labels: RsvpLabels):
     if (shuttle.back) shuttleBack += shuttle.seats;
   }
 
+  const roomsRequested = yesEntries.reduce((sum, e) => sum + (e.rooms ?? 0), 0);
+
   const children = persons.filter((p) => p.child);
   const lastUpdatedAt = entries.reduce<string | null>(
     (latest, e) => (latest === null || e.updatedAt > latest ? e.updatedAt : latest),
@@ -136,6 +140,7 @@ export function computeStats(entries: readonly RsvpEntry[], labels: RsvpLabels):
     shuttleThere,
     shuttleBack,
     shuttleHouseholds,
+    roomsRequested,
     overnight: labels.overnightOptions.map((option) => ({
       key: option.value,
       label: option.label,

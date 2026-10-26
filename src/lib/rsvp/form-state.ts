@@ -35,6 +35,8 @@ export interface RsvpFormValues {
   shuttleBack: boolean;
   shuttleFrom: string;
   shuttleSeats: number;
+  rooms: number;
+  stayNote: string;
   songWish: string;
   message: string;
   consent: boolean;
@@ -52,6 +54,8 @@ export interface RsvpSummary {
   events: string[];
   overnight: string | null;
   shuttle: RsvpShuttle | null;
+  rooms: number | null;
+  stayNote: string;
   songWish: string;
   message: string;
   updatedAt: string;
@@ -124,6 +128,8 @@ export function emptyValues(): RsvpFormValues {
     shuttleBack: false,
     shuttleFrom: '',
     shuttleSeats: 1,
+    rooms: 1,
+    stayNote: '',
     songWish: '',
     message: '',
     consent: false,
@@ -157,6 +163,8 @@ export function entryToValues(entry: RsvpSummary): RsvpFormValues {
     shuttleBack: entry.shuttle?.back ?? false,
     shuttleFrom: entry.shuttle?.from ?? '',
     shuttleSeats: entry.shuttle && entry.shuttle.seats > 0 ? entry.shuttle.seats : persons.length,
+    rooms: entry.rooms && entry.rooms > 0 ? entry.rooms : 1,
+    stayNote: entry.stayNote,
     songWish: entry.songWish,
     message: entry.message,
     // Wer schon gespeichert hat, hat bereits eingewilligt.
@@ -174,6 +182,8 @@ export function toSummary(entry: RsvpEntry): RsvpSummary {
     events: entry.events,
     overnight: entry.overnight,
     shuttle: entry.shuttle,
+    rooms: entry.rooms ?? null,
+    stayNote: entry.stayNote ?? '',
     songWish: entry.songWish,
     message: entry.message,
     updatedAt: entry.updatedAt,

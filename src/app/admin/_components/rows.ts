@@ -46,6 +46,8 @@ export function buildRows(entries: readonly RsvpEntry[], labels: RsvpLabels): Ad
       eventsShort: events.length === 0 ? '' : events.length === allEvents && allEvents > 1 ? 'alle' : events.join(', '),
       eventLabels: events,
       overnight: overnightLabel(entry.attendance === 'yes' ? entry.overnight : null, labels),
+      rooms: entry.attendance === 'yes' ? (entry.rooms ?? null) : null,
+      stayNote: entry.attendance === 'yes' ? (entry.stayNote ?? '').trim() : '',
       shuttle: shuttleText(entry),
       shuttleFrom: entry.attendance === 'yes' && entry.shuttle && (entry.shuttle.there || entry.shuttle.back) ? entry.shuttle.from : '',
       allergyCount: allergyPersons.length,

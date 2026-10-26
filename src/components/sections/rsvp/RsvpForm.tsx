@@ -119,6 +119,8 @@ function toPlain(v: ClientValues): RsvpFormValues {
     shuttleBack: v.shuttleBack,
     shuttleFrom: v.shuttleFrom,
     shuttleSeats: v.shuttleSeats,
+    rooms: v.rooms,
+    stayNote: v.stayNote,
     songWish: v.songWish,
     message: v.message,
     consent: v.consent,
@@ -164,6 +166,8 @@ function sanitizeDraft(raw: unknown, maxPersons: number): RsvpFormValues | null 
     shuttleBack: b(r.shuttleBack),
     shuttleFrom: s(r.shuttleFrom),
     shuttleSeats: typeof r.shuttleSeats === 'number' ? r.shuttleSeats : base.shuttleSeats,
+    rooms: typeof r.rooms === 'number' ? r.rooms : base.rooms,
+    stayNote: s(r.stayNote),
     songWish: s(r.songWish),
     message: s(r.message),
     // Die Einwilligung wird bewusst nicht gespeichert.
@@ -271,6 +275,8 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
   const atMax = personCount >= rsvp.maxPersons;
   const anyShuttle = values.shuttleThere || values.shuttleBack;
   const seats = Math.min(Math.max(values.shuttleSeats, 1), Math.max(personCount, 1));
+  const booking = rsvp.roomBooking;
+  const rooms = Math.min(Math.max(values.rooms, 1), Math.max(personCount, 1));
   const submittedOnce = errorFocus > 0 || state.attempt > 0;
 
   const plain = toPlain(values);
@@ -771,6 +777,50 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
                     ))}
                   </div>
                   <FieldError errorKey="overnight" message={shown.overnight} />
+                  {values.overnight === booking.overnightValue ? (
+                    <div className={styles.stayDetails}>
+                      <Notice tone="info" title={booking.infoTitle}>
+                        <p>{booking.infoIntro}</p>
+                        <ul role="list" className={styles.priceList}>
+                          {booking.prices.map((price) => (
+                            <li key={price}>{price}</li>
+                          ))}
+                        </ul>
+                        <p>{booking.infoNote}</p>
+                      </Notice>
+                      <Stepper
+                        id={fieldId('rooms')}
+                        name="rooms"
+                        label={booking.roomsLabel}
+                        value={rooms}
+                        min={1}
+                        max={Math.max(personCount, 1)}
+                        onChange={(value) => set('rooms', value)}
+                        unit={['Zimmer', 'Zimmer']}
+                        errorKey="rooms"
+                        error={shown.rooms}
+                      />
+                      <p className={styles.groupIntro}>{booking.roomsHint}</p>
+                    </div>
+                  ) : null}
+                  {booking.noteFor.includes(values.overnight) ? (
+                    <div className={styles.stayDetails}>
+                      <TextField
+                        id={fieldId('stayNote')}
+                        name="stayNote"
+                        label={booking.noteLabel}
+                        optional
+                        hint={booking.noteHint}
+                        value={values.stayNote}
+                        onChange={(stayNote) => set('stayNote', stayNote)}
+                        autoComplete="off"
+                        inputMode="text"
+                        maxLength={RSVP_LIMITS.stayNote}
+                        errorKey="stayNote"
+                        error={shown.stayNote}
+                      />
+                    </div>
+                  ) : null}
                 </SubGroup>
               ) : null}
 

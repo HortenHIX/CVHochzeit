@@ -106,6 +106,7 @@ export function readFormValues(formData: FormData): RsvpFormValues {
   const name = cleanLine(str(formData, 'name'));
   const events = all(formData, 'events').map(cleanLine);
   const seats = Number.parseInt(str(formData, 'shuttleSeats'), 10);
+  const rooms = Number.parseInt(str(formData, 'rooms'), 10);
 
   return {
     attendance,
@@ -119,6 +120,8 @@ export function readFormValues(formData: FormData): RsvpFormValues {
     shuttleBack: flag(formData, 'shuttleBack'),
     shuttleFrom: cleanLine(str(formData, 'shuttleFrom')),
     shuttleSeats: Number.isFinite(seats) ? seats : 0,
+    rooms: Number.isFinite(rooms) ? rooms : 0,
+    stayNote: cleanLine(str(formData, 'stayNote')),
     songWish: cleanLine(str(formData, 'songWish')),
     message: cleanText(str(formData, 'message')),
     consent: flag(formData, 'consent'),
@@ -146,6 +149,7 @@ export function cleanValues(values: RsvpFormValues): RsvpFormValues {
     })),
     overnight: cleanLine(values.overnight),
     shuttleFrom: cleanLine(values.shuttleFrom),
+    stayNote: cleanLine(values.stayNote),
     songWish: cleanLine(values.songWish),
     message: cleanText(values.message),
   };
@@ -237,6 +241,24 @@ export function validateValues(values: RsvpFormValues, config: RsvpConfig): Rsvp
     else errors.overnight = 'Bitte wählt eine der Möglichkeiten zur Übernachtung.';
   }
 
+  // Zimmer nur bei der Zimmer-Option, Wünsche zusätzlich z. B. beim Stellplatz.
+  const booking = rsvp.roomBooking;
+  const wantsRooms = attending && overnight === booking.overnightValue;
+  const wantsNote = attending && overnight !== null && booking.noteFor.includes(overnight);
+  let rooms: number | null = null;
+  if (wantsRooms) {
+    const max = Math.max(1, persons.length);
+    if (!Number.isInteger(values.rooms) || values.rooms < 1 || values.rooms > max) {
+      errors.rooms =
+        max === 1 ? 'Bitte gebt 1 Zimmer an.' : `Bitte gebt zwischen 1 und ${max} Zimmer an.`;
+    } else {
+      rooms = values.rooms;
+    }
+  }
+  if (wantsNote && tooLong(values.stayNote, RSVP_LIMITS.stayNote)) {
+    errors.stayNote = `Bitte kürzt eure Wünsche auf höchstens ${RSVP_LIMITS.stayNote} Zeichen.`;
+  }
+
   let shuttle: RsvpShuttle | null = null;
   if (attending && config.shuttleEnabled) {
     const wanted = values.shuttleThere || values.shuttleBack;
@@ -282,6 +304,8 @@ export function validateValues(values: RsvpFormValues, config: RsvpConfig): Rsvp
       events,
       overnight,
       shuttle,
+      rooms,
+      stayNote: wantsNote ? values.stayNote : '',
       songWish: rsvp.askSongWish && attending ? values.songWish : '',
       message: values.message,
     },

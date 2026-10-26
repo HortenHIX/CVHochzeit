@@ -1,4 +1,4 @@
-import type { RsvpEvent, RsvpOption, ShuttleRide } from '@/content/site';
+import type { RoomBooking, RsvpEvent, RsvpOption, ShuttleRide } from '@/content/site';
 
 /**
  * Einstellungen des Zusage-Formulars – genau das, was Formular und Prüfung
@@ -23,6 +23,7 @@ export interface RsvpConfig {
     events: RsvpEvent[];
     askOvernight: boolean;
     overnightOptions: RsvpOption[];
+    roomBooking: RoomBooking;
     askSongWish: boolean;
     successYes: string;
     successNo: string;

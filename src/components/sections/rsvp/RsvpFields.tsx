@@ -510,7 +510,7 @@ export function Stepper({
           className={styles.stepButton}
           onClick={() => step(-1)}
           aria-disabled={atMin || undefined}
-          aria-label={`Einen ${unit[0]} weniger`}
+          aria-label={`${unit[0]} entfernen`}
         >
           <Icon name="minus" size={20} />
         </button>
@@ -523,7 +523,7 @@ export function Stepper({
           className={styles.stepButton}
           onClick={() => step(1)}
           aria-disabled={atMax || undefined}
-          aria-label={`Einen ${unit[0]} mehr`}
+          aria-label={`${unit[0]} hinzufügen`}
         >
           <Icon name="plus" size={20} />
         </button>

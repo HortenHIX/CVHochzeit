@@ -627,6 +627,8 @@ function RowDetails({ row, onDeleted }: { row: AdminRow; onDeleted: (id: string,
               <>
                 <Fact term="Programm">{row.eventLabels.length > 0 ? row.eventLabels.join(', ') : 'keine Angabe'}</Fact>
                 <Fact term="Übernachtung">{row.overnight || 'keine Angabe'}</Fact>
+                {row.rooms ? <Fact term="Zimmer">{row.rooms}</Fact> : null}
+                {row.stayNote ? <Fact term="Übernachtungswünsche">{row.stayNote}</Fact> : null}
                 <Fact term="Shuttle">
                   {row.shuttle ? (
                     <>

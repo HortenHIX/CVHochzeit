@@ -114,6 +114,19 @@ export function StatTiles({ stats }: { stats: RsvpStats }) {
             sub={<Parts parts={['Plätze', plural(stats.shuttleHouseholds, 'Haushalt', 'Haushalte')]} />}
           />
         ) : null}
+        {site.rsvp.roomBooking.totalRooms > 0 ? (
+          <Tile
+            id="zimmer"
+            label="Zimmer angefragt"
+            icon="bed"
+            value={stats.roomsRequested}
+            sub={
+              stats.roomsRequested > site.rsvp.roomBooking.totalRooms
+                ? `mehr als die ${site.rsvp.roomBooking.totalRooms} reservierten`
+                : `von ${site.rsvp.roomBooking.totalRooms} reservierten`
+            }
+          />
+        ) : null}
         {stats.overnight.map((row) => (
           <Tile
             key={row.key}
