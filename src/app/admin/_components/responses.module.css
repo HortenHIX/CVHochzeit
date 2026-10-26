@@ -733,6 +733,33 @@
 
 /* ---------- Löschen ---------- */
 
+.editBar {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--space-4);
+  border-top: var(--hairline);
+}
+
+.editLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1.5px solid var(--c-sage-700);
+  border-radius: var(--radius-pill);
+  color: var(--c-sage-700);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  text-decoration: none;
+  touch-action: manipulation;
+}
+
+.editBar + .deleteBar {
+  padding-top: var(--space-2);
+  border-top: 0;
+}
+
 .deleteBar {
   display: flex;
   justify-content: flex-end;
@@ -1277,6 +1304,7 @@
 @media print {
   .toolbar,
   .toggle,
+  .editBar,
   .deleteBar,
   .confirm {
     display: none;

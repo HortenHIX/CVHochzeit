@@ -10,6 +10,7 @@ import {
   type MouseEvent,
   type ReactNode,
 } from 'react';
+import Link from 'next/link';
 import { Icon } from '@/components/icons/Icon';
 import { Badge } from '@/components/ui/Badge';
 import { foldText } from '@/lib/rsvp/stats';
@@ -665,6 +666,14 @@ function RowDetails({ row, onDeleted }: { row: AdminRow; onDeleted: (id: string,
         </div>
       </div>
 
+      <div className={styles.editBar}>
+        <Link href={`/admin/antwort/${row.id}`} className={styles.editLink}>
+          <Icon name="link" size={20} />
+          <span>
+            Antwort bearbeiten<span className="visually-hidden">: {row.name}</span>
+          </span>
+        </Link>
+      </div>
       <DeleteControl id={row.id} name={row.name} onDeleted={onDeleted} />
     </div>
   );

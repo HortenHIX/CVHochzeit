@@ -341,6 +341,49 @@ test.describe('Verwaltung', () => {
     expect(unknown.status()).toBe(400);
   });
 
+  test('Bearbeiten ändert eine Antwort, prüft die Eingaben und speichert', async ({ page }) => {
+    await loginAsAdmin(page);
+    const row = responseRow(page, 'injektion');
+    await row.getByRole('button', { name: /Details/ }).click();
+    await row.getByRole('link', { name: /Antwort bearbeiten/ }).click();
+    await expect(page).toHaveURL(new RegExp(`/admin/antwort/${ID_PREFIX}injektion$`), SERVER);
+    await expect(page.getByRole('heading', { level: 1, name: 'Antwort bearbeiten' })).toBeVisible(SERVER);
+
+    // Fehlende Angaben werden wie im Gästeformular abgelehnt, nichts geht verloren
+    const person = page.getByRole('group', { name: 'Personen' });
+    await person.getByLabel('Name', { exact: true }).fill('');
+    await page.getByRole('button', { name: 'Änderungen speichern' }).click();
+    const alert = page.getByRole('alert').filter({ hasText: 'Bitte prüft noch' });
+    await expect(alert).toContainText('Bitte gebt den Namen von Person 1 an.', SERVER);
+    await expect(page).toHaveURL(/\/admin\/antwort\//);
+
+    // Korrigieren: neuer Name, anderes Menü, Zimmer-Option mit Wunsch
+    await person.getByLabel('Name', { exact: true }).fill('Ingo Geändert');
+    await person.getByRole('radio', { name: 'Vegetarisch' }).check();
+    await page.getByRole('radio', { name: 'In der Bergwelt (Vermittlung über uns)' }).check();
+    await page.getByLabel('Zimmer', { exact: true }).fill('1');
+    await page.getByLabel(/Wünsche zur Übernachtung/).fill('Anreise Freitag');
+    await page.getByRole('button', { name: 'Änderungen speichern' }).click();
+
+    await expect(page).toHaveURL(/\/admin$/, SERVER);
+    const stored = JSON.parse(await fs.readFile(RSVP_FILE, 'utf8')) as Record<string, RsvpEntry>;
+    const saved = stored[`${ID_PREFIX}injektion`];
+    expect(saved.persons[0]).toMatchObject({ name: 'Ingo Geändert', menu: 'vegetarisch' });
+    expect(saved).toMatchObject({ overnight: 'bergwelt', rooms: 1, stayNote: 'Anreise Freitag', revision: 1 });
+    expect(saved.createdAt).toBe('2026-09-01T10:00:00.000Z');
+    expect(saved.updatedAt).not.toBe('2026-09-01T10:00:00.000Z');
+  });
+
+  test('Bearbeiten: ohne Anmeldung gesperrt, unbekannte Antwort wird gemeldet', async ({ page, request }) => {
+    const anonymous = await request.get(`/admin/antwort/${ID_PREFIX}testmann`, { maxRedirects: 0 });
+    expect(anonymous.status()).toBe(307);
+    expect(anonymous.headers()['location']).toContain('/admin/login');
+
+    await loginAsAdmin(page);
+    await page.goto('/admin/antwort/gibt-es-nicht');
+    await expect(page.getByText('Diese Antwort gibt es nicht (mehr).')).toBeVisible(SERVER);
+  });
+
   test('Löschen entfernt eine Antwort nach Rückfrage', async ({ page }) => {
     await loginAsAdmin(page);
     const row = responseRow(page, 'loeschen');
