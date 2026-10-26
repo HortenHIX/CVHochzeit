@@ -376,8 +376,7 @@ export const site = {
         time: '14:00\u00A0Uhr',
         name: 'Bergwelt Kandel',
         street: 'Kandel 1',
-        /** PLZ und Ort fehlen noch – bitte ergänzen (erscheint z. B. im Kalendereintrag). */
-        zipCity: '',
+        zipCity: '79183 Waldkirch (Südschwarzwald)',
         description: 'Ein alter Gutshof mit großem Garten, Scheune und viel Platz zum Feiern. PLATZHALTER',
         lat: 48.15,
         lng: 11.6,
@@ -665,10 +664,10 @@ export const site = {
     text: 'Wir freuen uns auf euch.',
   },
   privacy: {
-    /** Verantwortlich für die Datenverarbeitung. PLATZHALTER */
-    responsibleName: 'Christoph Mustermann & Vera Musterfrau',
-    responsibleAddress: 'Musterstraße 1, 12345 Musterstadt',
-    responsibleEmail: 'hallo@example.com',
+    /** Verantwortlich für die Datenverarbeitung */
+    responsibleName: 'Christoph & Vera',
+    responsibleAddress: '78183 Hüfingen',
+    responsibleEmail: 'chris.koehler13@web.de',
   },
 };
 
