@@ -11,8 +11,24 @@ import { RsvpSection } from '@/components/sections/rsvp/RsvpSection';
 import { Schedule } from '@/components/sections/Schedule';
 import { Stay } from '@/components/sections/Stay';
 import { Story } from '@/components/sections/Story';
+import { isSaveTheDate } from '@/lib/site-mode';
 
 export default function HomePage() {
+  // Save-the-Date-Modus: nur Titelbereich und Zusage. Die übrigen Sektionen werden gar nicht
+  // erst gerendert, ihre Inhalte verlassen den Server also nicht.
+  if (isSaveTheDate()) {
+    return (
+      <>
+        <Header minimal />
+        <main id="inhalt">
+          <Hero />
+          <RsvpSection />
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
   return (
     <>
       <Header />

@@ -1,6 +1,7 @@
 import 'server-only';
 import { site } from '@/content/site';
 import { formatDate, rsvpDeadlineIso } from '@/lib/format';
+import { isSaveTheDate } from '@/lib/site-mode';
 import { shuttleTimesText, type RsvpConfig } from './config';
 
 /** Baut die Formular-Einstellungen aus der Inhaltsdatei (nur auf dem Server). */
@@ -38,5 +39,6 @@ export function getRsvpConfig(): RsvpConfig {
       back: shuttleTimesText(stay.shuttle.rides, 'zurueck'),
     },
     allEventIds: rsvp.events.map((e) => e.id),
+    fullSite: !isSaveTheDate(),
   };
 }

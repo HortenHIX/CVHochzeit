@@ -30,7 +30,7 @@ const CTA_HIDE_AFTER = (() => {
  * Sticky Header mit Skip-Link, Monogramm, Desktop-Navigation (ab 75em),
  * Zusage-Button und mobilem Vollbild-Menü (design.md F1).
  */
-export function Header() {
+export function Header({ minimal = false }: { minimal?: boolean }) {
   return (
     <>
       <a href="#inhalt" className="skip-link">
@@ -41,10 +41,10 @@ export function Header() {
           <a href="#start" className={styles.brand}>
             <Monogram variant="small" size={40} label="Christoph und Vera – zum Seitenanfang" />
           </a>
-          <DesktopNav items={DESKTOP_ITEMS} spyIds={SPY_IDS} />
+          {minimal ? null : <DesktopNav items={DESKTOP_ITEMS} spyIds={SPY_IDS} />}
           <div className={styles.actions}>
-            <Suspense fallback={<HeaderActions state="none" />}>
-              <HeaderActionsWithRsvp />
+            <Suspense fallback={<HeaderActions state="none" minimal={minimal} />}>
+              <HeaderActionsWithRsvp minimal={minimal} />
             </Suspense>
           </div>
         </div>
@@ -54,16 +54,17 @@ export function Header() {
 }
 
 /** Liest die eigene Antwort dieses Geräts (Cookie) – deshalb hinter <Suspense>. */
-async function HeaderActionsWithRsvp() {
+async function HeaderActionsWithRsvp({ minimal }: { minimal: boolean }) {
   const own = await getOwnRsvp();
   const state: RsvpState = own ? (own.attendance === 'yes' ? 'yes' : 'no') : 'none';
-  return <HeaderActions state={state} />;
+  return <HeaderActions state={state} minimal={minimal} />;
 }
 
-function HeaderActions({ state }: { state: RsvpState }) {
+function HeaderActions({ state, minimal }: { state: RsvpState; minimal: boolean }) {
   return (
     <>
       <HeaderRsvpCta state={state} hideAfter={CTA_HIDE_AFTER} href={`#${RSVP_NAV.id}`} />
+      {minimal ? null : (
       <MobileMenu
         items={NAV_ITEMS}
         spyIds={SPY_IDS}
@@ -73,6 +74,7 @@ function HeaderActions({ state }: { state: RsvpState }) {
         brand={<Monogram variant="small" size={40} />}
         decoration={<CornerBouquet corner="bottom-right" size={160} className={styles.menuBouquet} />}
       />
+      )}
     </>
   );
 }

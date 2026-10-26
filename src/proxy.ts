@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getAuthSecrets } from '@/lib/auth/config';
+import { isHiddenInSaveTheDate, isSaveTheDate } from '@/lib/site-mode';
 import { clientIpFrom, hitRateLimit, LIMITS, refundRateLimit } from '@/lib/rate-limit';
 import {
   createSessionToken,
@@ -15,6 +16,7 @@ import {
  * - Ohne gültige Session → Weiterleitung zu /login (bzw. /admin/login).
  * - `?code=<Gästecode>` in der URL (z. B. im QR-Code auf der Einladung)
  *   meldet Gäste direkt an und entfernt den Code wieder aus der Adresse.
+ * - `SITE_MODE=savethedate`: nur Titelbereich und Zusage; Unterseiten leiten auf `/` um (siehe site-mode.ts).
  * - Öffentlich bleiben nur Login-Seiten, Datenschutz und technische Dateien.
  */
 
@@ -66,6 +68,11 @@ export async function proxy(request: NextRequest) {
     }
     // Falscher Code: weiter zum Login, Code nicht in der Adresse behalten.
     return withNoIndex(redirectToLogin(request, '/login', 'code'));
+  }
+
+  // Save-the-Date-Modus: Unterseiten der vollen Seite sind nicht erreichbar.
+  if (isSaveTheDate() && isHiddenInSaveTheDate(pathname)) {
+    return withNoIndex(NextResponse.redirect(new URL('/', request.url)));
   }
 
   if (isAdminArea) {

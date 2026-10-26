@@ -41,6 +41,8 @@ export interface RsvpConfig {
   shuttleHotels: string[];
   shuttleTimes: { there: string | null; back: string | null };
   allEventIds: string[];
+  /** Komplette Seite online? Sonst (Save the Date) fehlen Kontakt- und Übernachten-Sektion. */
+  fullSite: boolean;
 }
 
 export function menuLabel(config: RsvpConfig, value: string): string {

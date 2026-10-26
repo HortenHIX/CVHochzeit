@@ -618,7 +618,7 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
                         <a href="/login?next=%2F%23zusage">Zur Anmeldung</a>
                       </>
                     ) : null}
-                    {serverKind === 'storage' ? (
+                    {serverKind === 'storage' && config.fullSite ? (
                       <>
                         {' '}
                         <a href="#kontakt">Zu den Kontakten</a>
@@ -824,13 +824,15 @@ function RsvpFormInner({ initial, draft }: { initial: RsvpInitial | null; draft:
                   optional
                   hintId="rsvp-shuttle-hinweis"
                   hint={
-                    <>
-                      Fahrplan und Haltestellen findet ihr unter{' '}
-                      <a href="#uebernachten" className={styles.inlineLink}>
-                        Übernachten & Shuttle
-                      </a>
-                      .
-                    </>
+                    config.fullSite ? (
+                      <>
+                        Fahrplan und Haltestellen findet ihr unter{' '}
+                        <a href="#uebernachten" className={styles.inlineLink}>
+                          Übernachten & Shuttle
+                        </a>
+                        .
+                      </>
+                    ) : undefined
                   }
                 >
                   <div className={styles.shuttle}>
